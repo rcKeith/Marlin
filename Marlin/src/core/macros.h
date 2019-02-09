@@ -21,9 +21,17 @@
  */
 #pragma once
 
-#define NUM_AXIS 4
+#define MOV_AXIS 3
+#define NUM_AXIS NON_E_AXES + 1
 #define ABCE 4
 #define XYZE 4
+#define XYZIE 5
+#define XYZIJE 6
+#define XYZIJKE 7
+#define ABCDE 5
+#define ABCIE 5
+#define ABCIJE 6
+#define ABCIJKE 7
 #define ABC  3
 #define XYZ  3
 
@@ -32,9 +40,17 @@
 #define _XMIN_ 100
 #define _YMIN_ 200
 #define _ZMIN_ 300
+#define _DMIN_ 400
+#define _IMIN_ 400
+#define _JMIN_ 500
+#define _KMIN_ 600
 #define _XMAX_ 101
 #define _YMAX_ 201
 #define _ZMAX_ 301
+#define _DMAX_ 401
+#define _IMAX_ 401
+#define _JMAX_ 501
+#define _KMAX_ 601
 
 #define _FORCE_INLINE_ __attribute__((__always_inline__)) __inline__
 #define  FORCE_INLINE  __attribute__((always_inline)) inline

@@ -199,7 +199,17 @@ void GCodeParser::parse(char *p) {
       #endif
       case 'P': case 'Q':
         if (motion_mode_codenum != 5) return;
-      case 'X': case 'Y': case 'Z': case 'E': case 'F':
+      case 'X': case 'Y': case 'Z': case 'E':
+        #if NON_E_AXES > 3
+          case 'I':
+          #if NON_E_AXES > 4
+            case 'J':
+            #if NON_E_AXES > 5
+              case 'K':
+            #endif
+          #endif
+        #endif
+        case 'F':
         if (motion_mode_codenum < 0) return;
         command_letter = 'G';
         codenum = motion_mode_codenum;

@@ -187,6 +187,16 @@ void serial_spaces(uint8_t count);
 void print_bin(const uint16_t val);
 
 void print_xyz(PGM_P const prefix, PGM_P const suffix, const float xyz[]);
-void print_xyz(PGM_P const prefix, PGM_P const suffix, const float &x, const float &y, const float &z);
+void print_xyz(PGM_P const prefix, PGM_P const suffix, const float &x, const float &y, const float &z
+  #if NON_E_AXES > 3 
+    , const float &i
+    #if NON_E_AXES > 4 
+      , const float &j
+      #if NON_E_AXES > 5 
+        , const float &k
+      #endif
+    #endif
+  #endif
+  );
 #define SERIAL_POS(SUFFIX,VAR) do { print_xyz(PSTR("  " STRINGIFY(VAR) "="), PSTR(" : " SUFFIX "\n"), VAR); }while(0)
 #define SERIAL_XYZ(PREFIX,V...) do { print_xyz(PSTR(PREFIX), nullptr, V); }while(0)

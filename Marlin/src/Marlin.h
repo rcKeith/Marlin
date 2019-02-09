@@ -142,6 +142,56 @@ void manage_inactivity(const bool ignore_stepper_queue=false);
 #define  enable_Z() do{ Z_enable; Z2_enable; Z3_enable; }while(0)
 #define disable_Z() do{ Z_disable; Z2_disable; Z3_disable; CBI(axis_known_position, Z_AXIS); }while(0)
 
+#if NON_E_AXES > 3
+#if AXIS_DRIVER_TYPE_I(L6470)
+  extern L6470 stepperI;
+  #define I_enable  NOOP
+  #define I_disable stepperI.free()
+#elif HAS_I_ENABLE
+  #define I_enable  I_ENABLE_WRITE( I_ENABLE_ON)
+  #define I_disable I_ENABLE_WRITE(!I_ENABLE_ON)
+#else
+  #define I_enable  NOOP
+  #define I_disable NOOP
+#endif
+
+#define  enable_I() do{ I_enable; }while(0)
+#define disable_I() do{ I_disable; CBI(axis_known_position, I_AXIS); }while(0)
+
+#if NON_E_AXES > 4
+#if AXIS_DRIVER_TYPE_J(L6470)
+  extern L6470 stepperJ;
+  #define J_enable  NOOP
+  #define J_disable stepperJ.free()
+#elif HAS_J_ENABLE
+  #define J_enable  J_ENABLE_WRITE( J_ENABLE_ON)
+  #define J_disable J_ENABLE_WRITE(!J_ENABLE_ON)
+#else
+  #define J_enable  NOOP
+  #define J_disable NOOP
+#endif
+
+#define  enable_J() do{ J_enable; }while(0)
+#define disable_J() do{ J_disable; CBI(axis_known_position, J_AXIS); }while(0)
+
+#if NON_E_AXES > 5
+#if AXIS_DRIVER_TYPE_K(L6470)
+  extern L6470 stepperK;
+  #define K_enable  NOOP
+  #define K_disable stepperF.free()
+#elif HAS_K_ENABLE
+  #define K_enable  K_ENABLE_WRITE( K_ENABLE_ON)
+  #define K_disable K_ENABLE_WRITE(!K_ENABLE_ON)
+#else
+  #define K_enable  NOOP
+  #define K_disable NOOP
+#endif
+
+#define  enable_J() do{ J_enable; }while(0)
+#define disable_J() do{ J_disable; CBI(axis_known_position, J_AXIS); }while(0)
+#endif // NON_E_AXES > 5
+#endif // NON_E_AXES > 4
+#endif // NON_E_AXES > 3
 //
 // Extruder Stepper enable / disable
 //

@@ -37,7 +37,7 @@
  * ***              In the 2.0 release, it will simply be disabled by default.
  */
 void GcodeSuite::M206() {
-  LOOP_XYZ(i)
+  LOOP_NON_E(i)
     if (parser.seen(axis_codes[i]))
       set_home_offset((AxisEnum)i, parser.value_linear_units());
 
@@ -63,8 +63,8 @@ void GcodeSuite::M206() {
 void GcodeSuite::M428() {
   if (axis_unhomed_error()) return;
 
-  float diff[XYZ];
-  LOOP_XYZ(i) {
+  float diff[NON_E_AXES];
+  LOOP_NON_E(i) {
     diff[i] = base_home_pos((AxisEnum)i) - current_position[i];
     if (!WITHIN(diff[i], -20, 20) && home_dir((AxisEnum)i) > 0)
       diff[i] = -current_position[i];
@@ -76,7 +76,7 @@ void GcodeSuite::M428() {
     }
   }
 
-  LOOP_XYZ(i) set_home_offset((AxisEnum)i, diff[i]);
+  LOOP_NON_E(i) set_home_offset((AxisEnum)i, diff[i]);
   report_current_position();
   LCD_MESSAGEPGM(MSG_HOME_OFFSETS_APPLIED);
   BUZZ(100, 659);

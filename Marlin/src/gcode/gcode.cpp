@@ -112,8 +112,18 @@ int8_t GcodeSuite::get_target_e_stepper_from_command() {
  *  - Set the feedrate, if included
  */
 void GcodeSuite::get_destination_from_command() {
-  bool seen[XYZE] = { false, false, false, false };
-  LOOP_XYZE(i) {
+  bool seen[NUM_AXIS] = { false, false, false, false 
+    #if NON_E_AXES > 3
+      , false
+      #if NON_E_AXES > 4
+        , false
+        #if NON_E_AXES > 5
+          , false
+        #endif
+      #endif
+    #endif  
+  }; // TODO (DerAndere): Test for NON_E_AXES > 3
+  LOOP_NUM_AXIS(i) {
     if ( (seen[i] = parser.seenval(axis_codes[i])) ) {
       const float v = parser.value_axis_units((AxisEnum)i);
       destination[i] = axis_is_relative(AxisEnum(i)) ? current_position[i] + v : (i == E_AXIS) ? v : LOGICAL_TO_NATIVE(v, i);

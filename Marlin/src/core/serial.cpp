@@ -65,15 +65,45 @@ void print_bin(const uint16_t val) {
     if (i && !(i % 4)) SERIAL_CHAR(' ');
     SERIAL_CHAR((val & mask) ? '1' : '0');
     mask >>= 1;
-  }
+  } // TODO (DerAndere): Test for NON_E_AXES
 }
 
-void print_xyz(PGM_P const prefix, PGM_P const suffix, const float &x, const float &y, const float &z) {
+void print_xyz(PGM_P const prefix, PGM_P const suffix, const float &x, const float &y, const float &z
+  #if NON_E_AXES > 3
+    , const float &i
+    #if NON_E_AXES > 4
+      , const float &j
+      #if NON_E_AXES > 5
+        , const float &k
+      #endif
+    #endif
+  #endif
+) {
   serialprintPGM(prefix);
-  SERIAL_ECHOPAIR(" " MSG_X, x, " " MSG_Y, y, " " MSG_Z, z);
+  SERIAL_ECHOPAIR(" " MSG_X, x, " " MSG_Y, y, " " MSG_Z, z
+    #if NON_E_AXES > 3
+      " " MSG_I, i
+      #if NON_E_AXES > 4
+        " " MSG_J, j
+        #if NON_E_AXES > 5
+          " " MSG_K, k
+        #endif
+      #endif
+    #endif
+  );
   if (suffix) serialprintPGM(suffix); else SERIAL_EOL();
-}
+} // TODO (DerAndere): Test for NON_E_AXES
 
 void print_xyz(PGM_P const prefix, PGM_P const suffix, const float xyz[]) {
-  print_xyz(prefix, suffix, xyz[X_AXIS], xyz[Y_AXIS], xyz[Z_AXIS]);
-}
+  print_xyz(prefix, suffix, xyz[X_AXIS], xyz[Y_AXIS], xyz[Z_AXIS]
+    #if NON_E_AXES > 3
+      , xyz[I_AXIS]
+      #if NON_E_AXES > 4
+        , xyz[J_AXIS]
+        #if NON_E_AXES > 5
+          , xyz[K_AXIS]
+        #endif
+      #endif
+    #endif
+  );
+} // TODO (DerAndere): Test for NON_E_AXES

@@ -35,6 +35,46 @@ enum AxisEnum : unsigned char {
   B_AXIS    = 1,
   Z_AXIS    = 2,
   C_AXIS    = 2,
+#if NON_E_AXES > 5
+  I_AXIS    = 3,
+  J_AXIS    = 4,
+  K_AXIS    = 5,
+  E_AXIS    = 6,
+  X_HEAD    = 7,
+  Y_HEAD    = 8,
+  Z_HEAD    = 9,
+  E0_AXIS   = 6,
+  E1_AXIS   = 7,
+  E2_AXIS   = 8,
+  E3_AXIS   = 9,
+  E4_AXIS   = 10,
+  E5_AXIS   = 11,
+#elif NON_E_AXES > 4
+  I_AXIS    = 3,
+  J_AXIS    = 4,
+  E_AXIS    = 5,
+  X_HEAD    = 6,
+  Y_HEAD    = 7,
+  Z_HEAD    = 8,
+  E0_AXIS   = 5,
+  E1_AXIS   = 6,
+  E2_AXIS   = 7,
+  E3_AXIS   = 8,
+  E4_AXIS   = 9,
+  E5_AXIS   = 10,
+#elif NON_E_AXES > 3
+  I_AXIS    = 3,
+  E_AXIS    = 4,
+  X_HEAD    = 5,
+  Y_HEAD    = 6,
+  Z_HEAD    = 7,
+  E0_AXIS   = 4,
+  E1_AXIS   = 5,
+  E2_AXIS   = 6,
+  E3_AXIS   = 7,
+  E4_AXIS   = 8,
+  E5_AXIS   = 9,
+#else
   E_AXIS    = 3,
   X_HEAD    = 4,
   Y_HEAD    = 5,
@@ -45,6 +85,7 @@ enum AxisEnum : unsigned char {
   E3_AXIS   = 6,
   E4_AXIS   = 7,
   E5_AXIS   = 8,
+#endif
   ALL_AXES  = 0xFE,
   NO_AXIS   = 0xFF
 };
@@ -61,3 +102,8 @@ enum AxisEnum : unsigned char {
 #define LOOP_ABC(VAR) LOOP_S_LE_N(VAR, A_AXIS, C_AXIS)
 #define LOOP_ABCE(VAR) LOOP_S_LE_N(VAR, A_AXIS, E_AXIS)
 #define LOOP_ABCE_N(VAR) LOOP_S_L_N(VAR, A_AXIS, XYZE_N)
+#define LOOP_MOV_AXIS(VAR) LOOP_S_L_N(VAR, A_AXIS, MOV_AXIS)
+#define LOOP_NUM_AXIS(VAR) LOOP_S_L_N(VAR, A_AXIS, NUM_AXIS)
+#define LOOP_NUM_AXIS_N(VAR) LOOP_S_L_N(VAR, A_AXIS, NUM_AXIS_N)
+#define LOOP_NON_E(VAR) LOOP_S_L_N(VAR, A_AXIS, NON_E_AXES)
+

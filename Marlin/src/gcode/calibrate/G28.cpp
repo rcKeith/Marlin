@@ -271,8 +271,37 @@ void GcodeSuite::G28(const bool always_home_all) {
   #else // NOT DELTA
 
     const bool homeX = parser.seen('X'), homeY = parser.seen('Y'), homeZ = parser.seen('Z'),
-               home_all = always_home_all || (homeX == homeY && homeX == homeZ),
-               doX = home_all || homeX, doY = home_all || homeY, doZ = home_all || homeZ;
+               #if NON_E_AXES > 3
+                 homeI = always_home_all || parser.seen('I'),
+                 #if NON_E_AXES > 4
+                   homeJ = always_home_all || parser.seen('J'),
+                   #if NON_E_AXES > 5
+                     homeK = always_home_all || parser.seen('K'),
+                   #endif
+                 #endif
+               #endif
+               home_all = always_home_all || (homeX == homeY && homeX == homeZ
+               #if NON_E_AXES > 3
+                 && !homeI
+                 #if NON_E_AXES > 4
+                   && !homeJ
+                   #if NON_E_AXES > 5
+                     && !homeK
+                   #endif
+                 #endif
+               #endif
+               ),
+               doX = home_all || homeX, doY = home_all || homeY, doZ = home_all || homeZ
+               #if NON_E_AXES > 3
+                 , doI = home_all || homeI
+                 #if NON_E_AXES > 4
+                   , doJ = home_all || homeJ
+                   #if NON_E_AXES > 5
+                     , doK = home_all || homeK
+                   #endif
+                 #endif
+               #endif
+               ;
 
     set_destination_from_current();
 
@@ -289,7 +318,17 @@ void GcodeSuite::G28(const bool always_home_all) {
           (parser.seenval('R') ? parser.value_linear_units() : Z_HOMING_HEIGHT)
     );
 
-    if (z_homing_height && (doX || doY)) {
+    if (z_homing_height && (doX || doY
+      #if NON_E_AXES > 3
+        || doI
+        #if NON_E_AXES > 4
+          || doJ
+          #if NON_E_AXES > 5
+            || doK
+          #endif
+        #endif
+      #endif
+    )) {
       // Raise Z before homing any other axes and z is not already high enough (never lower z)
       destination[Z_AXIS] = z_homing_height;
       if (destination[Z_AXIS] > current_position[Z_AXIS]) {
@@ -371,6 +410,16 @@ void GcodeSuite::G28(const bool always_home_all) {
       } // doZ
     #endif // Z_HOME_DIR < 0
 
+    #if NON_E_AXES > 3
+      if (doI) homeaxis(I_AXIS);
+      #if NON_E_AXES > 4
+        if (doJ) homeaxis(J_AXIS);
+        #if NON_E_AXES > 5
+          if (doK) homeaxis(K_AXIS);
+        #endif
+      #endif
+    #endif
+      
     sync_plan_position();
 
   #endif // !DELTA (G28)

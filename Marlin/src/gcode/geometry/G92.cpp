@@ -52,7 +52,7 @@ void GcodeSuite::G92() {
       case 1: {
         // Zero the G92 values and restore current position
         #if !IS_SCARA
-          LOOP_XYZ(i) if (position_shift[i]) {
+          LOOP_NON_E(i) if (position_shift[i]) { // TODO (DerAndere): Test for NON_E_AXES > 3
             position_shift[i] = 0;
             update_workspace_offset((AxisEnum)i);
           }
@@ -61,7 +61,7 @@ void GcodeSuite::G92() {
     #endif
     #if ENABLED(POWER_LOSS_RECOVERY)
       case 9: {
-        LOOP_XYZE(i) {
+        LOOP_NUM_AXIS(i) {
           if (parser.seenval(axis_codes[i])) {
             current_position[i] = parser.value_axis_units((AxisEnum)i);
             #if IS_SCARA || !HAS_POSITION_SHIFT

@@ -136,6 +136,33 @@
   #define ISR_START_Z_STEPPER_CYCLES 0UL
   #define ISR_Z_STEPPER_CYCLES       0UL
 #endif
+//#if NON_E_AXES > 3
+  #ifdef HAS_I_STEP
+    #define ISR_START_I_STEPPER_CYCLES ISR_START_STEPPER_CYCLES
+    #define ISR_I_STEPPER_CYCLES       ISR_STEPPER_CYCLES
+  #else
+    #define ISR_START_I_STEPPER_CYCLES 0UL
+    #define ISR_I_STEPPER_CYCLES       0UL
+  #endif
+//  #if NON_E_AXES > 4
+    #ifdef HAS_J_STEP
+      #define ISR_START_J_STEPPER_CYCLES ISR_START_STEPPER_CYCLES
+      #define ISR_J_STEPPER_CYCLES       ISR_STEPPER_CYCLES
+    #else
+      #define ISR_START_J_STEPPER_CYCLES 0UL
+      #define ISR_J_STEPPER_CYCLES       0UL
+    #endif
+//    #if NON_E_AXES > 5
+      #ifdef HAS_K_STEP
+        #define ISR_START_K_STEPPER_CYCLES ISR_START_STEPPER_CYCLES
+        #define ISR_K_STEPPER_CYCLES       ISR_STEPPER_CYCLES
+      #else
+        #define ISR_START_K_STEPPER_CYCLES 0UL
+        #define ISR_K_STEPPER_CYCLES       0UL
+      #endif
+//    #endif
+//  #endif
+//#endif
 
 // E is always interpolated, even for mixing extruders
 #define ISR_START_E_STEPPER_CYCLES   ISR_START_STEPPER_CYCLES
@@ -151,11 +178,28 @@
 #endif
 
 // Calculate the minimum time to start all stepper pulses in the ISR loop
-#define MIN_ISR_START_LOOP_CYCLES (ISR_START_X_STEPPER_CYCLES + ISR_START_Y_STEPPER_CYCLES + ISR_START_Z_STEPPER_CYCLES + ISR_START_E_STEPPER_CYCLES + ISR_START_MIXING_STEPPER_CYCLES)
+  #if NON_E_AXES > 3
+    #define MIN_ISR_START_LOOP_CYCLES (ISR_START_X_STEPPER_CYCLES + ISR_START_Y_STEPPER_CYCLES + ISR_START_Z_STEPPER_CYCLES + ISR_START_I_STEPPER_CYCLES + ISR_START_E_STEPPER_CYCLES + ISR_START_MIXING_STEPPER_CYCLES)
+    #if NON_E_AXES > 4
+    #define MIN_ISR_START_LOOP_CYCLES (ISR_START_X_STEPPER_CYCLES + ISR_START_Y_STEPPER_CYCLES + ISR_START_Z_STEPPER_CYCLES + ISR_START_I_STEPPER_CYCLES + ISR_START_J_STEPPER_CYCLES + ISR_START_E_STEPPER_CYCLES + ISR_START_MIXING_STEPPER_CYCLES)
+      #if NON_E_AXES > 5
+    #define MIN_ISR_START_LOOP_CYCLES (ISR_START_X_STEPPER_CYCLES + ISR_START_Y_STEPPER_CYCLES + ISR_START_Z_STEPPER_CYCLES + ISR_START_I_STEPPER_CYCLES + ISR_START_J_STEPPER_CYCLES + ISR_START_K_STEPPER_CYCLES + ISR_START_E_STEPPER_CYCLES + ISR_START_MIXING_STEPPER_CYCLES)
+      #endif
+    #endif
+  #else
+    #define MIN_ISR_START_LOOP_CYCLES (ISR_START_X_STEPPER_CYCLES + ISR_START_Y_STEPPER_CYCLES + ISR_START_Z_STEPPER_CYCLES + ISR_START_E_STEPPER_CYCLES + ISR_START_MIXING_STEPPER_CYCLES)
+  #endif
 
 // And the total minimum loop time, not including the base
-#define MIN_ISR_LOOP_CYCLES (ISR_X_STEPPER_CYCLES + ISR_Y_STEPPER_CYCLES + ISR_Z_STEPPER_CYCLES + ISR_E_STEPPER_CYCLES + ISR_MIXING_STEPPER_CYCLES)
-
+  #if NON_E_AXES == 4
+    #define MIN_ISR_LOOP_CYCLES (ISR_X_STEPPER_CYCLES + ISR_Y_STEPPER_CYCLES + ISR_Z_STEPPER_CYCLES + ISR_I_STEPPER_CYCLES + ISR_E_STEPPER_CYCLES + ISR_MIXING_STEPPER_CYCLES)
+  #elif NON_E_AXES == 5
+    #define MIN_ISR_LOOP_CYCLES (ISR_X_STEPPER_CYCLES + ISR_Y_STEPPER_CYCLES + ISR_Z_STEPPER_CYCLES + ISR_I_STEPPER_CYCLES + ISR_J_STEPPER_CYCLES + ISR_E_STEPPER_CYCLES + ISR_MIXING_STEPPER_CYCLES)
+  #elif NON_E_AXES == 6
+    #define MIN_ISR_LOOP_CYCLES (ISR_X_STEPPER_CYCLES + ISR_Y_STEPPER_CYCLES + ISR_Z_STEPPER_CYCLES + ISR_I_STEPPER_CYCLES + ISR_J_STEPPER_CYCLES + ISR_K_STEPPER_CYCLES + ISR_E_STEPPER_CYCLES + ISR_MIXING_STEPPER_CYCLES)
+  #else
+    #define MIN_ISR_LOOP_CYCLES (ISR_X_STEPPER_CYCLES + ISR_Y_STEPPER_CYCLES + ISR_Z_STEPPER_CYCLES + ISR_E_STEPPER_CYCLES + ISR_MIXING_STEPPER_CYCLES)
+  #endif
 // Calculate the minimum MPU cycles needed per pulse to enforce, limited to the max stepper rate
 #define _MIN_STEPPER_PULSE_CYCLES(N) _MAX(uint32_t((F_CPU) / (MAXIMUM_STEPPER_RATE)), ((F_CPU) / 500000UL) * (N))
 #if MINIMUM_STEPPER_PULSE
@@ -320,7 +364,7 @@ class Stepper {
     //
     // Exact steps at which an endstop was triggered
     //
-    static volatile int32_t endstops_trigsteps[XYZ];
+    static volatile int32_t endstops_trigsteps[NON_E_AXES];
 
     //
     // Positions of stepper motors, in step units
@@ -436,11 +480,31 @@ class Stepper {
     #endif
 
     // Set the current position in steps
-    static inline void set_position(const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &e) {
+    static inline void set_position(const int32_t &a, const int32_t &b, const int32_t &c
+      #if NON_E_AXES > 3
+        , const int32_t &i
+        #if NON_E_AXES > 4
+          , const int32_t &j
+          #if NON_E_AXES > 5
+            , const int32_t &k
+          #endif
+        #endif
+      #endif
+      , const int32_t &e) {
       planner.synchronize();
       const bool was_enabled = STEPPER_ISR_ENABLED();
       if (was_enabled) DISABLE_STEPPER_DRIVER_INTERRUPT();
-      _set_position(a, b, c, e);
+      _set_position(a, b, c
+        #if NON_E_AXES > 3
+          , i
+          #if NON_E_AXES > 4
+            , j
+            #if NON_E_AXES > 5
+              , k
+            #endif
+          #endif
+        #endif
+      , e);
       if (was_enabled) ENABLE_STEPPER_DRIVER_INTERRUPT();
     }
 
@@ -468,7 +532,17 @@ class Stepper {
   private:
 
     // Set the current position in steps
-    static void _set_position(const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &e);
+    static void _set_position(const int32_t &a, const int32_t &b, const int32_t &c
+      #if NON_E_AXES > 3
+        , const int32_t &i
+        #if NON_E_AXES > 4
+          , const int32_t &j
+          #if NON_E_AXES > 5
+            , const int32_t &k
+          #endif
+        #endif
+      #endif
+      , const int32_t &e);
 
     FORCE_INLINE static uint32_t calc_timer_interval(uint32_t step_rate, uint8_t scale, uint8_t* loops) {
       uint32_t timer;

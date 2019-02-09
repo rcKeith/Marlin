@@ -205,7 +205,17 @@ public:
 
   // Seen any axis parameter
   static inline bool seen_axis() {
-    return SEEN_TEST('X') || SEEN_TEST('Y') || SEEN_TEST('Z') || SEEN_TEST('E');
+    return SEEN_TEST('X') || SEEN_TEST('Y') || SEEN_TEST('Z')
+      #if NON_E_AXES > 3
+        || SEEN_TEST('I')
+        #if NON_E_AXES > 4
+          || SEEN_TEST('J')
+          #if NON_E_AXES > 5
+            || SEEN_TEST('K')
+          #endif
+        #endif
+      #endif
+      || SEEN_TEST('E');
   }
 
   // Populate all fields by parsing a single line of GCode

@@ -1324,6 +1324,11 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
     #error "DISABLE_[XYZ] is not compatible with HOME_AFTER_DEACTIVATE or Z_SAFE_HOMING."
   #endif
 #endif
+#if NON_E_AXES > 3
+  #if ENABLED(DISABLE_I) || ENABLED(DISABLE_J) || ENABLED(DISABLE_K)
+    #error "DISABLE_[IJK] is not compatible with HOME_AFTER_DEACTIVATE or Z_SAVE_HOMING."
+  #endif
+#endif
 
 /**
  * Filament Width Sensor
@@ -1645,6 +1650,15 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
 #if _AXIS_PLUG_UNUSED_TEST(Z)
   #error "You must enable USE_ZMIN_PLUG or USE_ZMAX_PLUG."
 #endif
+#if NON_E_AXES > 3 && _AXIS_PLUG_UNUSED_TEST(I)
+  #error "You must enable USE_IMIN_PLUG or USE_IMAX_PLUG."
+  #if NON_E_AXES > 4 && _AXIS_PLUG_UNUSED_TEST(J)
+    #error "You must enable USE_JMIN_PLUG or USE_JMAX_PLUG."
+    #if NON_E_AXES > 5 && _AXIS_PLUG_UNUSED_TEST(K)
+      #error "You must enable USE_KMIN_PLUG or USE_KMAX_PLUG."
+    #endif
+  #endif
+#endif  
 
 // Delta and Cartesian use 3 homing endstops
 #if !IS_SCARA
@@ -1657,7 +1671,26 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
   #elif Y_HOME_DIR > 0 && DISABLED(USE_YMAX_PLUG)
     #error "Enable USE_YMAX_PLUG when homing Y to MAX."
   #endif
-#endif
+  #if NON_E_AXES > 3
+    #if I_HOME_DIR < 0 && DISABLED(USE_IMIN_PLUG)
+      #error "Enable USE_IMIN_PLUG when homing I to MIN."
+    #elif I_HOME_DIR > 0 && DISABLED(USE_IMAX_PLUG)
+      #error "Enable USE_IMAX_PLUG when homing I to MAX."
+    #elif NON_E_AXES > 4
+      #if J_HOME_DIR < 0 && DISABLED(USE_JMIN_PLUG)
+        #error "Enable USE_JMIN_PLUG when homing J to MIN."
+      #elif J_HOME_DIR > 0 && DISABLED(USE_JMAX_PLUG)
+        #error "Enable USE_JMAX_PLUG when homing J to MAX."
+      #elif NON_E_AXES > 5
+        #if K_HOME_DIR < 0 && DISABLED(USE_KMIN_PLUG)
+          #error "Enable USE_KMIN_PLUG when homing K to MIN."
+        #elif K_HOME_DIR > 0 && DISABLED(USE_KMAX_PLUG)
+          #error "Enable USE_KMAX_PLUG when homing K to MAX."
+        #endif
+      #endif // NON_E_AXES > 5
+    #endif // NON_E_AXES > 4
+  #endif // NON_E_AXES > 3
+#endif // !IS_SCARA
 #if Z_HOME_DIR < 0 && DISABLED(USE_ZMIN_PLUG)
   #error "Enable USE_ZMIN_PLUG when homing Z to MIN."
 #elif Z_HOME_DIR > 0 && DISABLED(USE_ZMAX_PLUG)
@@ -1934,6 +1967,18 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
   #error "An SPI driven TMC driver on Z2 requires Z2_CS_PIN."
 #elif INVALID_TMC_SPI(Z3)
   #error "An SPI driven TMC driver on Z3 requires Z3_CS_PIN."
+#elif NON_E_AXES > 3
+  #if INVALID_TMC_SPI(I)
+    #error "An SPI driven TMC driver on I requires I_CS_PIN."
+  #elif NON_E_AXES > 4
+    #if INVALID_TMC_SPI(J)
+      #error "An SPI driven TMC driver on J requires J_CS_PIN."
+    #elif NON_E_AXES > 5
+      #if INVALID_TMC_SPI(K)
+        #error "An SPI driven TMC driver on K requires K_CS_PIN."
+      #endif
+    #endif
+  #endif
 #elif INVALID_TMC_SPI(E0)
   #error "An SPI driven TMC driver on E0 requires E0_CS_PIN."
 #elif INVALID_TMC_SPI(E1)
@@ -2230,24 +2275,24 @@ constexpr float sanity_arr_1[] = DEFAULT_AXIS_STEPS_PER_UNIT,
                 sanity_arr_2[] = DEFAULT_MAX_FEEDRATE,
                 sanity_arr_3[] = DEFAULT_MAX_ACCELERATION;
 
-#define _ARR_TEST(N,I) (sanity_arr_##N[_MIN(I,int(COUNT(sanity_arr_##N))-1)] > 0)
+#define _ARR_TEST(N,I) (sanity_arr_##N[_MIN(I,int(COUNT(sanity_arr_##N))-1)] > 0) // TODO (DerAndere): Test for NON_E_AXES > 3
 
-static_assert(COUNT(sanity_arr_1) >= XYZE, "DEFAULT_AXIS_STEPS_PER_UNIT requires X, Y, Z and E elements.");
-static_assert(COUNT(sanity_arr_1) <= XYZE_N, "DEFAULT_AXIS_STEPS_PER_UNIT has too many elements. (Did you forget to enable DISTINCT_E_FACTORS?)");
+static_assert(COUNT(sanity_arr_1) >= NUM_AXIS, "DEFAULT_AXIS_STEPS_PER_UNIT requires NON_E_AXES + EXTRUDERS elements.");
+static_assert(COUNT(sanity_arr_1) <= NUM_AXIS_N, "DEFAULT_AXIS_STEPS_PER_UNIT has too many elements. (Did you forget to enable DISTINCT_E_FACTORS?)");
 static_assert(   _ARR_TEST(1,0) && _ARR_TEST(1,1) && _ARR_TEST(1,2)
               && _ARR_TEST(1,3) && _ARR_TEST(1,4) && _ARR_TEST(1,5)
               && _ARR_TEST(1,6) && _ARR_TEST(1,7) && _ARR_TEST(1,8),
               "DEFAULT_AXIS_STEPS_PER_UNIT values must be positive.");
 
-static_assert(COUNT(sanity_arr_2) >= XYZE, "DEFAULT_MAX_FEEDRATE requires X, Y, Z and E elements.");
-static_assert(COUNT(sanity_arr_2) <= XYZE_N, "DEFAULT_MAX_FEEDRATE has too many elements. (Did you forget to enable DISTINCT_E_FACTORS?)");
+static_assert(COUNT(sanity_arr_2) >= NUM_AXIS, "DEFAULT_MAX_FEEDRATE requires NON_E_AXES + EXTRUDERS elements.");
+static_assert(COUNT(sanity_arr_2) <= NUM_AXIS_N, "DEFAULT_MAX_FEEDRATE has too many elements. (Did you forget to enable DISTINCT_E_FACTORS?)");
 static_assert(   _ARR_TEST(2,0) && _ARR_TEST(2,1) && _ARR_TEST(2,2)
               && _ARR_TEST(2,3) && _ARR_TEST(2,4) && _ARR_TEST(2,5)
               && _ARR_TEST(2,6) && _ARR_TEST(2,7) && _ARR_TEST(2,8),
               "DEFAULT_MAX_FEEDRATE values must be positive.");
 
-static_assert(COUNT(sanity_arr_3) >= XYZE, "DEFAULT_MAX_ACCELERATION requires X, Y, Z and E elements.");
-static_assert(COUNT(sanity_arr_3) <= XYZE_N, "DEFAULT_MAX_ACCELERATION has too many elements. (Did you forget to enable DISTINCT_E_FACTORS?)");
+static_assert(COUNT(sanity_arr_3) >= NUM_AXIS, "DEFAULT_MAX_ACCELERATION requires NON_E_AXES + EXTRUDERS elements.");
+static_assert(COUNT(sanity_arr_3) <= NUM_AXIS_N, "DEFAULT_MAX_ACCELERATION has too many elements. (Did you forget to enable DISTINCT_E_FACTORS?)");
 static_assert(   _ARR_TEST(3,0) && _ARR_TEST(3,1) && _ARR_TEST(3,2)
               && _ARR_TEST(3,3) && _ARR_TEST(3,4) && _ARR_TEST(3,5)
               && _ARR_TEST(3,6) && _ARR_TEST(3,7) && _ARR_TEST(3,8),

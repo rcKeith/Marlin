@@ -196,6 +196,12 @@
 #define MSG_Z2_MAX                          "z2_max"
 #define MSG_Z3_MIN                          "z3_min"
 #define MSG_Z3_MAX                          "z3_max"
+#define MSG_I_MIN                           "i_min"
+#define MSG_I_MAX                           "i_max"
+#define MSG_J_MIN                           "j_min"
+#define MSG_J_MAX                           "j_max"
+#define MSG_K_MIN                           "k_min"
+#define MSG_K_MAX                           "k_max"
 #define MSG_Z_PROBE                         "z_probe"
 #define MSG_FILAMENT_RUNOUT_SENSOR          "filament"
 #define MSG_PROBE_OFFSET                    "Probe Offset"
@@ -324,6 +330,10 @@
 #define MSG_Y "Y"
 #define MSG_Z "Z"
 #define MSG_E "E"
+#define MSG_I "I"
+#define MSG_J "J"
+#define MSG_K "K"
+
 #if IS_KINEMATIC
   #define MSG_A "A"
   #define MSG_B "B"

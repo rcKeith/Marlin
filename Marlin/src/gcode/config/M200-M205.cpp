@@ -59,7 +59,7 @@ void GcodeSuite::M201() {
   const int8_t target_extruder = get_target_extruder_from_command();
   if (target_extruder < 0) return;
 
-  LOOP_XYZE(i) {
+  LOOP_NUM_AXIS(i) {
     if (parser.seen(axis_codes[i])) {
       const uint8_t a = (i == E_AXIS ? uint8_t(E_AXIS_N(target_extruder)) : i);
       planner.settings.max_acceleration_mm_per_s2[a] = parser.value_axis_units((AxisEnum)a);
@@ -79,7 +79,7 @@ void GcodeSuite::M203() {
   const int8_t target_extruder = get_target_extruder_from_command();
   if (target_extruder < 0) return;
 
-  LOOP_XYZE(i)
+  LOOP_NUM_AXIS(i)
     if (parser.seen(axis_codes[i])) {
       const uint8_t a = (i == E_AXIS ? uint8_t(E_AXIS_N(target_extruder)) : i);
       planner.settings.max_feedrate_mm_s[a] = parser.value_axis_units((AxisEnum)a);
@@ -161,6 +161,15 @@ void GcodeSuite::M205() {
           SERIAL_ECHOLNPGM("WARNING! Low Z Jerk may lead to unwanted pauses.");
       #endif
     }
+    #if NON_E_AXES > 3
+      if (parser.seen('I')) planner.max_jerk[I_AXIS] = parser.value_linear_units();
+      #if NON_E_AXES > 4
+        if (parser.seen('J')) planner.max_jerk[J_AXIS] = parser.value_linear_units();
+        #if NON_E_AXES > 5
+          if (parser.seen('K')) planner.max_jerk[K_AXIS] = parser.value_linear_units();
+        #endif
+      #endif
+    #endif
     #if !BOTH(JUNCTION_DEVIATION, LIN_ADVANCE)
       if (parser.seen('E')) planner.max_jerk[E_AXIS] = parser.value_linear_units();
     #endif

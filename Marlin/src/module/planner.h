@@ -170,10 +170,10 @@ typedef struct block_t {
 #define BLOCK_MOD(n) ((n)&(BLOCK_BUFFER_SIZE-1))
 
 typedef struct {
-  uint32_t max_acceleration_mm_per_s2[XYZE_N],  // (mm/s^2) M201 XYZE
+  uint32_t max_acceleration_mm_per_s2[NUM_AXIS_N],  // (mm/s^2) M201 XYZE
            min_segment_time_us;                 // (µs) M205 B
-  float axis_steps_per_mm[XYZE_N],              // (steps) M92 XYZE - Steps per millimeter
-        max_feedrate_mm_s[XYZE_N],              // (mm/s) M203 XYZE - Max speeds
+  float axis_steps_per_mm[NUM_AXIS_N],              // (steps) M92 XYZE - Steps per millimeter
+        max_feedrate_mm_s[NUM_AXIS_N],              // (mm/s) M203 XYZE - Max speeds
         acceleration,                           // (mm/s^2) M204 S - Normal acceleration. DEFAULT ACCELERATION for all printing moves.
         retract_acceleration,                   // (mm/s^2) M204 R - Retract acceleration. Filament pull-back and push-forward while standing still in the other axes
         travel_acceleration,                    // (mm/s^2) M204 T - Travel acceleration. DEFAULT ACCELERATION for all NON printing moves.
@@ -244,8 +244,8 @@ class Planner {
 
     static planner_settings_t settings;
 
-    static uint32_t max_acceleration_steps_per_s2[XYZE_N]; // (steps/s^2) Derived from mm_per_s2
-    static float steps_to_mm[XYZE_N];           // Millimeters per step
+    static uint32_t max_acceleration_steps_per_s2[NUM_AXIS_N]; // (steps/s^2) Derived from mm_per_s2
+    static float steps_to_mm[NUM_AXIS_N];           // Millimeters per step
 
     #if ENABLED(JUNCTION_DEVIATION)
       static float junction_deviation_mm;       // (mm) M205 J
@@ -263,7 +263,7 @@ class Planner {
         #if BOTH(JUNCTION_DEVIATION, LIN_ADVANCE)
           XYZ                                    // (mm/s^2) M205 XYZ - The largest speed change requiring no acceleration.
         #else
-          XYZE                                   // (mm/s^2) M205 XYZE - The largest speed change requiring no acceleration.
+          NUM_AXIS                                   // (mm/s^2) M205 XYZE - The largest speed change requiring no acceleration.
         #endif
       ];
     #endif
@@ -285,11 +285,11 @@ class Planner {
     #endif
 
     #if HAS_POSITION_FLOAT
-      static float position_float[XYZE];
+      static float position_float[NUM_AXIS];
     #endif
 
     #if IS_KINEMATIC
-      static float position_cart[XYZE];
+      static float position_cart[NUM_AXIS];
     #endif
 
     static skew_factor_t skew_factor;
@@ -478,20 +478,20 @@ class Planner {
        */
       static void apply_leveling(float &rx, float &ry, float &rz);
       FORCE_INLINE static void apply_leveling(float (&raw)[XYZ]) { apply_leveling(raw[X_AXIS], raw[Y_AXIS], raw[Z_AXIS]); }
-      FORCE_INLINE static void apply_leveling(float (&raw)[XYZE]) { apply_leveling(raw[X_AXIS], raw[Y_AXIS], raw[Z_AXIS]); }
+      FORCE_INLINE static void apply_leveling(float (&raw)[NUM_AXIS]) { apply_leveling(raw[X_AXIS], raw[Y_AXIS], raw[Z_AXIS]); }
 
       static void unapply_leveling(float raw[XYZ]);
     #endif
 
     #if ENABLED(FWRETRACT)
       static void apply_retract(float &rz, float &e);
-      FORCE_INLINE static void apply_retract(float (&raw)[XYZE]) { apply_retract(raw[Z_AXIS], raw[E_AXIS]); }
+      FORCE_INLINE static void apply_retract(float (&raw)[NUM_AXIS]) { apply_retract(raw[Z_AXIS], raw[E_AXIS]); }
       static void unapply_retract(float &rz, float &e);
-      FORCE_INLINE static void unapply_retract(float (&raw)[XYZE]) { unapply_retract(raw[Z_AXIS], raw[E_AXIS]); }
+      FORCE_INLINE static void unapply_retract(float (&raw)[NUM_AXIS]) { unapply_retract(raw[Z_AXIS], raw[E_AXIS]); }
     #endif
 
     #if HAS_POSITION_MODIFIERS
-      FORCE_INLINE static void apply_modifiers(float (&pos)[XYZE]
+      FORCE_INLINE static void apply_modifiers(float (&pos)[NUM_AXIS]
         #if HAS_LEVELING
           , bool leveling =
           #if PLANNER_LEVELING
@@ -512,7 +512,7 @@ class Planner {
         #endif
       }
 
-      FORCE_INLINE static void unapply_modifiers(float (&pos)[XYZE]
+      FORCE_INLINE static void unapply_modifiers(float (&pos)[NUM_AXIS]
         #if HAS_LEVELING
           , bool leveling =
           #if PLANNER_LEVELING
@@ -578,12 +578,12 @@ class Planner {
      *
      * Returns true if movement was buffered, false otherwise
      */
-    static bool _buffer_steps(const int32_t (&target)[XYZE]
+    static bool _buffer_steps(const int32_t (&target)[NUM_AXIS]
       #if HAS_POSITION_FLOAT
-        , const float (&target_float)[ABCE]
+        , const float (&target_float)[NUM_AXIS]
       #endif
       #if IS_KINEMATIC && ENABLED(JUNCTION_DEVIATION)
-        , const float (&delta_mm_cart)[XYZE]
+        , const float (&delta_mm_cart)[NUM_AXIS]
       #endif
       , float fr_mm_s, const uint8_t extruder, const float &millimeters=0.0
     );
@@ -601,12 +601,12 @@ class Planner {
      * Returns true is movement is acceptable, false otherwise
      */
     static bool _populate_block(block_t * const block, bool split_move,
-        const int32_t (&target)[XYZE]
+        const int32_t (&target)[NUM_AXIS]
       #if HAS_POSITION_FLOAT
-        , const float (&target_float)[XYZE]
+        , const float (&target_float)[NUM_AXIS]
       #endif
       #if IS_KINEMATIC && ENABLED(JUNCTION_DEVIATION)
-        , const float (&delta_mm_cart)[XYZE]
+        , const float (&delta_mm_cart)[NUM_AXIS]
       #endif
       , float fr_mm_s, const uint8_t extruder, const float &millimeters=0.0
     );
@@ -636,20 +636,40 @@ class Planner {
      *  extruder    - target extruder
      *  millimeters - the length of the movement, if known
      */
-    static bool buffer_segment(const float &a, const float &b, const float &c, const float &e
+    static bool buffer_segment(const float &a, const float &b, const float &c
+      #if NON_E_AXES > 3
+        , const float &i
+        #if NON_E_AXES > 4
+          , const float &j
+          #if NON_E_AXES > 5
+            , const float &k
+          #endif
+        #endif
+      #endif
+      , const float &e
       #if IS_KINEMATIC && ENABLED(JUNCTION_DEVIATION)
-        , const float (&delta_mm_cart)[XYZE]
+        , const float (&delta_mm_cart)[NUM_AXIS]
       #endif
       , const float &fr_mm_s, const uint8_t extruder, const float &millimeters=0.0
     );
 
-    FORCE_INLINE static bool buffer_segment(const float (&abce)[ABCE]
+    FORCE_INLINE static bool buffer_segment(const float (&axes)[NUM_AXIS]
       #if IS_KINEMATIC && ENABLED(JUNCTION_DEVIATION)
-        , const float (&delta_mm_cart)[XYZE]
+        , const float (&delta_mm_cart)[NUM_AXIS]
       #endif
       , const float &fr_mm_s, const uint8_t extruder, const float &millimeters=0.0
     ) {
-      return buffer_segment(abce[A_AXIS], abce[B_AXIS], abce[C_AXIS], abce[E_AXIS]
+      return buffer_segment(axes[A_AXIS], axes[B_AXIS], axes[C_AXIS]
+        #if NON_E_AXES > 3
+          , axes[I_AXIS]
+          #if NON_E_AXES > 4
+		    , axes[J_AXIS]
+            #if NON_E_AXES > 5
+		      , axes[K_AXIS]
+            #endif
+          #endif
+        #endif
+        , axes[E_AXIS]
         #if IS_KINEMATIC && ENABLED(JUNCTION_DEVIATION)
           , delta_mm_cart
         #endif
@@ -670,18 +690,38 @@ class Planner {
      *  millimeters  - the length of the movement, if known
      *  inv_duration - the reciprocal if the duration of the movement, if known (kinematic only if feeedrate scaling is enabled)
      */
-    static bool buffer_line(const float &rx, const float &ry, const float &rz, const float &e, const float &fr_mm_s, const uint8_t extruder, const float millimeters=0.0
+    static bool buffer_line(const float &rx, const float &ry, const float &rz
+      #if NON_E_AXES > 3
+        , const float &ri
+        #if NON_E_AXES > 4
+          , const float &rj
+          #if NON_E_AXES > 5
+            , &rk
+          #endif
+        #endif
+      #endif
+      , const float &e, const float &fr_mm_s, const uint8_t extruder, const float millimeters=0.0
       #if ENABLED(SCARA_FEEDRATE_SCALING)
         , const float &inv_duration=0.0
       #endif
     );
 
-    FORCE_INLINE static bool buffer_line(const float (&cart)[XYZE], const float &fr_mm_s, const uint8_t extruder, const float millimeters=0.0
+    FORCE_INLINE static bool buffer_line(const float (&cart)[NUM_AXIS], const float &fr_mm_s, const uint8_t extruder, const float millimeters=0.0
       #if ENABLED(SCARA_FEEDRATE_SCALING)
         , const float &inv_duration=0.0
       #endif
     ) {
-      return buffer_line(cart[X_AXIS], cart[Y_AXIS], cart[Z_AXIS], cart[E_AXIS], fr_mm_s, extruder, millimeters
+      return buffer_line(cart[X_AXIS], cart[Y_AXIS], cart[Z_AXIS]
+        #if NON_E_AXES > 3
+          , cart[I_AXIS]
+          #if NON_E_AXES > 4
+            , cart[J_AXIS]
+            #if NON_E_AXES > 5
+              , cart[K_AXIS]
+            #endif
+          #endif
+        #endif
+	   , cart[E_AXIS], fr_mm_s, extruder, millimeters
         #if ENABLED(SCARA_FEEDRATE_SCALING)
           , inv_duration
         #endif
@@ -701,8 +741,28 @@ class Planner {
      *
      * Clears previous speed values.
      */
-    static void set_position_mm(const float &rx, const float &ry, const float &rz, const float &e);
-    FORCE_INLINE static void set_position_mm(const float (&cart)[XYZE]) { set_position_mm(cart[X_AXIS], cart[Y_AXIS], cart[Z_AXIS], cart[E_AXIS]); }
+    static void set_position_mm(const float &rx, const float &ry, const float &rz
+      #if NON_E_AXES > 3
+        , const float &ri
+        #if NON_E_AXES > 4
+          , const float &rj
+          #if NON_E_AXES > 5
+            , const float &rk
+          #endif
+        #endif
+      #endif
+      , const float &e);
+    FORCE_INLINE static void set_position_mm(const float (&cart)[NUM_AXIS]) { set_position_mm(cart[X_AXIS], cart[Y_AXIS], cart[Z_AXIS]
+      #if NON_E_AXES > 3
+        , cart[I_AXIS]
+        #if NON_E_AXES > 4
+          , cart[J_AXIS]
+          #if NON_E_AXES > 5
+            , cart[K_AXIS]
+          #endif
+        #endif
+      #endif
+     , cart[E_AXIS]); }
     static void set_e_position_mm(const float &e);
 
     /**
@@ -711,8 +771,28 @@ class Planner {
      * The supplied position is in machine space, and no additional
      * conversions are applied.
      */
-    static void set_machine_position_mm(const float &a, const float &b, const float &c, const float &e);
-    FORCE_INLINE static void set_machine_position_mm(const float (&abce)[ABCE]) { set_machine_position_mm(abce[A_AXIS], abce[B_AXIS], abce[C_AXIS], abce[E_AXIS]); }
+    static void set_machine_position_mm(const float &a, const float &b, const float &c
+      #if NON_E_AXES > 3
+        , const float &i
+        #if NON_E_AXES > 4
+          , const float &j
+          #if NON_E_AXES > 5
+            , const float &k
+          #endif
+        #endif
+      #endif
+    , const float &e);
+    FORCE_INLINE static void set_machine_position_mm(const float (&axes)[NUM_AXIS]) { set_machine_position_mm(axes[A_AXIS], axes[B_AXIS], axes[C_AXIS]
+      #if NON_E_AXES > 3
+        , axes[I_AXIS]
+        #if NON_E_AXES > 4
+          , axes[J_AXIS]
+          #if NON_E_AXES > 5
+		    , axes[K_AXIS]
+          #endif
+        #endif
+      #endif
+      , axes[E_AXIS]); }
 
     /**
      * Get an axis position according to stepper position(s)
@@ -943,16 +1023,16 @@ class Planner {
 
     #if ENABLED(JUNCTION_DEVIATION)
 
-      FORCE_INLINE static void normalize_junction_vector(float (&vector)[XYZE]) {
+      FORCE_INLINE static void normalize_junction_vector(float (&vector)[NUM_AXIS]) {
         float magnitude_sq = 0;
-        LOOP_XYZE(idx) if (vector[idx]) magnitude_sq += sq(vector[idx]);
+        LOOP_NUM_AXIS(idx) if (vector[idx]) magnitude_sq += sq(vector[idx]);
         const float inv_magnitude = RSQRT(magnitude_sq);
-        LOOP_XYZE(idx) vector[idx] *= inv_magnitude;
+        LOOP_NUM_AXIS(idx) vector[idx] *= inv_magnitude;
       }
 
-      FORCE_INLINE static float limit_value_by_axis_maximum(const float &max_value, float (&unit_vec)[XYZE]) {
+      FORCE_INLINE static float limit_value_by_axis_maximum(const float &max_value, float (&unit_vec)[NUM_AXIS]) {
         float limit_value = max_value;
-        LOOP_XYZE(idx) if (unit_vec[idx]) // Avoid divide by zero
+        LOOP_NUM_AXIS(idx) if (unit_vec[idx]) // Avoid divide by zero
           NOMORE(limit_value, ABS(settings.max_acceleration_mm_per_s2[idx] / unit_vec[idx]));
         return limit_value;
       }

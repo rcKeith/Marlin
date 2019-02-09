@@ -225,5 +225,64 @@ void setup_endstop_interrupts() {
     #endif
   #endif
 
+  #if HAS_I_MAX
+    #if (digitalPinToInterrupt(I_MAX_PIN) != NOT_AN_INTERRUPT) // if pin has an external interrupt
+      attachInterrupt(digitalPinToInterrupt(I_MAX_PIN), endstop_ISR, CHANGE); // assign it
+    #else
+      // Not all used endstop/probe -pins can raise interrupts. Please deactivate ENDSTOP_INTERRUPTS or change the pin configuration!
+      static_assert(digitalPinToPCICR(I_MAX_PIN) != NULL, "I_MAX_PIN is not interrupt-capable"); // if pin has no pin change interrupt - error
+      pciSetup(I_MAX_PIN);                                                            // assign it
+    #endif
+  #endif
+
+  #if HAS_I_MIN
+    #if (digitalPinToInterrupt(I_MIN_PIN) != NOT_AN_INTERRUPT)
+      attachInterrupt(digitalPinToInterrupt(I_MIN_PIN), endstop_ISR, CHANGE);
+    #else
+      // Not all used endstop/probe -pins can raise interrupts. Please deactivate ENDSTOP_INTERRUPTS or change the pin configuration!
+      static_assert(digitalPinToPCICR(I_MIN_PIN) != NULL, "I_MIN_PIN is not interrupt-capable");
+      pciSetup(I_MIN_PIN);
+    #endif
+  #endif
+
+  #if HAS_J_MAX
+    #if (digitalPinToInterrupt(J_MAX_PIN) != NOT_AN_INTERRUPT) // if pin has an external interrupt
+      attachInterrupt(digitalPinToInterrupt(J_MAX_PIN), endstop_ISR, CHANGE); // assign it
+    #else
+      // Not all used endstop/probe -pins can raise interrupts. Please deactivate ENDSTOP_INTERRUPTS or change the pin configuration!
+      static_assert(digitalPinToPCICR(J_MAX_PIN) != NULL, "J_MAX_PIN is not interrupt-capable"); // if pin has no pin change interrupt - error
+      pciSetup(J_MAX_PIN);                                                            // assign it
+    #endif
+  #endif
+
+  #if HAS_J_MIN
+    #if (digitalPinToInterrupt(J_MIN_PIN) != NOT_AN_INTERRUPT)
+      attachInterrupt(digitalPinToInterrupt(J_MIN_PIN), endstop_ISR, CHANGE);
+    #else
+      // Not all used endstop/probe -pins can raise interrupts. Please deactivate ENDSTOP_INTERRUPTS or change the pin configuration!
+      static_assert(digitalPinToPCICR(J_MIN_PIN) != NULL, "J_MIN_PIN is not interrupt-capable");
+      pciSetup(J_MIN_PIN);
+    #endif
+  #endif
+  
+  #if HAS_K_MAX
+    #if (digitalPinToInterrupt(K_MAX_PIN) != NOT_AN_INTERRUPT) // if pin has an external interrupt
+      attachInterrupt(digitalPinToInterrupt(K_MAX_PIN), endstop_ISR, CHANGE); // assign it
+    #else
+      // Not all used endstop/probe -pins can raise interrupts. Please deactivate ENDSTOP_INTERRUPTS or change the pin configuration!
+      static_assert(digitalPinToPCICR(K_MAX_PIN) != NULL, "K_MAX_PIN is not interrupt-capable"); // if pin has no pin change interrupt - error
+      pciSetup(K_MAX_PIN);                                                            // assign it
+    #endif
+  #endif
+
+  #if HAS_K_MIN
+    #if (digitalPinToInterrupt(K_MIN_PIN) != NOT_AN_INTERRUPT)
+      attachInterrupt(digitalPinToInterrupt(K_MIN_PIN), endstop_ISR, CHANGE);
+    #else
+      // Not all used endstop/probe -pins can raise interrupts. Please deactivate ENDSTOP_INTERRUPTS or change the pin configuration!
+      static_assert(digitalPinToPCICR(K_MIN_PIN) != NULL, "K_MIN_PIN is not interrupt-capable");
+      pciSetup(K_MIN_PIN);
+    #endif
+  #endif
   // If we arrive here without raising an assertion, each pin has either an EXT-interrupt or a PCI.
 }
