@@ -2419,7 +2419,7 @@ void Stepper::report_positions() {
                 ypos = count_position[Y_AXIS],
                 zpos = count_position[Z_AXIS]
                 #if NON_E_AXES > 3
-                  , ipos = count_position[I_AXIS];
+                  , ipos = count_position[I_AXIS]
                   #if NON_E_AXES > 4
                     , jpos = count_position[J_AXIS];
                     #if NON_E_AXES > 5

@@ -461,17 +461,18 @@ void Endstops::event_handler() {
     SERIAL_EOL();
 
     #if HAS_SPI_LCD
-      ui.status_printf_P(0, PSTR(MSG_LCD_ENDSTOPS " %c %c %c %c
-#if NON_E_AXES > 3
- %c
-#if NON_E_AXES > 4
- %c
-#if NON_E_AXES > 5
- %c
-#endif
-#endif
-#endif
-"), chrX, chrY, chrZ
+    
+      ui.status_printf_P(0, PSTR(MSG_LCD_ENDSTOPS 
+      #if NON_E_AXES == 6 
+        " %c %c %c %c %c %c %c "
+      #elif NON_E_AXES == 5 
+        " %c %c %c %c %c %c "
+      #elif NON_E_AXES == 4
+        " %c %c %c %c %c "
+      #else
+        " %c %c %c %c %c "
+      #endif
+      ), chrX, chrY, chrZ
       #if NON_E_AXES > 3
         , chrI
         #if NON_E_AXES > 4
@@ -481,7 +482,7 @@ void Endstops::event_handler() {
           #endif
         #endif
       #endif 
-      , chrP);
+      , chrP); // TODO (DerAndere): Test for NON_E_AXES > 3
     #endif
 
     #if BOTH(SD_ABORT_ON_ENDSTOP_HIT, SDSUPPORT)
@@ -551,6 +552,25 @@ void _O2 Endstops::M119() {
   #if HAS_Z3_MAX
     ES_REPORT(Z3_MAX);
   #endif
+  #if HAS_I_MIN
+    ES_REPORT(I_MIN);
+  #endif
+  #if HAS_I_MAX
+    ES_REPORT(I_MAX);
+  #endif
+  #if HAS_J_MIN
+    ES_REPORT(J_MIN);
+  #endif
+  #if HAS_J_MAX
+    ES_REPORT(J_MAX);
+  #endif  
+    #if HAS_K_MIN
+    ES_REPORT(K_MIN);
+  #endif
+  #if HAS_K_MAX
+    ES_REPORT(K_MAX);
+  #endif
+
   #if USES_Z_MIN_PROBE_ENDSTOP
     print_es_state(READ(Z_MIN_PROBE_PIN) != Z_MIN_PROBE_ENDSTOP_INVERTING, PSTR(MSG_Z_PROBE));
   #endif

@@ -653,7 +653,7 @@
 #if NON_E_AXES > 3
   #define INVERT_I_STEP_PIN false
   #if NON_E_AXES > 4
-    #define INVERT_K_STEP_PIN false
+    #define INVERT_J_STEP_PIN false
     #if NON_E_AXES > 5
       #define INVERT_K_STEP_PIN false
     #endif
@@ -670,9 +670,9 @@
 #define DISABLE_INACTIVE_Z true  // Set to false if the nozzle will fall down on your printed part when print has finished.
 #if NON_E_AXES > 3
   #define DISABLE_INACTIVE_I true
-  #if NON_E_AXES > 3
+  #if NON_E_AXES > 4
     #define DISABLE_INACTIVE_J true
-    #if NON_E_AXES > 3
+    #if NON_E_AXES > 5
       #define DISABLE_INACTIVE_K true
     #endif
   #endif
