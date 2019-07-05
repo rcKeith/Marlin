@@ -585,6 +585,17 @@
 #ifndef MSG_MOVE_Z
   #define MSG_MOVE_Z                          _UxGT("Move Z")
 #endif
+
+#ifndef MSG_MOVE_I
+  #define MSG_MOVE_I                          _UxGT("Move I")
+#endif
+#ifndef MSG_MOVE_J
+  #define MSG_MOVE_J                          _UxGT("Move J")
+#endif
+#ifndef MSG_MOVE_K
+  #define MSG_MOVE_K                          _UxGT("Move K")
+#endif
+
 #ifndef MSG_MOVE_E
   #define MSG_MOVE_E                          _UxGT("Extruder")
 #endif
@@ -689,6 +700,15 @@
   #ifndef MSG_VC_JERK
     #define MSG_VC_JERK                       _UxGT("Vz-Jerk")
   #endif
+  #ifndef MSG_VI_JERK
+    #define MSG_VI_JERK                       _UxGT("Vi-jerk")
+  #endif
+  #ifndef MSG_VJ_JERK
+    #define MSG_VJ_JERK                       _UxGT("Vj-jerk")
+  #endif
+  #ifndef MSG_VK_JERK
+    #define MSG_VK_JERK                       _UxGT("Vk-jerk")
+  #endif
 #endif
 #ifndef MSG_VE_JERK
   #define MSG_VE_JERK                         _UxGT("Ve-Jerk")
@@ -742,6 +762,15 @@
   #endif
   #ifndef MSG_CSTEPS
     #define MSG_CSTEPS                        _UxGT("Zsteps/mm")
+  #endif
+  #ifndef MSG_ISTEPS
+    #define MSG_ISTEPS                        _UxGT("Isteps/mm")
+  #endif
+  #ifndef MSG_JSTEPS
+    #define MSG_JSTEPS                        _UxGT("Jsteps/mm")
+  #endif
+  #ifndef MSG_KSTEPS
+    #define MSG_KSTEPS                        _UxGT("Ksteps/mm")
   #endif
 #endif
 #ifndef MSG_ESTEPS
