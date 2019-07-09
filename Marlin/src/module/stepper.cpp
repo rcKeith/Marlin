@@ -1539,6 +1539,15 @@ void Stepper::stepper_pulse_phase_isr() {
     #if HAS_Z_STEP
       PULSE_STOP(Z);
     #endif
+    #if HAS_I_STEP
+      PULSE_STOP(I);
+    #endif
+    #if HAS_J_STEP
+      PULSE_STOP(J);
+    #endif
+    #if HAS_K_STEP
+      PULSE_STOP(K);
+    #endif
 
     #if DISABLED(LIN_ADVANCE)
       #if ENABLED(MIXING_EXTRUDER)
