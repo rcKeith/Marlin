@@ -2207,7 +2207,7 @@ void MarlinSettings::postprocess() {
 void MarlinSettings::reset() {
   static const float tmp1[] PROGMEM = DEFAULT_AXIS_STEPS_PER_UNIT, tmp2[] PROGMEM = DEFAULT_MAX_FEEDRATE;
   static const uint32_t tmp3[] PROGMEM = DEFAULT_MAX_ACCELERATION;
-  LOOP_XYZE_N(i) {
+  LOOP_NUM_AXIS_N(i) {
     planner.settings.axis_steps_per_mm[i]          = pgm_read_float(&tmp1[ALIM(i, tmp1)]);
     planner.settings.max_feedrate_mm_s[i]          = pgm_read_float(&tmp2[ALIM(i, tmp2)]);
     planner.settings.max_acceleration_mm_per_s2[i] = pgm_read_dword(&tmp3[ALIM(i, tmp3)]);
@@ -2234,6 +2234,8 @@ void MarlinSettings::reset() {
     planner.max_jerk[Y_AXIS] = DEFAULT_YJERK;
     planner.max_jerk[Z_AXIS] = DEFAULT_ZJERK;
     #if !BOTH(JUNCTION_DEVIATION, LIN_ADVANCE)
+      planner.max_jerk[I_AXIS] = DEFAULT_IJERK;
+      planner.max_jerk[J_AXIS] = DEFAULT_JJERK;
       planner.max_jerk[E_AXIS] = DEFAULT_EJERK;
     #endif
   #endif
@@ -2704,6 +2706,15 @@ void MarlinSettings::reset() {
         "  M203 X", LINEAR_UNIT(planner.settings.max_feedrate_mm_s[X_AXIS])
       , " Y", LINEAR_UNIT(planner.settings.max_feedrate_mm_s[Y_AXIS])
       , " Z", LINEAR_UNIT(planner.settings.max_feedrate_mm_s[Z_AXIS])
+      #if NON_E_AXES > 3
+        , " I", LINEAR_UNIT(planner.settings.max_feedrate_mm_s[I_AXIS])
+        #if NON_E_AXES > 4
+          , " J", LINEAR_UNIT(planner.settings.max_feedrate_mm_s[J_AXIS])
+          #if NON_E_AXES > 5
+            , " K", LINEAR_UNIT(planner.settings.max_feedrate_mm_s[K_AXIS])
+          #endif
+        #endif
+      #endif
       #if DISABLED(DISTINCT_E_FACTORS)
         , " E", VOLUMETRIC_UNIT(planner.settings.max_feedrate_mm_s[E_AXIS])
       #endif
@@ -2720,10 +2731,20 @@ void MarlinSettings::reset() {
 
     CONFIG_ECHO_HEADING("Maximum Acceleration (units/s2):");
     CONFIG_ECHO_START();
+<<<<<<< Upstream, based on bf2_6axis_dev12
     SERIAL_ECHOLNPAIR(
         "  M201 X", LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[X_AXIS])
       , " Y", LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[Y_AXIS])
       , " Z", LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[Z_AXIS])
+      #if NON_E_AXES > 3
+      , " I", LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[I_AXIS])
+        #if NON_E_AXES > 4
+          , " J", LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[J_AXIS])
+          #if NON_E_AXES > 5
+            , " K", LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[K_AXIS])
+          #endif
+        #endif
+      #endif
       #if DISABLED(DISTINCT_E_FACTORS)
         , " E", VOLUMETRIC_UNIT(planner.settings.max_acceleration_mm_per_s2[E_AXIS])
       #endif
@@ -2771,6 +2792,15 @@ void MarlinSettings::reset() {
         , " X", LINEAR_UNIT(planner.max_jerk[X_AXIS])
         , " Y", LINEAR_UNIT(planner.max_jerk[Y_AXIS])
         , " Z", LINEAR_UNIT(planner.max_jerk[Z_AXIS])
+        #if NON_E_AXES > 3
+          , " I", LINEAR_UNIT(planner.max_jerk[I_AXIS])
+          #if NON_E_AXES > 4
+            , " J", LINEAR_UNIT(planner.max_jerk[J_AXIS])
+            #if NON_E_AXES > 5
+              , " K", LINEAR_UNIT(planner.max_jerk[K_AXIS])
+            #endif
+          #endif
+        #endif
         #if !BOTH(JUNCTION_DEVIATION, LIN_ADVANCE)
           , " E", LINEAR_UNIT(planner.max_jerk[E_AXIS])
         #endif

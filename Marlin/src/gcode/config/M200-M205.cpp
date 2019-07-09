@@ -128,7 +128,7 @@ void GcodeSuite::M205() {
     #define J_PARAM
   #endif
   #if HAS_CLASSIC_JERK
-    #define XYZE_PARAM "XYZE"
+    #define XYZE_PARAM "XYZIJE"
   #else
     #define XYZE_PARAM
   #endif

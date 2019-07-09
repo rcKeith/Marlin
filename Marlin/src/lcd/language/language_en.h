@@ -741,7 +741,7 @@
   #define MSG_A_TRAVEL                        _UxGT("A-Travel")
 #endif
 #ifndef MSG_STEPS_PER_MM
-  #define MSG_STEPS_PER_MM                    _UxGT("Steps/mm")
+  #define MSG_STEPS_PER_MM                    _UxGT("Steps/units")
 #endif
 #if IS_KINEMATIC
   #ifndef MSG_ASTEPS
