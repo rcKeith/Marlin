@@ -69,8 +69,9 @@
 //
 
 //select machine model by the differences
-#define MODULE_50
+#define MODULE_50 false
 //#define MODULE_20
+#define DEV_PARAMETERS true
 
 
 
@@ -804,23 +805,25 @@
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4[, E5]]]]]
  */
 //default calibration for module 50
+#ifdef DEV_PARAMETERS
+  #define DEFAULT_AXIS_STEPS_PER_UNIT   { 31.49, 31.49, 31.49, 31.49, 31.49, 1000} //e axis in ML  
+  #define DEFAULT_MAX_FEEDRATE          { 250, 250, 250, 250, 250, 250 }  //X, Y, Z, [I ,[J ,[K ,]]] E0 [, E1[, E2[, E3[, E4[, E5]]]]]
+  #define DEFAULT_MAX_ACCELERATION      { 500, 500, 500, 500, 500, 500 }
+
+#else
 #ifdef MODULE_50
   #define DEFAULT_AXIS_STEPS_PER_UNIT   { 31.49, 52.49, 52.49, 477.87, 477.87, 1000} //e axis in ML  
-  #define DEFAULT_MAX_FEEDRATE          { 250, 250, 250, 12, 12, 250 }  //X, Y, Z, [I ,[J ,[K ,]]] E0 [, E1[, E2[, E3[, E4[, E5]]]]]
+  #define DEFAULT_MAX_FEEDRATE          { 250, 250, 250, 250, 12, 250 }  //X, Y, Z, [I ,[J ,[K ,]]] E0 [, E1[, E2[, E3[, E4[, E5]]]]]
   #define DEFAULT_MAX_ACCELERATION      { 500, 500, 500, 9, 9, 500 }
-#endif
 
-
-
-//default calibration for module 20
-#ifdef MODULE_20
+#elif MODULE_20
   #define DEFAULT_AXIS_STEPS_PER_UNIT   { 31.49, 52.49, 52.49 , 912.35, 912.35, 1000} //e axis in ML 
   #define DEFAULT_MAX_FEEDRATE          { 250, 250, 250 , 12, 12, 250 }
   #define DEFAULT_MAX_ACCELERATION      { 500, 500, 500, 9, 9, 500 }
 
   //X, Y, Z, [I ,[J ,[K ,]]] E0 [, E1[, E2[, E3[, E4[, E5]]]]]
 #endif
-
+#endif
 
 
 /**
@@ -862,11 +865,11 @@
   #define DEFAULT_YJERK 2.0
   #define DEFAULT_ZJERK  0.3
   #if NON_E_AXES > 3
-    #define DEFAULT_IJERK  1.0
+    #define DEFAULT_IJERK  0.1
     #if NON_E_AXES > 4
-      #define DEFAULT_JJERK  1.0
+      #define DEFAULT_JJERK  0.1
       #if NON_E_AXES > 5
-        #define DEFAULT_KJERK  1.0
+        #define DEFAULT_KJERK  0.1
       #endif
     #endif
   #endif
@@ -1184,10 +1187,10 @@
 #define Z_MAX_POS 200
 #if NON_E_AXES > 3
   #define I_MIN_POS 0
-  #define I_MAX_POS 50
+  #define I_MAX_POS 100
   #if NON_E_AXES > 4
     #define J_MIN_POS 0
-    #define J_MAX_POS 50
+    #define J_MAX_POS 100
     #if NON_E_AXES > 5
       #define K_MIN_POS 0
       #define K_MAX_POS 50
@@ -1465,13 +1468,13 @@
 
 // Homing speeds (mm/m)
 #define HOMING_FEEDRATE_XY (50*60)
-#define HOMING_FEEDRATE_Z  (4*60)
+#define HOMING_FEEDRATE_Z  (50*60)
 #if NON_E_AXES > 3
-  #define HOMING_FEEDRATE_I (2.5*60)
+  #define HOMING_FEEDRATE_I (50*60)
   #if NON_E_AXES > 4
-    #define HOMING_FEEDRATE_J (2.5*60)
+    #define HOMING_FEEDRATE_J (50*60)
     #if NON_E_AXES > 5
-      #define HOMING_FEEDRATE_K (2.5*60)
+      #define HOMING_FEEDRATE_K (50*60)
     #endif
   #endif
 #endif
