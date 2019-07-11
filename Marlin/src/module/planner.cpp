@@ -1881,12 +1881,52 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
       block->millimeters = SQRT(
         #if CORE_IS_XY
           sq(delta_mm[X_HEAD]) + sq(delta_mm[Y_HEAD]) + sq(delta_mm[Z_AXIS])
+          #if NON_E_AXES > 3
+            + sq(delta_mm[I_AXIS])
+            #if NON_E_AXES > 4
+            + sq(delta_mm[J_AXIS])
+              #if NON_E_AXES > 5
+              + sq(delta_mm[K_AXIS])
+              #endif
+            #endif
+          #endif
+          
         #elif CORE_IS_XZ
           sq(delta_mm[X_HEAD]) + sq(delta_mm[Y_AXIS]) + sq(delta_mm[Z_HEAD])
+          #if NON_E_AXES > 3
+            + sq(delta_mm[I_AXIS])
+            #if NON_E_AXES > 4
+            + sq(delta_mm[J_AXIS])
+              #if NON_E_AXES > 5
+              + sq(delta_mm[K_AXIS])
+              #endif
+            #endif
+          #endif
+          
         #elif CORE_IS_YZ
           sq(delta_mm[X_AXIS]) + sq(delta_mm[Y_HEAD]) + sq(delta_mm[Z_HEAD])
+          #if NON_E_AXES > 3
+            + sq(delta_mm[I_AXIS])
+            #if NON_E_AXES > 4
+            + sq(delta_mm[J_AXIS])
+              #if NON_E_AXES > 5
+              + sq(delta_mm[K_AXIS])
+              #endif
+            #endif
+          #endif
+          
         #else
-          sq(delta_mm[X_AXIS]) + sq(delta_mm[Y_AXIS]) + sq(delta_mm[Z_AXIS])
+          sq(delta_mm[X_AXIS]) + sq(delta_mm[Y_AXIS]) + sq(delta_mm[Z_AXIS]) 
+          #if NON_E_AXES > 3
+            + sq(delta_mm[I_AXIS])
+            #if NON_E_AXES > 4
+            + sq(delta_mm[J_AXIS])
+              #if NON_E_AXES > 5
+              + sq(delta_mm[K_AXIS])
+              #endif
+            #endif
+          #endif
+          
         #endif
       );
 
@@ -2421,7 +2461,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
           already calculated in a different place. */
 
     // Unit vector of previous path line segment
-    static float previous_unit_vec[XYZE];
+    static float previous_unit_vec[NUM_AXIS];
 
     #if IS_KINEMATIC && ENABLED(JUNCTION_DEVIATION)
       float unit_vec[] = {
