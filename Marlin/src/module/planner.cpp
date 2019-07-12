@@ -139,7 +139,7 @@ float Planner::steps_to_mm[NUM_AXIS_N];           // (mm) Millimeters per step
   #if BOTH(JUNCTION_DEVIATION, LIN_ADVANCE)
     float Planner::max_jerk[XYZ];             // (mm/s^2) M205 XYZ - The largest speed change requiring no acceleration.
   #else
-    float Planner::max_jerk[XYZE];            // (mm/s^2) M205 XYZE - The largest speed change requiring no acceleration.
+    float Planner::max_jerk[NUM_AXIS];            // (mm/s^2) M205 XYZE - The largest speed change requiring no acceleration.
   #endif
 #endif
 
@@ -1212,10 +1212,10 @@ void Planner::check_axes_activity() {
       #endif
     #endif
 
-    #if ANY(DISABLE_X, DISABLE_Y, DISABLE_Z, DISABLE_E)
+    #if ANY(DISABLE_X, DISABLE_Y, DISABLE_Z, DISABLE_I, DISABLE_J, DISABLE_K, DISABLE_E)
       for (uint8_t b = block_buffer_tail; b != block_buffer_head; b = next_block_index(b)) {
         block_t *block = &block_buffer[b];
-        LOOP_XYZE(i) if (block->steps[i]) axis_active[i] = true;
+        LOOP_NUM_AXIS(i) if (block->steps[i]) axis_active[i] = true;
       }
     #endif
   }
