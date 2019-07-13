@@ -159,6 +159,17 @@ void lcd_move_x() { _lcd_move_xyz(PSTR(MSG_MOVE_X), X_AXIS); }
 void lcd_move_y() { _lcd_move_xyz(PSTR(MSG_MOVE_Y), Y_AXIS); }
 void lcd_move_z() { _lcd_move_xyz(PSTR(MSG_MOVE_Z), Z_AXIS); }
 
+#if NON_E_AXES > 3
+      void lcd_move_i() { _lcd_move_xyz(PSTR(MSG_MOVE_I), I_AXIS); }
+      #if NON_E_AXES > 4
+        void lcd_move_j() { _lcd_move_xyz(PSTR(MSG_MOVE_J), J_AXIS); }
+        #if NON_E_AXES > 5
+          void lcd_move_k() { _lcd_move_xyz(PSTR(MSG_MOVE_K), K_AXIS); }
+        #endif
+      #endif
+    #endif
+
+
 #if E_MANUAL
 
   static void _lcd_move_e(
@@ -301,6 +312,17 @@ void lcd_move_get_x_amount() { _menu_move_distance(X_AXIS, lcd_move_x); }
 void lcd_move_get_y_amount() { _menu_move_distance(Y_AXIS, lcd_move_y); }
 void lcd_move_get_z_amount() { _menu_move_distance(Z_AXIS, lcd_move_z); }
 
+#if NON_E_AXES > 3
+      void lcd_move_get_i_amount() { _menu_move_distance(I_AXIS, lcd_move_i); }
+      #if NON_E_AXES > 4
+        void lcd_move_get_j_amount() { _menu_move_distance(J_AXIS, lcd_move_j); }
+        #if NON_E_AXES > 5
+          void lcd_move_get_k_amount() { _menu_move_distance(K_AXIS, lcd_move_k); }
+        #endif
+      #endif
+    #endif
+
+
 #if E_MANUAL
   void lcd_move_get_e_amount() { _menu_move_distance(E_AXIS, lcd_move_e, -1); }
   #if E_MANUAL > 1
@@ -359,6 +381,20 @@ void menu_move() {
     #endif
 
     MENU_ITEM(submenu, MSG_MOVE_Z, lcd_move_get_z_amount);
+
+    #if NON_E_AXES > 3
+      MENU_ITEM(submenu, MSG_MOVE_I, lcd_move_get_i_amount);
+
+      #if NON_E_AXES > 4
+        MENU_ITEM(submenu, MSG_MOVE_J, lcd_move_get_j_amount);
+
+        #if NON_E_AXES > 5
+          MENU_ITEM(submenu, MSG_MOVE_K, lcd_move_get_k_amount);
+
+        #endif
+      #endif
+    #endif
+
   }
   else
     MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G28"));
@@ -475,6 +511,15 @@ void menu_motion() {
     MENU_ITEM(gcode, MSG_AUTO_HOME_X, PSTR("G28 X"));
     MENU_ITEM(gcode, MSG_AUTO_HOME_Y, PSTR("G28 Y"));
     MENU_ITEM(gcode, MSG_AUTO_HOME_Z, PSTR("G28 Z"));
+    #if NON_E_AXES > 3
+      MENU_ITEM(gcode, MSG_AUTO_HOME_I, PSTR("G28 I"));
+      #if NON_E_AXES > 4
+        MENU_ITEM(gcode, MSG_AUTO_HOME_J, PSTR("G28 J"));
+        #if NON_E_AXES > 5
+          MENU_ITEM(gcode, MSG_AUTO_HOME_K, PSTR("G28 K"));
+        #endif
+      #endif
+    #endif
   #endif
 
   //

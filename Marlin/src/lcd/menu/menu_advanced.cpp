@@ -457,6 +457,15 @@ void menu_backlash();
     EDIT_VMAX(A);
     EDIT_VMAX(B);
     EDIT_VMAX(C);
+    #if NON_E_AXES > 3
+      EDIT_VMAX(I);
+      #if NON_E_AXES > 4
+        EDIT_VMAX(J);
+        #if NON_E_AXES > 5
+          EDIT_VMAX(K);
+        #endif
+      #endif
+    #endif
 
     #if ENABLED(DISTINCT_E_FACTORS)
       #define EDIT_VMAX_E(N) MENU_MULTIPLIER_ITEM_EDIT(float3, MSG_VMAX MSG_E##N, &planner.settings.max_feedrate_mm_s[E_AXIS_N(N-1)], 1, 999)
@@ -508,6 +517,15 @@ void menu_backlash();
     EDIT_AMAX(A,100);
     EDIT_AMAX(B,100);
     EDIT_AMAX(C, 10);
+    #if NON_E_AXES > 3
+      EDIT_AMAX(I, 10);
+      #if NON_E_AXES > 4
+        EDIT_AMAX(J, 10);
+        #if NON_E_AXES > 5
+          EDIT_AMAX(K, 10);
+        #endif
+      #endif
+    #endif
 
     #if ENABLED(DISTINCT_E_FACTORS)
       #define EDIT_AMAX_E(N,E) MENU_MULTIPLIER_ITEM_EDIT_CALLBACK(long5, MSG_AMAX MSG_E##N, &planner.settings.max_acceleration_mm_per_s2[E_AXIS_N(E)], 100, 99000, _reset_e##E##_acceleration_rate)
@@ -554,6 +572,17 @@ void menu_backlash();
       #else
         MENU_MULTIPLIER_ITEM_EDIT(float52sign, MSG_VC_JERK, &planner.max_jerk[C_AXIS], 0.1f, 990);
       #endif
+
+    #if NON_E_AXES > 3
+      EDIT_JERK(I);
+      #if NON_E_AXES > 4
+        EDIT_JERK(J);
+        #if NON_E_AXES > 5
+          EDIT_JERK(K);
+        #endif
+      #endif
+    #endif
+
       #if !BOTH(JUNCTION_DEVIATION, LIN_ADVANCE)
         EDIT_JERK(E);
       #endif
@@ -572,6 +601,16 @@ void menu_backlash();
     EDIT_QSTEPS(B);
     EDIT_QSTEPS(C);
 
+    #if NON_E_AXES > 3
+      EDIT_QSTEPS(I);
+      #if NON_E_AXES > 4
+        EDIT_QSTEPS(J);
+        #if NON_E_AXES > 5
+          EDIT_QSTEPS(K);
+        #endif
+      #endif
+    #endif
+    
     #if ENABLED(DISTINCT_E_FACTORS)
       #define EDIT_ESTEPS(N,E) MENU_MULTIPLIER_ITEM_EDIT_CALLBACK(float51, MSG_E##N##STEPS, &planner.settings.axis_steps_per_mm[E_AXIS_N(E)], 5, 9999, _planner_refresh_e##E##_positioning)
       MENU_MULTIPLIER_ITEM_EDIT_CALLBACK(float51, MSG_ESTEPS, &planner.settings.axis_steps_per_mm[E_AXIS_N(active_extruder)], 5, 9999, _planner_refresh_positioning);

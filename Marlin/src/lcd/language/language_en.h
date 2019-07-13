@@ -124,6 +124,15 @@
 #ifndef MSG_AUTO_HOME_Z
   #define MSG_AUTO_HOME_Z                     _UxGT("Home Z")
 #endif
+#ifndef MSG_AUTO_HOME_I
+  #define MSG_AUTO_HOME_I                     _UxGT("Home I")
+#endif
+#ifndef MSG_AUTO_HOME_J
+  #define MSG_AUTO_HOME_J                     _UxGT("Home J")
+#endif
+#ifndef MSG_AUTO_HOME_K
+  #define MSG_AUTO_HOME_K                     _UxGT("Home K")
+#endif
 #ifndef MSG_AUTO_Z_ALIGN
   #define MSG_AUTO_Z_ALIGN                    _UxGT("Auto Z-Align")
 #endif
