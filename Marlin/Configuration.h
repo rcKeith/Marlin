@@ -76,11 +76,11 @@
 
 
 #ifdef MODULE_50
-  #define VERSION "2.0.1 /50" 
+  #define VERSION "2.0.0 /50" 
 #endif
 
 #ifdef MODULE_20
-  #define VERSION "2.0.1 /20" 
+  #define VERSION "2.0.0 /20" 
 #endif
 
 // @section info
