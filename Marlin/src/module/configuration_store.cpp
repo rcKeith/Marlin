@@ -1292,15 +1292,15 @@ void MarlinSettings::postprocess() {
         const uint32_t def1[] = DEFAULT_MAX_ACCELERATION;
         const float def2[] = DEFAULT_AXIS_STEPS_PER_UNIT, def3[] = DEFAULT_MAX_FEEDRATE;
 
-        uint32_t tmp1[XYZ + esteppers];
+        uint32_t tmp1[NON_E_AXES + esteppers];
         EEPROM_READ(tmp1);                         // max_acceleration_mm_per_s2
         EEPROM_READ(planner.settings.min_segment_time_us);
 
-        float tmp2[XYZ + esteppers], tmp3[XYZ + esteppers];
+        float tmp2[NON_E_AXES + esteppers], tmp3[NON_E_AXES + esteppers];
         EEPROM_READ(tmp2);                         // axis_steps_per_mm
         EEPROM_READ(tmp3);                         // max_feedrate_mm_s
-        if (!validating) LOOP_XYZE_N(i) {
-          const bool in = (i < esteppers + XYZ);
+        if (!validating) LOOP_NUM_AXIS_N(i) {
+          const bool in = (i < esteppers + NON_E_AXES);
           planner.settings.max_acceleration_mm_per_s2[i] = in ? tmp1[i] : def1[ALIM(i, def1)];
           planner.settings.axis_steps_per_mm[i]          = in ? tmp2[i] : def2[ALIM(i, def2)];
           planner.settings.max_feedrate_mm_s[i]          = in ? tmp3[i] : def3[ALIM(i, def3)];
