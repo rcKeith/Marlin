@@ -69,9 +69,9 @@
 //
 
 //select machine model by the differences
-#define MODULE_50 false
+#define MODULE_50 
 //#define MODULE_20
-#define DEV_PARAMETERS true
+//#define DEV_PARAMETERS 
 
 
 
@@ -813,7 +813,7 @@
 #else
 #ifdef MODULE_50
   #define DEFAULT_AXIS_STEPS_PER_UNIT   { 31.49, 52.49, 52.49, 477.87, 477.87, 1000} //e axis in ML  
-  #define DEFAULT_MAX_FEEDRATE          { 250, 250, 250, 250, 12, 250 }  //X, Y, Z, [I ,[J ,[K ,]]] E0 [, E1[, E2[, E3[, E4[, E5]]]]]
+  #define DEFAULT_MAX_FEEDRATE          { 250, 250, 250, 12, 12, 250 }  //X, Y, Z, [I ,[J ,[K ,]]] E0 [, E1[, E2[, E3[, E4[, E5]]]]]
   #define DEFAULT_MAX_ACCELERATION      { 500, 500, 500, 9, 9, 500 }
 
 #elif MODULE_20
@@ -885,7 +885,7 @@
  *
  * See https://github.com/synthetos/TinyG/wiki/Jerk-Controlled-Motion-Explained
  */
-//#define S_CURVE_ACCELERATION
+#define S_CURVE_ACCELERATION
 
 //===========================================================================
 //============================= Z Probe Options =============================
@@ -1470,11 +1470,11 @@
 #define HOMING_FEEDRATE_XY (50*60)
 #define HOMING_FEEDRATE_Z  (50*60)
 #if NON_E_AXES > 3
-  #define HOMING_FEEDRATE_I (50*60)
+  #define HOMING_FEEDRATE_I (2*60)
   #if NON_E_AXES > 4
-    #define HOMING_FEEDRATE_J (50*60)
+    #define HOMING_FEEDRATE_J (2*60)
     #if NON_E_AXES > 5
-      #define HOMING_FEEDRATE_K (50*60)
+      #define HOMING_FEEDRATE_K (2*60)
     #endif
   #endif
 #endif
