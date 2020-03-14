@@ -233,6 +233,7 @@ void restore_feedrate_and_scaling();
 #else
   uint8_t axes_need_homing(uint8_t axis_bits=0x07);
   bool axis_unhomed_error(uint8_t axis_bits=0x07);
+#endif
 
 #if ENABLED(NO_MOTION_BEFORE_HOMING)
   #define MOTION_CONDITIONS (IsRunning() && !axis_unhomed_error())

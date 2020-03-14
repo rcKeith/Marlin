@@ -49,11 +49,21 @@ GcodeSuite gcode;
 
 millis_t GcodeSuite::previous_move_ms;
 
-static constexpr bool ar_init[XYZE] = AXIS_RELATIVE_MODES;
+static constexpr bool ar_init[NUM_AXIS] = AXIS_RELATIVE_MODES;
 uint8_t GcodeSuite::axis_relative = (
     (ar_init[X_AXIS] ? _BV(REL_X) : 0)
   | (ar_init[Y_AXIS] ? _BV(REL_Y) : 0)
   | (ar_init[Z_AXIS] ? _BV(REL_Z) : 0)
+  #if NON_E_AXES > 3
+    | (ar_init[I_AXIS] ? _BV(REL_I) : 0)
+    #if NON_E_AXES > 4
+      | (ar_init[J_AXIS] ? _BV(REL_J) : 0)
+      #if NON_E_AXES > 5
+        | (ar_init[K_AXIS] ? _BV(REL_K) : 0)
+      #endif
+    #endif
+  #endif
+
   | (ar_init[E_AXIS] ? _BV(REL_E) : 0)
 );
 

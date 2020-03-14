@@ -1794,6 +1794,16 @@ uint32_t Stepper::stepper_block_phase_isr() {
         #define Z_MOVE_TEST !!current_block->steps[C_AXIS]
       #endif
 
+      #if NON_E_AXES > 3
+        #define I_MOVE_TEST !!current_block->steps[I_AXIS]
+        #if NON_E_AXES > 4
+          #define J_MOVE_TEST !!current_block->steps[J_AXIS]
+          #if NON_E_AXES > 5
+            #define K_MOVE_TEST !!current_block->steps[K_AXIS]
+          #endif
+        #endif
+      #endif
+
       uint8_t axis_bits = 0;
       if (X_MOVE_TEST) SBI(axis_bits, A_AXIS);
       if (Y_MOVE_TEST) SBI(axis_bits, B_AXIS);

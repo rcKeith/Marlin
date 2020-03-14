@@ -84,11 +84,11 @@ void print_xyz(PGM_P const prefix, PGM_P const suffix, const float &x, const flo
   serialprintPGM(prefix);
   SERIAL_ECHOPAIR(" " MSG_X, x, " " MSG_Y, y, " " MSG_Z, z
     #if NON_E_AXES > 3
-      " " MSG_I, i
+      , " " MSG_I, i
       #if NON_E_AXES > 4
-        " " MSG_J, j
+        , " " MSG_J, j
         #if NON_E_AXES > 5
-          " " MSG_K, k
+          , " " MSG_K, k
         #endif
       #endif
     #endif

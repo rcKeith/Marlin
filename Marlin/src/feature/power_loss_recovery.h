@@ -47,10 +47,10 @@ typedef struct {
   float current_position[NUM_AXIS];
 
   #if HAS_HOME_OFFSET
-    float home_offset[XYZ];
+    float home_offset[NON_E_AXES];
   #endif
   #if HAS_POSITION_SHIFT
-    float position_shift[XYZ];
+    float position_shift[NON_E_AXES];
   #endif
 
   uint16_t feedrate;

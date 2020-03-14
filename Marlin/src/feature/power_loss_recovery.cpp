@@ -395,7 +395,7 @@ void PrintJobRecovery::resume() {
   gcode.axis_relative = info.axis_relative;
 
   #if HAS_HOME_OFFSET || HAS_POSITION_SHIFT
-    LOOP_XYZ(i) {
+    LOOP_NON_E(i) {
       #if HAS_HOME_OFFSET
         home_offset[i] = info.home_offset[i];
       #endif

@@ -80,22 +80,23 @@
                         || AXIS_DRIVER_TYPE_E2(T) || AXIS_DRIVER_TYPE_E3(T) \
                         || AXIS_DRIVER_TYPE_E4(T) || AXIS_DRIVER_TYPE_E5(T) )
 
-#if NON_E_AXES == 4
-#define HAS_DRIVER(T)  (AXIS_DRIVER_TYPE_X(T)  || AXIS_DRIVER_TYPE_X2(T) || \
-                        AXIS_DRIVER_TYPE_Y(T)  || AXIS_DRIVER_TYPE_Y2(T) || \
-                        AXIS_DRIVER_TYPE_Z(T)  || AXIS_DRIVER_TYPE_Z2(T) || AXIS_DRIVER_TYPE_Z3(T) || \
-                        AXIS_DRIVER_TYPE_I(T)
-#elif NON_E_AXES == 5
-#define HAS_DRIVER(T)  (AXIS_DRIVER_TYPE_X(T)  || AXIS_DRIVER_TYPE_X2(T) || \
-                        AXIS_DRIVER_TYPE_Y(T)  || AXIS_DRIVER_TYPE_Y2(T) || \
-                        AXIS_DRIVER_TYPE_Z(T)  || AXIS_DRIVER_TYPE_Z2(T) || AXIS_DRIVER_TYPE_Z3(T) || \
-                        AXIS_DRIVER_TYPE_I(T)  || AXIS_DRIVER_TYPE_J(T)  || \
+#if NON_E_AXES == 6
+#define HAS_DRIVER(T)  (AXIS_DRIVER_TYPE_X(T)  || AXIS_DRIVER_TYPE_X2(T) \
+                        || AXIS_DRIVER_TYPE_Y(T)  || AXIS_DRIVER_TYPE_Y2(T) \
+                        || AXIS_DRIVER_TYPE_Z(T)  || AXIS_DRIVER_TYPE_Z2(T) || AXIS_DRIVER_TYPE_Z3(T) \
+                        || AXIS_DRIVER_TYPE_I(T)  || AXIS_DRIVER_TYPE_J(T)  || AXIS_DRIVER_TYPE_K(T)  \
                         || HAS_E_DRIVER(T) )
-#elif NON_E_AXES == 6
-#define HAS_DRIVER(T)  (AXIS_DRIVER_TYPE_X(T)  || AXIS_DRIVER_TYPE_X2(T) || \
-                        AXIS_DRIVER_TYPE_Y(T)  || AXIS_DRIVER_TYPE_Y2(T) || \
-                        AXIS_DRIVER_TYPE_Z(T)  || AXIS_DRIVER_TYPE_Z2(T) || AXIS_DRIVER_TYPE_Z3(T) || \
-                        AXIS_DRIVER_TYPE_I(T)  || AXIS_DRIVER_TYPE_J(T)  || AXIS_DRIVER_TYPE_K(T)  || \
+#elif NON_E_AXES == 5
+#define HAS_DRIVER(T)  (AXIS_DRIVER_TYPE_X(T)  || AXIS_DRIVER_TYPE_X2(T) \
+                        || AXIS_DRIVER_TYPE_Y(T)  || AXIS_DRIVER_TYPE_Y2(T) \
+                        || AXIS_DRIVER_TYPE_Z(T)  || AXIS_DRIVER_TYPE_Z2(T) || AXIS_DRIVER_TYPE_Z3(T) \
+                        || AXIS_DRIVER_TYPE_I(T)  || AXIS_DRIVER_TYPE_J(T)  \
+                        || HAS_E_DRIVER(T) )
+#elif NON_E_AXES == 4
+#define HAS_DRIVER(T)  (AXIS_DRIVER_TYPE_X(T)  || AXIS_DRIVER_TYPE_X2(T) \
+                        || AXIS_DRIVER_TYPE_Y(T)  || AXIS_DRIVER_TYPE_Y2(T) \
+                        || AXIS_DRIVER_TYPE_Z(T)  || AXIS_DRIVER_TYPE_Z2(T) || AXIS_DRIVER_TYPE_Z3(T) \
+                        || AXIS_DRIVER_TYPE_I(T) \
                         || HAS_E_DRIVER(T) )
 #else
 #define HAS_DRIVER(T) (    AXIS_DRIVER_TYPE_X(T)  || AXIS_DRIVER_TYPE_X2(T) \

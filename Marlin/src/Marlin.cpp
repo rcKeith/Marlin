@@ -1034,7 +1034,7 @@ void setup() {
 
   #if HAS_M206_COMMAND
     // Initialize current position based on home_offset
-    LOOP_XYZ(a) current_position[a] += home_offset[a];
+    LOOP_NON_E(a) current_position[a] += home_offset[a];
   #endif
 
   // Vital to init stepper/planner equivalent for current_position

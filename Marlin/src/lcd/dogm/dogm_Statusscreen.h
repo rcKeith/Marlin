@@ -48,7 +48,7 @@
   #include "../../../_Statusscreen.h"
 
   #ifdef STATUS_SCREENWIDTH
-    //#error "Your custom _Statusscreen.h needs to be converted for Marlin 2.0."
+    #error "Your custom _Statusscreen.h needs to be converted for Marlin 2.0."
   #endif
 
 #endif
@@ -704,7 +704,6 @@
     #endif
   #endif
 
-<<<<<<< Upstream, based on bf2_6axis_dev12
   #ifdef STATUS_CHAMBER_ANIM
 
     const unsigned char status_chamber_bmp[] PROGMEM = {
@@ -761,66 +760,6 @@
 #define BED_OR_CHAMBER_OR_FAN (BED_OR_CHAMBER || HAS_FAN0)
 
 // Can also be overridden in Configuration_adv.h
-=======
-#if HAS_HEATED_CHAMBER
-
-  #define STATUS_CHAMBER_WIDTH 16
-
-  #ifdef STATUS_CHAMBER_ANIM
-
-    const unsigned char status_chamber_bmp[] PROGMEM = {
-      B11111111,B11111111,
-      B10000000,B00000001,
-      B10000000,B00000001,
-      B10000000,B00000001,
-      B10000000,B00000001,
-      B10000000,B00000001,
-      B10000000,B00000001,
-      B10000000,B00000001,
-      B10000000,B00000001,
-      B10000000,B00000001,
-      B11111111,B11111111,
-      B11111111,B11111111
-    };
-
-    const unsigned char status_chamber_on_bmp[] PROGMEM = {
-      B11111111,B11111111,
-      B10000000,B00000001,
-      B10000100,B00100001,
-      B10000010,B00010001,
-      B10000010,B00010001,
-      B10000100,B00100001,
-      B10001000,B01000001,
-      B10001000,B01000001,
-      B10000100,B00100001,
-      B10000000,B00000001,
-      B11111111,B11111111,
-      B11111111,B11111111
-    };
-
-  #else
-
-    const unsigned char status_chamber_bmp[] PROGMEM = {
-      B11111111,B11111111,
-      B10000000,B00000001,
-      B10000100,B00100001,
-      B10000010,B00010001,
-      B10000010,B00010001,
-      B10000100,B00100001,
-      B10001000,B01000001,
-      B10001000,B01000001,
-      B10000100,B00100001,
-      B10000000,B00000001,
-      B11111111,B11111111,
-      B11111111,B11111111
-    };
-
-  #endif
-
-#endif // HAS_HEATED_CHAMBER
-
-// Can also be overridden in Configuration.h
->>>>>>> 6a8645b merge axis to my DEV
 // If you can afford it, try the 3-frame fan animation!
 // Don't compile in the fan animation with no fan
 #if !HAS_FAN0 || (HOTENDS == 5 || (HOTENDS == 4 && BED_OR_CHAMBER) || (ENABLED(STATUS_COMBINE_HEATERS) && HAS_HEATED_CHAMBER))
@@ -1569,50 +1508,6 @@
 #endif
 
 //
-// Chamber Bitmap Properties
-//
-#ifndef STATUS_CHAMBER_WIDTH
-  #define STATUS_CHAMBER_WIDTH 0
-#endif
-#ifndef STATUS_CHAMBER_BYTEWIDTH
-  #define STATUS_CHAMBER_BYTEWIDTH BW(STATUS_CHAMBER_WIDTH)
-#endif
-#if STATUS_CHAMBER_WIDTH && !STATUS_HEATERS_WIDTH
-
-  #ifndef STATUS_CHAMBER_X
-    #define STATUS_CHAMBER_X (128 - (STATUS_FAN_BYTEWIDTH + STATUS_CHAMBER_BYTEWIDTH) * 8)
-  #endif
-
-  #ifndef STATUS_CHAMBER_HEIGHT
-    #ifdef STATUS_CHAMBER_ANIM
-      #define STATUS_CHAMBER_HEIGHT(S) ((S) ? sizeof(status_chamber_on_bmp) / (STATUS_CHAMBER_BYTEWIDTH) : sizeof(status_chamber_bmp) / (STATUS_CHAMBER_BYTEWIDTH))
-    #else
-      #define STATUS_CHAMBER_HEIGHT(S) (sizeof(status_chamber_bmp) / (STATUS_CHAMBER_BYTEWIDTH))
-    #endif
-  #endif
-
-  #ifndef STATUS_CHAMBER_Y
-    #define STATUS_CHAMBER_Y(S) (20 - STATUS_CHAMBER_HEIGHT(S))
-  #endif
-
-  #ifndef STATUS_CHAMBER_TEXT_X
-    #define STATUS_CHAMBER_TEXT_X (STATUS_CHAMBER_X + 7)
-  #endif
-
-  static_assert(
-    sizeof(status_chamber_bmp) == (STATUS_CHAMBER_BYTEWIDTH) * (STATUS_CHAMBER_HEIGHT(0)),
-    "Status chamber bitmap (status_chamber_bmp) dimensions don't match data."
-  );
-  #ifdef STATUS_CHAMBER_ANIM
-    static_assert(
-      sizeof(status_chamber_on_bmp) == (STATUS_CHAMBER_BYTEWIDTH) * (STATUS_CHAMBER_HEIGHT(1)),
-      "Status chamber bitmap (status_chamber_on_bmp) dimensions don't match data."
-    );
-  #endif
-
-#endif
-
-//
 // Bed Bitmap Properties
 //
 #ifndef STATUS_BED_BYTEWIDTH
@@ -1621,11 +1516,7 @@
 #if STATUS_BED_WIDTH && !STATUS_HEATERS_WIDTH
 
   #ifndef STATUS_BED_X
-<<<<<<< Upstream, based on bf2_6axis_dev12
     #define STATUS_BED_X (LCD_PIXEL_WIDTH - (STATUS_CHAMBER_BYTEWIDTH + STATUS_FAN_BYTEWIDTH + STATUS_BED_BYTEWIDTH) * 8)
-=======
-    #define STATUS_BED_X (128 - (STATUS_CHAMBER_BYTEWIDTH + STATUS_FAN_BYTEWIDTH + STATUS_BED_BYTEWIDTH) * 8)
->>>>>>> 6a8645b merge axis to my DEV
   #endif
 
   #ifndef STATUS_BED_HEIGHT

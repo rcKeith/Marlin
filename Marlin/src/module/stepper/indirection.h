@@ -180,6 +180,63 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
   #define Z3_DIR_WRITE(STATE) NOOP
 #endif
 
+#if NON_E_AXES > 3
+// I Stepper
+#ifndef I_ENABLE_INIT
+  #define I_ENABLE_INIT SET_OUTPUT(I_ENABLE_PIN)
+  #define I_ENABLE_WRITE(STATE) WRITE(I_ENABLE_PIN,STATE)
+  #define I_ENABLE_READ() READ(I_ENABLE_PIN)
+#endif
+#ifndef I_DIR_INIT
+  #define I_DIR_INIT SET_OUTPUT(I_DIR_PIN)
+  #define I_DIR_WRITE(STATE) WRITE(I_DIR_PIN,STATE)
+  #define I_DIR_READ() READ(I_DIR_PIN)
+#endif
+#define I_STEP_INIT SET_OUTPUT(I_STEP_PIN)
+#ifndef I_STEP_WRITE
+  #define I_STEP_WRITE(STATE) WRITE(I_STEP_PIN,STATE)
+#endif
+#define I_STEP_READ READ(I_STEP_PIN)
+
+#if NON_E_AXES > 4
+// J Stepper
+#ifndef J_ENABLE_INIT
+  #define J_ENABLE_INIT SET_OUTPUT(J_ENABLE_PIN)
+  #define J_ENABLE_WRITE(STATE) WRITE(J_ENABLE_PIN,STATE)
+  #define J_ENABLE_READ() READ(J_ENABLE_PIN)
+#endif
+#ifndef J_DIR_INIT
+  #define J_DIR_INIT SET_OUTPUT(J_DIR_PIN)
+  #define J_DIR_WRITE(STATE) WRITE(J_DIR_PIN,STATE)
+  #define J_DIR_READ() READ(J_DIR_PIN)
+#endif
+#define J_STEP_INIT SET_OUTPUT(J_STEP_PIN)
+#ifndef J_STEP_WRITE
+  #define J_STEP_WRITE(STATE) WRITE(J_STEP_PIN,STATE)
+#endif
+#define J_STEP_READ READ(J_STEP_PIN)
+
+#if NON_E_AXES > 5
+// K Stepper
+#ifndef K_ENABLE_INIT
+  #define K_ENABLE_INIT SET_OUTPUT(K_ENABLE_PIN)
+  #define K_ENABLE_WRITE(STATE) WRITE(K_ENABLE_PIN,STATE)
+  #define K_ENABLE_READ() READ(K_ENABLE_PIN)
+#endif
+#ifndef K_DIR_INIT
+  #define K_DIR_INIT SET_OUTPUT(K_DIR_PIN)
+  #define K_DIR_WRITE(STATE) WRITE(K_DIR_PIN,STATE)
+  #define K_DIR_READ() READ(K_DIR_PIN)
+#endif
+#define K_STEP_INIT SET_OUTPUT(K_STEP_PIN)
+#ifndef K_STEP_WRITE
+  #define K_STEP_WRITE(STATE) WRITE(K_STEP_PIN,STATE)
+#endif
+#define K_STEP_READ READ(K_STEP_PIN)
+#endif // NON_E_AXES > 5
+#endif // NON_E_AXES > 4
+#endif // NON_E_AXES > 3
+
 // E0 Stepper
 #ifndef E0_ENABLE_INIT
   #define E0_ENABLE_INIT SET_OUTPUT(E0_ENABLE_PIN)

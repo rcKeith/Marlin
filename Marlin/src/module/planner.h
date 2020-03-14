@@ -788,7 +788,7 @@ class Planner {
         #if NON_E_AXES > 4
           , axes[J_AXIS]
           #if NON_E_AXES > 5
-		    , axes[K_AXIS]
+            , axes[K_AXIS]
           #endif
         #endif
       #endif

@@ -109,6 +109,7 @@ float current_position[NUM_AXIS] = { X_HOME_POS, Y_HOME_POS, Z_HOME_POS
       #endif
     #endif
   #endif
+  , 0
 }; // TODO (DerAndere): Test for NON_E_AXES > 3
 
 /**
@@ -165,7 +166,6 @@ const float homing_feedrate_mm_s[NON_E_AXES] PROGMEM = {
       #endif
     #endif
   #endif
-  , MMM_TO_MMS(HOMING_FEEDRATE_Z)
 };
 
 // Cartesian conversion result goes here:

@@ -68,35 +68,10 @@
 // config/examples/SCARA and customize for your machine.
 //
 
-//select machine model by the differences
-#define MODULE_50 
-//#define MODULE_20
-//#define DEV_PARAMETERS 
-
-
-
-#ifdef MODULE_50
-  #define VERSION "2.0.0 /50" 
-#endif
-
-#ifdef MODULE_20
-  #define VERSION "2.0.0 /20" 
-#endif
-
 // @section info
 
-<<<<<<< Upstream, based on bf2_6axis_dev12
 // Author info of this build printed to the host during boot and M115
 #define STRING_CONFIG_H_AUTHOR "(none, default config)" // Who made the changes.
-=======
-// User-specified version info of this build to display in [Pronterface, etc] terminal window during
-// startup. Implementation of an idea by Prof Braino to inform user that any changes made to this
-// build by the user have been successfully uploaded into firmware.
-#define STRING_CONFIG_H_AUTHOR "Gabriel S. Beraldo" // Who made the changes.
-#define SHOW_BOOTSCREEN
-#define STRING_SPLASH_LINE1 "" // will be shown during bootup in line 1
-#define STRING_SPLASH_LINE2 VERSION         // will be shown during bootup in line 2
->>>>>>> 6a8645b merge axis to my DEV
 
 /**
  * *** VENDORS PLEASE READ ***
@@ -115,13 +90,8 @@
 // Show the bitmap in Marlin/_Bootscreen.h on startup.
 //#define SHOW_CUSTOM_BOOTSCREEN
 
-<<<<<<< Upstream, based on bf2_6axis_dev12
 // Show the bitmap in Marlin/_Statusscreen.h on the status screen.
 //#define CUSTOM_STATUS_SCREEN_IMAGE
-=======
-// Enable to show the bitmap in Marlin/_Statusscreen.h on the status screen.
-#define CUSTOM_STATUS_SCREEN_IMAGE
->>>>>>> 6a8645b merge axis to my DEV
 
 // @section machine
 
@@ -162,23 +132,22 @@
   #define MOTHERBOARD BOARD_RAMPS_14_EFB
 #endif
 
-<<<<<<< Upstream, based on bf2_6axis_dev12
 // Name displayed in the LCD "Ready" message and Info menu
 //#define CUSTOM_MACHINE_NAME "3D Printer"
-=======
-// Optional custom name for your RepStrap or other custom machine
-// Displayed in the LCD "Ready" message
-#define CUSTOM_MACHINE_NAME ""
->>>>>>> 6a8645b merge axis to my DEV
 
 // Printer's unique ID, used by some programs to differentiate between machines.
 // Choose your own or use a service like http://www.uuidgenerator.net/version4
 //#define MACHINE_UUID "00000000-0000-0000-0000-000000000000"
 
-// This defines the number of axes that are not used for extruders (axes that benefit from endstops and homing).
-// This must be set to 3 also if one or more of the positioning axes are driven by multiple stepper motors. Only increase 
-// for robots with additional axes (tools apart from extruders that are driven by stepper motors) 
-#define NON_E_AXES 5
+/**
+ * This defines the number of axes that are not used for extruders (axes that
+ * benefit from endstops and homing). Non-cartesian kinematics are currently
+ * not supported. Can be used for cartesian machines where additional axes
+ * I, J, K do not affect the positioning of the main tool. NON_E_AXES > 3
+ * requires definition of {I, J, K}_STEP_PIN, {I, J, K}_ENABLE_PIN,
+ * {I, J, K}_DIR_PIN, {I, J, K}_STOP_PIN, USE_{I, J, K}[MIN || MAX]_PLUG.
+ */
+#define NON_E_AXES 3
 
 // @section extruder
 
@@ -444,7 +413,7 @@
  *
  * :{ '0':"Not used", '1':"100k / 4.7k - EPCOS", '331':"(3.3V thermistor 1)", '2':"200k / 4.7k - ATC Semitec 204GT-2", '3':"Mendel-parts / 4.7k", '4':"10k !! do not use for a hotend. Bad resolution at high temp. !!", '5':"100K / 4.7k - ATC Semitec 104GT-2 (Used in ParCan & J-Head)", '501':"100K Zonestar (Tronxy X3A)", '512':"100k RPW-Ultra hotend thermistor", '6':"100k / 4.7k EPCOS - Not as accurate as Table 1", '7':"100k / 4.7k Honeywell 135-104LAG-J01", '8':"100k / 4.7k 0603 SMD Vishay NTCS0603E3104FXT", '9':"100k / 4.7k GE Sensing AL03006-58.2K-97-G1", '10':"100k / 4.7k RS 198-961", '11':"100k / 4.7k beta 3950 1%", '12':"100k / 4.7k 0603 SMD Vishay NTCS0603E3104FXT (calibrated for Makibox hot bed)", '13':"100k Hisens 3950  1% up to 300°C for hotend 'Simple ONE ' & hotend 'All In ONE'", '18':"ATC Semitec 204GT-2 (4.7k pullup) Dagoma.Fr - MKS_Base_DKU001327" '20':"Pt100 (Ultimainboard V2.x)", '201':"Pt100 (Overlord)", '51':"100k / 1k - EPCOS", '52':"200k / 1k - ATC Semitec 204GT-2", '55':"100k / 1k - ATC Semitec 104GT-2 (Used in ParCan & J-Head)", '60':"100k Maker's Tool Works Kapton Bed Thermistor beta=3950", '61':"100k Formbot / Vivedino 3950 350C thermistor 4.7k pullup", '66':"Dyze Design 4.7M High Temperature thermistor", '67':"Slice Engineering 450C High Temperature thermistor", '70':"the 100K thermistor found in the bq Hephestos 2", '71':"100k / 4.7k Honeywell 135-104LAF-J01", '147':"Pt100 / 4.7k", '1047':"Pt1000 / 4.7k", '110':"Pt100 / 1k (non-standard)", '1010':"Pt1000 / 1k (non standard)", '-4':"Thermocouple + AD8495", '-3':"Thermocouple + MAX31855 (only for sensor 0)", '-2':"Thermocouple + MAX6675 (only for sensor 0)", '-1':"Thermocouple + AD595", '998':"Dummy 1", '999':"Dummy 2", '1000':"Custom thermistor params" }
  */
-#define TEMP_SENSOR_0 998
+#define TEMP_SENSOR_0 1
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_3 0
@@ -588,15 +557,15 @@
  *
  * *** IT IS HIGHLY RECOMMENDED TO LEAVE THIS OPTION ENABLED! ***
  */
-//#define PREVENT_COLD_EXTRUSION
-//#define EXTRUDE_MINTEMP 170
+#define PREVENT_COLD_EXTRUSION
+#define EXTRUDE_MINTEMP 170
 
 /**
  * Prevent a single extrusion longer than EXTRUDE_MAXLENGTH.
  * Note: For Bowden Extruders make this large enough to allow load/unload.
  */
-//#define PREVENT_LENGTHY_EXTRUDE
-//#define EXTRUDE_MAXLENGTH 200
+#define PREVENT_LENGTHY_EXTRUDE
+#define EXTRUDE_MAXLENGTH 200
 
 //===========================================================================
 //======================== Thermal Runaway Protection =======================
@@ -615,14 +584,9 @@
  * details can be tuned in Configuration_adv.h
  */
 
-<<<<<<< Upstream, based on bf2_6axis_dev12
 #define THERMAL_PROTECTION_HOTENDS // Enable thermal protection for all extruders
 #define THERMAL_PROTECTION_BED     // Enable thermal protection for the heated bed
 #define THERMAL_PROTECTION_CHAMBER // Enable thermal protection for the heated chamber
-=======
-//#define THERMAL_PROTECTION_HOTENDS // Enable thermal protection for all extruders
-//#define THERMAL_PROTECTION_BED     // Enable thermal protection for the heated bed
->>>>>>> 6a8645b merge axis to my DEV
 
 //===========================================================================
 //============================= Mechanical Settings =========================
@@ -652,7 +616,7 @@
 #define USE_YMIN_PLUG
 #define USE_ZMIN_PLUG
 #define USE_IMIN_PLUG
-#define USE_JMIN_PLUG
+//#define USE_JMIN_PLUG
 //#define USE_KMIN_PLUG
 //#define USE_XMAX_PLUG
 //#define USE_YMAX_PLUG
@@ -700,7 +664,6 @@
 #endif
 
 // Mechanical endstop with COM to ground and NC to Signal uses "false" here (most common setup).
-<<<<<<< Upstream, based on bf2_6axis_dev12
 #define X_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
 #define Y_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
 #define Z_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
@@ -714,21 +677,6 @@
 #define J_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
 #define K_MAX_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
 #define Z_MIN_PROBE_ENDSTOP_INVERTING false // Set to true to invert the logic of the probe.
-=======
-#define X_MIN_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop.
-#define Y_MIN_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop.
-#define Z_MIN_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop.
-#define I_MIN_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop.
-#define J_MIN_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop.
-#define K_MIN_ENDSTOP_INVERTING false // set to true to invert the logic of the endstop.
-#define X_MAX_ENDSTOP_INVERTING false // set to true to invert the logic of the endstop.
-#define Y_MAX_ENDSTOP_INVERTING false // set to true to invert the logic of the endstop.
-#define Z_MAX_ENDSTOP_INVERTING false // set to true to invert the logic of the endstop.
-#define I_MAX_ENDSTOP_INVERTING false // set to true to invert the logic of the endstop.
-#define J_MAX_ENDSTOP_INVERTING false // set to true to invert the logic of the endstop.
-#define K_MAX_ENDSTOP_INVERTING false // set to true to invert the logic of the endstop.
-#define Z_MIN_PROBE_ENDSTOP_INVERTING false // set to true to invert the logic of the probe.
->>>>>>> 6a8645b merge axis to my DEV
 
 /**
  * Stepper Drivers
@@ -745,9 +693,9 @@
  *          TMC5130, TMC5130_STANDALONE, TMC5160, TMC5160_STANDALONE
  * :['A4988', 'A5984', 'DRV8825', 'LV8729', 'L6470', 'TB6560', 'TB6600', 'TMC2100', 'TMC2130', 'TMC2130_STANDALONE', 'TMC2160', 'TMC2160_STANDALONE', 'TMC2208', 'TMC2208_STANDALONE', 'TMC2209', 'TMC2209_STANDALONE', 'TMC26X', 'TMC26X_STANDALONE', 'TMC2660', 'TMC2660_STANDALONE', 'TMC5130', 'TMC5130_STANDALONE', 'TMC5160', 'TMC5160_STANDALONE']
  */
-#define X_DRIVER_TYPE  A4988
-#define Y_DRIVER_TYPE  A4988
-#define Z_DRIVER_TYPE  A4988
+//#define X_DRIVER_TYPE  A4988
+//#define Y_DRIVER_TYPE  A4988
+//#define Z_DRIVER_TYPE  A4988
 //#define X2_DRIVER_TYPE A4988
 //#define Y2_DRIVER_TYPE A4988
 //#define Z2_DRIVER_TYPE A4988
@@ -758,12 +706,13 @@
 //#define E3_DRIVER_TYPE A4988
 //#define E4_DRIVER_TYPE A4988
 //#define E5_DRIVER_TYPE A4988
-#define I_DRIVER_TYPE  A4988
-#define J_DRIVER_TYPE  A4988
+//#define I_DRIVER_TYPE  A4988
+//#define J_DRIVER_TYPE  A4988
+//#define K_DRIVER_TYPE  A4988
 
 // Enable this feature if all enabled endstop pins are interrupt-capable.
 // This will remove the need to poll the interrupt pins, saving many CPU cycles.
-#define ENDSTOP_INTERRUPTS_FEATURE
+//#define ENDSTOP_INTERRUPTS_FEATURE
 
 /**
  * Endstop Noise Threshold
@@ -804,27 +753,22 @@
  * Override with M92
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4[, E5]]]]]
  */
-//default calibration for module 50
-#ifdef DEV_PARAMETERS
-  #define DEFAULT_AXIS_STEPS_PER_UNIT   { 31.49, 31.49, 31.49, 31.49, 31.49, 1000} //e axis in ML  
-  #define DEFAULT_MAX_FEEDRATE          { 250, 250, 250, 250, 250, 250 }  //X, Y, Z, [I ,[J ,[K ,]]] E0 [, E1[, E2[, E3[, E4[, E5]]]]]
-  #define DEFAULT_MAX_ACCELERATION      { 500, 500, 500, 500, 500, 500 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 4000, 500 }
 
-#else
-#ifdef MODULE_50
-  #define DEFAULT_AXIS_STEPS_PER_UNIT   { 31.49, 52.49, 52.49, 477.87, 477.87, 1000} //e axis in ML  
-  #define DEFAULT_MAX_FEEDRATE          { 250, 250, 250, 12, 12, 250 }  //X, Y, Z, [I ,[J ,[K ,]]] E0 [, E1[, E2[, E3[, E4[, E5]]]]]
-  #define DEFAULT_MAX_ACCELERATION      { 500, 500, 500, 9, 9, 500 }
+/**
+ * Default Max Feed Rate (mm/s)
+ * Override with M203
+ *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4[, E5]]]]]
+ */
+#define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }
 
-#elif MODULE_20
-  #define DEFAULT_AXIS_STEPS_PER_UNIT   { 31.49, 52.49, 52.49 , 912.35, 912.35, 1000} //e axis in ML 
-  #define DEFAULT_MAX_FEEDRATE          { 250, 250, 250 , 12, 12, 250 }
-  #define DEFAULT_MAX_ACCELERATION      { 500, 500, 500, 9, 9, 500 }
-
-  //X, Y, Z, [I ,[J ,[K ,]]] E0 [, E1[, E2[, E3[, E4[, E5]]]]]
-#endif
-#endif
-
+/**
+ * Default Max Acceleration (change/s) change = mm/s
+ * (Maximum start speed for accelerated moves)
+ * Override with M201
+ *                                      X, Y, Z, [I ,[J ,[K ,]]] E0 [, E1[, E2[, E3[, E4[, E5]]]]]
+ */
+#define DEFAULT_MAX_ACCELERATION      { 3000, 3000, 100, 10000 }
 
 /**
  * Default Acceleration (change/s) change = mm/s
@@ -834,9 +778,9 @@
  *   M204 R    Retract Acceleration
  *   M204 T    Travel Acceleration
  */
-#define DEFAULT_ACCELERATION          250    // X, Y, Z and E acceleration for printing moves
-#define DEFAULT_RETRACT_ACCELERATION  10    // E acceleration for retracts
-#define DEFAULT_TRAVEL_ACCELERATION   250    // X, Y, Z acceleration for travel (non printing) moves
+#define DEFAULT_ACCELERATION          3000    // X, Y, Z and E acceleration for printing moves
+#define DEFAULT_RETRACT_ACCELERATION  3000    // E acceleration for retracts
+#define DEFAULT_TRAVEL_ACCELERATION   3000    // X, Y, Z acceleration for travel (non printing) moves
 
 /**
  * Junction Deviation
@@ -861,21 +805,21 @@
  * value set here, it may happen instantaneously.
  */
 #if DISABLED(JUNCTION_DEVIATION)
-  #define DEFAULT_XJERK 2.0
-  #define DEFAULT_YJERK 2.0
+  #define DEFAULT_XJERK 10.0
+  #define DEFAULT_YJERK 10.0
   #define DEFAULT_ZJERK  0.3
   #if NON_E_AXES > 3
-    #define DEFAULT_IJERK  0.1
+    #define DEFAULT_IJERK  0.3
     #if NON_E_AXES > 4
-      #define DEFAULT_JJERK  0.1
+      #define DEFAULT_JJERK  0.3
       #if NON_E_AXES > 5
-        #define DEFAULT_KJERK  0.1
+        #define DEFAULT_KJERK  0.3
       #endif
     #endif
   #endif
 #endif
 
-#define DEFAULT_EJERK    1.0  // May be used by Linear Advance
+#define DEFAULT_EJERK    5.0  // May be used by Linear Advance
 
 /**
  * S-Curve Acceleration
@@ -885,7 +829,7 @@
  *
  * See https://github.com/synthetos/TinyG/wiki/Jerk-Controlled-Motion-Explained
  */
-#define S_CURVE_ACCELERATION
+//#define S_CURVE_ACCELERATION
 
 //===========================================================================
 //============================= Z Probe Options =============================
@@ -1053,8 +997,6 @@
 #define Z_CLEARANCE_MULTI_PROBE     5 // Z Clearance between multiple probes
 //#define Z_AFTER_PROBING           5 // Z position after probing is done
 
-#define Z_HOMING_HEIGHT 0
-
 #define Z_PROBE_LOW_POINT          -2 // Farthest distance below the trigger-point to go before stopping
 
 // For M851 give a range for adjusting the Z probe offset
@@ -1127,7 +1069,7 @@
 
 // Invert the stepper direction. Change (or reverse the motor connector) if an axis goes the wrong way.
 #define INVERT_X_DIR false
-#define INVERT_Y_DIR false
+#define INVERT_Y_DIR true
 #define INVERT_Z_DIR false
 #if NON_E_AXES > 3
   #define INVERT_I_DIR false
@@ -1171,12 +1113,11 @@
     #endif
   #endif
 #endif
-
 // @section machine
 
 // The size of the print bed
-#define X_BED_SIZE 780
-#define Y_BED_SIZE 600
+#define X_BED_SIZE 200
+#define Y_BED_SIZE 200
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
 #define X_MIN_POS 0
@@ -1187,10 +1128,10 @@
 #define Z_MAX_POS 200
 #if NON_E_AXES > 3
   #define I_MIN_POS 0
-  #define I_MAX_POS 100
+  #define I_MAX_POS 50
   #if NON_E_AXES > 4
     #define J_MIN_POS 0
-    #define J_MAX_POS 100
+    #define J_MAX_POS 50
     #if NON_E_AXES > 5
       #define K_MIN_POS 0
       #define K_MAX_POS 50
@@ -1320,7 +1261,7 @@
  * Turn on with the command 'M111 S32'.
  * NOTE: Requires a lot of PROGMEM!
  */
-#define DEBUG_LEVELING_FEATURE
+//#define DEBUG_LEVELING_FEATURE
 
 #if ANY(MESH_BED_LEVELING, AUTO_BED_LEVELING_BILINEAR, AUTO_BED_LEVELING_UBL)
   // Gradually reduce leveling correction until a set height is reached,
@@ -1468,13 +1409,13 @@
 
 // Homing speeds (mm/m)
 #define HOMING_FEEDRATE_XY (50*60)
-#define HOMING_FEEDRATE_Z  (50*60)
+#define HOMING_FEEDRATE_Z  (4*60)
 #if NON_E_AXES > 3
-  #define HOMING_FEEDRATE_I (2*60)
+  #define HOMING_FEEDRATE_I (4*60)
   #if NON_E_AXES > 4
-    #define HOMING_FEEDRATE_J (2*60)
+    #define HOMING_FEEDRATE_J (4*60)
     #if NON_E_AXES > 5
-      #define HOMING_FEEDRATE_K (2*60)
+      #define HOMING_FEEDRATE_K (4*60)
     #endif
   #endif
 #endif
@@ -1545,7 +1486,6 @@
 
 // @section extras
 
-<<<<<<< Upstream, based on bf2_6axis_dev12
 /**
  * EEPROM
  *
@@ -1561,19 +1501,6 @@
 #if ENABLED(EEPROM_SETTINGS)
   //#define EEPROM_AUTO_INIT  // Init EEPROM automatically on any errors.
 #endif
-=======
-//
-// EEPROM
-//
-// The microcontroller can store settings in the EEPROM, e.g. max velocity...
-// M500 - stores parameters in EEPROM
-// M501 - reads parameters from EEPROM (if you need reset them after you changed them temporarily).
-// M502 - reverts to the default "factory settings".  You still need to store them in EEPROM afterwards if you want to.
-//
-#define EEPROM_SETTINGS // Enable for M500 and M501 commands
-//#define DISABLE_M503    // Saves ~2700 bytes of PROGMEM. Disable for release!
-#define EEPROM_CHITCHAT   // Give feedback on EEPROM commands. Disable to save PROGMEM.
->>>>>>> 8854c7d aditional axis LCD items
 
 //
 // Host Keepalive
@@ -1785,7 +1712,7 @@
  * you must uncomment the following option or it won't work.
  *
  */
-#define SDSUPPORT
+//#define SDSUPPORT
 
 /**
  * SD CARD: SPI SPEED
@@ -1842,7 +1769,7 @@
 //
 //  Set this option if CLOCKWISE causes values to DECREASE
 //
-#define REVERSE_ENCODER_DIRECTION
+//#define REVERSE_ENCODER_DIRECTION
 
 //
 // This option reverses the encoder direction for navigating LCD menus.
@@ -1865,7 +1792,7 @@
 //
 // Add individual axis homing items (Home X, Home Y, and Home Z) to the LCD menu.
 //
-#define INDIVIDUAL_AXIS_HOMING_MENU
+//#define INDIVIDUAL_AXIS_HOMING_MENU
 
 //
 // SPEAKER/BUZZER
@@ -1873,7 +1800,7 @@
 // If you have a speaker that can produce tones, enable it here.
 // By default Marlin assumes you have a buzzer with a fixed frequency.
 //
-#define SPEAKER
+//#define SPEAKER
 
 //
 // The duration and frequency for the UI feedback sound.
@@ -2036,7 +1963,7 @@
 // RepRapDiscount FULL GRAPHIC Smart Controller
 // http://reprap.org/wiki/RepRapDiscount_Full_Graphic_Smart_Controller
 //
-#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER
+//#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER
 
 //
 // ReprapWorld Graphical LCD

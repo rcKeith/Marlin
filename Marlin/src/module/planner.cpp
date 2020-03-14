@@ -2476,11 +2476,11 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
         delta_mm[Y_AXIS] * inverse_millimeters,
         delta_mm[Z_AXIS] * inverse_millimeters,
         #if NON_E_AXES > 3
-          delta_mm_cart[I_AXIS] * inverse_millimeters,
+          delta_mm[I_AXIS] * inverse_millimeters,
           #if NON_E_AXES > 4
-            delta_mm_cart[J_AXIS] * inverse_millimeters,
+            delta_mm[J_AXIS] * inverse_millimeters,
             #if NON_E_AXES > 5
-              delta_mm_cart[K_AXIS] * inverse_millimeters,
+              delta_mm[K_AXIS] * inverse_millimeters,
             #endif
           #endif
         #endif
@@ -2525,7 +2525,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
         NOLESS(junction_cos_theta, -0.999999f); // Check for numerical round-off to avoid divide by zero.
 
         // Convert delta vector to unit vector
-        float junction_unit_vec[XYZE] = {
+        float junction_unit_vec[NUM_AXIS] = {
           unit_vec[X_AXIS] - previous_unit_vec[X_AXIS],
           unit_vec[Y_AXIS] - previous_unit_vec[Y_AXIS],
           unit_vec[Z_AXIS] - previous_unit_vec[Z_AXIS],

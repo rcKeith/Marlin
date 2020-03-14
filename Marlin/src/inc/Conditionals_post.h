@@ -194,6 +194,34 @@
   #define Z_HOME_POS (Z_HOME_DIR < 0 ? Z_MIN_POS : Z_MAX_POS)
 #endif
 
+#if NON_E_AXES > 3
+  #ifdef MANUAL_I_HOME_POS
+    #define I_HOME_POS MANUAL_I_HOME_POS
+  #elif ENABLED(BED_CENTER_AT_0_0)
+    #define I_HOME_POS (I_HOME_DIR < 0 ? I_MIN_POS : I_MAX_POS)
+  #else
+    #define I_HOME_POS (I_HOME_DIR < 0 ? I_MIN_POS : I_MAX_POS)
+  #endif
+  #if NON_E_AXES > 4
+    #ifdef MANUAL_I_HOME_POS
+      #define J_HOME_POS MANUAL_J_HOME_POS
+    #elif ENABLED(BED_CENTER_AT_0_0)
+      #define J_HOME_POS (J_HOME_DIR < 0 ? J_MIN_POS : J_MAX_POS)
+    #else
+      #define J_HOME_POS (J_HOME_DIR < 0 ? J_MIN_POS : J_MAX_POS)
+    #endif
+    #if NON_E_AXES > 5
+      #ifdef MANUAL_K_HOME_POS
+        #define K_HOME_POS MANUAL_K_HOME_POS
+      #elif ENABLED(BED_CENTER_AT_0_0)
+        #define K_HOME_POS (K_HOME_DIR < 0 ? K_MIN_POS : K_MAX_POS)
+      #else
+        #define K_HOME_POS (K_HOME_DIR < 0 ? K_MIN_POS : K_MAX_POS)
+      #endif
+    #endif
+  #endif
+#endif
+
 /**
  * If DELTA_HEIGHT isn't defined use the old setting
  */
