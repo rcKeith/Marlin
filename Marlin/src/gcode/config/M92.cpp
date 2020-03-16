@@ -28,6 +28,15 @@ void report_M92(const bool echo=true, const int8_t e=-1) {
   SERIAL_ECHOPAIR(" M92 X", LINEAR_UNIT(planner.settings.axis_steps_per_mm[X_AXIS]));
   SERIAL_ECHOPAIR(" Y", LINEAR_UNIT(planner.settings.axis_steps_per_mm[Y_AXIS]));
   SERIAL_ECHOPAIR(" Z", LINEAR_UNIT(planner.settings.axis_steps_per_mm[Z_AXIS]));
+  #if NON_E_AXES > 3
+    SERIAL_ECHOPAIR(" I", LINEAR_UNIT(planner.settings.axis_steps_per_mm[I_AXIS]));
+    #if NON_E_AXES > 4
+      SERIAL_ECHOPAIR(" J", LINEAR_UNIT(planner.settings.axis_steps_per_mm[J_AXIS]));
+      #if NON_E_AXES > 5
+        SERIAL_ECHOPAIR(" K", LINEAR_UNIT(planner.settings.axis_steps_per_mm[K_AXIS]));
+      #endif
+    #endif
+  #endif
   #if DISABLED(DISTINCT_E_FACTORS)
     SERIAL_ECHOPAIR(" E", VOLUMETRIC_UNIT(planner.settings.axis_steps_per_mm[E_AXIS]));
   #endif

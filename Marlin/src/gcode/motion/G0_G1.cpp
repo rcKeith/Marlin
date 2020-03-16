@@ -42,7 +42,7 @@ extern float destination[NUM_AXIS];
 #endif
 
 /**
- * G0, G1: Coordinated movement of X Y Z E axes
+ * G0, G1: Coordinated movement of X Y Z [I [J [K]]] E axes
  */
 void GcodeSuite::G0_G1(
   #if IS_SCARA || defined(G0_FEEDRATE)
@@ -55,7 +55,17 @@ void GcodeSuite::G0_G1(
       && !axis_unhomed_error(
           (parser.seen('X') ? _BV(X_AXIS) : 0)
         | (parser.seen('Y') ? _BV(Y_AXIS) : 0)
-        | (parser.seen('Z') ? _BV(Z_AXIS) : 0) )
+        | (parser.seen('Z') ? _BV(Z_AXIS) : 0)
+        #if NON_E_AXES > 3
+          | (parser.seen('I') ? _BV(I_AXIS) : 0)
+          #if NON_E_AXES > 4
+            | (parser.seen('J') ? _BV(J_AXIS) : 0)
+            #if NON_E_AXES > 5
+              | (parser.seen('K') ? _BV(K_AXIS) : 0)
+            #endif
+          #endif
+        #endif
+      )
     #endif
   ) {
 
@@ -69,7 +79,7 @@ void GcodeSuite::G0_G1(
       #endif
     #endif
 
-    get_destination_from_command(); // For X Y Z E F
+    get_destination_from_command(); // For X Y Z [I [J [K]]] E F
 
     #ifdef G0_FEEDRATE
       if (fast_move) {

@@ -221,11 +221,11 @@ void report_current_position() {
   SERIAL_ECHOPAIR(" Y:", LOGICAL_Y_POSITION(current_position[Y_AXIS]));
   SERIAL_ECHOPAIR(" Z:", LOGICAL_Z_POSITION(current_position[Z_AXIS]));
   #if NON_E_AXES > 3
-    SERIAL_ECHOPAIR(" I:", current_position[I_AXIS]);
+    SERIAL_ECHOPAIR(" I:", LOGICAL_I_POSITION(current_position[I_AXIS]));
     #if NON_E_AXES > 4
-      SERIAL_ECHOPAIR(" J:", current_position[J_AXIS]);
+      SERIAL_ECHOPAIR(" J:", LOGICAL_J_POSITION(current_position[J_AXIS]));
       #if NON_E_AXES > 5
-        SERIAL_ECHOPAIR(" K:", current_position[K_AXIS]);
+        SERIAL_ECHOPAIR(" K:", LOGICAL_K_POSITION(current_position[K_AXIS]));
       #endif
     #endif
   #endif
@@ -400,9 +400,9 @@ void do_blocking_move_to(const float rx, const float ry, const float rz, const f
     #if NON_E_AXES > 3
       , 0
       #if NON_E_AXES > 4
-		, 0
+        , 0
         #if NON_E_AXES > 5
-		  , 0
+          , 0
         #endif
       #endif
     #endif
@@ -849,11 +849,11 @@ void restore_feedrate_and_scaling() {
       // Remaining cartesian distances
       const float zdiff = destination[Z_AXIS] - current_position[Z_AXIS],
         #if NON_E_AXES > 3
-    	  idiff = destination[I_AXIS] - current_position[I_AXIS];
+          idiff = destination[I_AXIS] - current_position[I_AXIS],
           #if NON_E_AXES > 4
-  		    jdiff = destination[J_AXIS] - current_position[J_AXIS];
+            jdiff = destination[J_AXIS] - current_position[J_AXIS],
             #if NON_E_AXES > 5
-  		      kdiff = destination[K_AXIS] - current_position[K_AXIS];
+              kdiff = destination[K_AXIS] - current_position[K_AXIS],
             #endif
           #endif
         #endif

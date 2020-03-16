@@ -2594,9 +2594,9 @@ void Stepper::report_positions() {
           enable_Y();
           enable_Z();
           #if NON_E_AXES > 3
-		    enable_I();
+            enable_I();
             #if NON_E_AXES > 4
-		      enable_J();
+              enable_J();
               #if NON_E_AXES > 5
                 enable_K();
               #endif
@@ -2611,9 +2611,9 @@ void Stepper::report_positions() {
                         old_z_dir_pin = Z_DIR_READ();
           #if NON_E_AXES > 3
             const uint8_t old_i_dir_pin = I_DIR_READ;
-            #if NON_E_AXES > 3
+            #if NON_E_AXES > 4
               const uint8_t old_j_dir_pin = J_DIR_READ;
-              #if NON_E_AXES > 3
+              #if NON_E_AXES > 5
                 const uint8_t old_k_dir_pin = K_DIR_READ;
               #endif
             #endif
@@ -2623,9 +2623,9 @@ void Stepper::report_positions() {
           Z_DIR_WRITE(INVERT_Z_DIR ^ z_direction);
           #if NON_E_AXES > 3
             I_DIR_WRITE(INVERT_I_DIR ^ z_direction);
-            #if NON_E_AXES > 3
+            #if NON_E_AXES > 4
               J_DIR_WRITE(INVERT_J_DIR ^ z_direction);
-              #if NON_E_AXES > 3
+              #if NON_E_AXES > 5
                 K_DIR_WRITE(INVERT_K_DIR ^ z_direction);
               #endif
             #endif

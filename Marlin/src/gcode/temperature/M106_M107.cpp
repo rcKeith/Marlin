@@ -60,6 +60,9 @@ void GcodeSuite::M106() {
     #endif
     uint16_t d = parser.seen('A') ? thermalManager.fan_speed[active_extruder] : 255;
     uint16_t s = parser.ushortval('S', d);
+    #if ENABLED(FOAMCUTTER_XY_IJ)
+      s = s*2.55; // Get command in % of max heat.
+    #endif
     NOMORE(s, 255U);
 
     thermalManager.set_fan_speed(p, s);

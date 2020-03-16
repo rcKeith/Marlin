@@ -57,8 +57,13 @@
 #endif
 
 #define X_LABEL_POS      3
-#define X_VALUE_POS     11
-#define XYZ_SPACING     37
+#if ENABLED(FOAMCUTTER_XY_IJ)
+  #define X_VALUE_POS     3
+  #define XYZ_SPACING     33
+#else
+  #define X_VALUE_POS     11
+  #define XYZ_SPACING     37
+#endif
 #define XYZ_BASELINE    (30 + INFO_FONT_ASCENT)
 #define EXTRAS_BASELINE (40 + INFO_FONT_ASCENT)
 #define STATUS_BASELINE (LCD_PIXEL_HEIGHT - INFO_FONT_DESCENT)
@@ -294,25 +299,54 @@ FORCE_INLINE void _draw_heater_status(const heater_ind_t heater, const bool blin
 // Homed but unknown... '123' <-> '   '.
 // Homed and known, display constantly.
 //
-FORCE_INLINE void _draw_axis_value(const AxisEnum axis, const char *value, const bool blink) {
-  const uint8_t offs = (XYZ_SPACING) * axis;
-  lcd_put_wchar(X_LABEL_POS + offs, XYZ_BASELINE, 'X' + axis);
-  lcd_moveto(X_VALUE_POS + offs, XYZ_BASELINE);
-  if (blink)
-    lcd_put_u8str(value);
-  else {
-    if (!TEST(axis_homed, axis))
-      while (const char c = *value++) lcd_put_wchar(c <= '.' ? c : '?');
+
+#if ENABLED(FOAMCUTTER_XY_IJ)
+  void _draw_axis_value(const AxisEnum axis, const char *value, const bool blink) {
+    const uint8_t offs = (XYZ_SPACING) * axis;
+    if (axis <2) {
+      lcd_put_wchar(X_LABEL_POS + offs, XYZ_BASELINE, 'X' + axis);
+      lcd_moveto(X_VALUE_POS + offs, XYZ_BASELINE);
+    }
     else {
-      #if NONE(HOME_AFTER_DEACTIVATE, DISABLE_REDUCED_ACCURACY_WARNING)
-        if (!TEST(axis_known_position, axis))
-          lcd_put_u8str_P(axis == Z_AXIS ? PSTR("       ") : PSTR("    "));
-        else
-      #endif
-          lcd_put_u8str(value);
+      lcd_put_wchar(X_LABEL_POS + offs - (XYZ_SPACING), XYZ_BASELINE, 'I' + (axis-3)); // skipping Z for foam cutter
+      lcd_moveto(X_VALUE_POS + offs - (XYZ_SPACING), XYZ_BASELINE);
+    }
+    if (blink)
+      lcd_put_u8str(value);
+    else {
+      if (!TEST(axis_homed, axis))
+        while (const char c = *value++) lcd_put_wchar(c <= '.' ? c : '?');
+      else {
+        #if NONE(HOME_AFTER_DEACTIVATE, DISABLE_REDUCED_ACCURACY_WARNING)
+          if (!TEST(axis_known_position, axis))
+            lcd_put_u8str_P(axis == Z_AXIS ? PSTR("       ") : PSTR("    "));
+          else
+        #endif
+        lcd_put_u8str(value);
+      }
     }
   }
-}
+#else
+  FORCE_INLINE void _draw_axis_value(const AxisEnum axis, const char *value, const bool blink) {
+    const uint8_t offs = (XYZ_SPACING) * axis;
+    lcd_put_wchar(X_LABEL_POS + offs, XYZ_BASELINE, 'X' + axis);
+    lcd_moveto(X_VALUE_POS + offs, XYZ_BASELINE);
+    if (blink)
+      lcd_put_u8str(value);
+    else {
+      if (!TEST(axis_homed, axis))
+        while (const char c = *value++) lcd_put_wchar(c <= '.' ? c : '?');
+      else {
+        #if NONE(HOME_AFTER_DEACTIVATE, DISABLE_REDUCED_ACCURACY_WARNING)
+          if (!TEST(axis_known_position, axis))
+            lcd_put_u8str_P(axis == Z_AXIS ? PSTR("       ") : PSTR("    "));
+          else
+        #endif
+        lcd_put_u8str(value);
+      }
+    }
+  }
+#endif
 
 #if ENABLED(MARLIN_DEV_MODE)
   uint16_t count_renders = 0;
@@ -325,7 +359,17 @@ void MarlinUI::draw_status_screen() {
     if (first_page) count_renders++;
   #endif
 
-  static char xstring[5], ystring[5], zstring[8];
+  static char xstring[5], ystring[5], zstring[8]
+  #if NON_E_AXES > 3
+    ,istring[5]
+    #if NON_E_AXES > 4
+      ,jstring[5]
+      #if NON_E_AXES > 5
+        ,kstring[5]
+      #endif
+    #endif
+  #endif
+  ;
   #if ENABLED(FILAMENT_LCD_DISPLAY)
     static char wstring[5], mstring[4];
   #endif
@@ -348,6 +392,16 @@ void MarlinUI::draw_status_screen() {
     strcpy(xstring, ftostr4sign(LOGICAL_X_POSITION(current_position[X_AXIS])));
     strcpy(ystring, ftostr4sign(LOGICAL_Y_POSITION(current_position[Y_AXIS])));
     strcpy(zstring, ftostr52sp( LOGICAL_Z_POSITION(current_position[Z_AXIS])));
+    #if NON_E_AXES > 3
+      strcpy(istring, ftostr4sign(LOGICAL_I_POSITION(current_position[I_AXIS])));
+      #if NON_E_AXES > 4
+        strcpy(jstring, ftostr4sign(LOGICAL_J_POSITION(current_position[J_AXIS])));
+        #if NON_E_AXES > 5
+          strcpy(kstring, ftostr4sign(LOGICAL_K_POSITION(current_position[K_AXIS])));
+        #endif
+      #endif
+    #endif
+
     #if ENABLED(FILAMENT_LCD_DISPLAY)
       strcpy(wstring, ftostr12ns(filwidth.measured_mm));
       strcpy(mstring, i16tostr3(planner.volumetric_percent(parser.volumetric_enabled)));
@@ -590,7 +644,12 @@ void MarlinUI::draw_status_screen() {
 
       #endif
 
-      _draw_axis_value(Z_AXIS, zstring, blink);
+      #if ENABLED(FOAMCUTTER_XY_IJ)
+        _draw_axis_value(I_AXIS, istring, blink);
+        _draw_axis_value(J_AXIS, jstring, blink);
+      #else
+        _draw_axis_value(Z_AXIS, zstring, blink); // TODO (DerAndere): Add support for NON_E_AXES > 3
+      #endif
 
       #if DISABLED(XYZ_HOLLOW_FRAME)
         u8g.setColorIndex(1); // black on white

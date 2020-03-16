@@ -37,7 +37,7 @@
  */
 
 // Change EEPROM version if the structure changes
-#define EEPROM_VERSION "V70"
+#define EEPROM_VERSION "V99"
 #define EEPROM_OFFSET 100
 
 // Check the integrity of data offsets.
@@ -141,10 +141,10 @@ typedef struct SettingsDataStruct {
 
   planner_settings_t planner_settings;
 
-  float planner_max_jerk[NUM_AXIS],                         // M205 XYZE  planner.max_jerk[XYZE]
+  float planner_max_jerk[NUM_AXIS],                         // M205 XYZ[I[J[K]]]E  planner.max_jerk[XYZ(IJK)E]
         planner_junction_deviation_mm;                  // M205 J     planner.junction_deviation_mm
 
-  float home_offset[NON_E_AXES];                               // M206 XYZ / M665 TPZ
+  float home_offset[NON_E_AXES];                               // M206 XYZ[I[J[K]]] / M665 TPZ
 
   #if HAS_HOTEND_OFFSET
     float hotend_offset[XYZ][HOTENDS - 1];              // M218 XYZ
@@ -2233,16 +2233,18 @@ void MarlinSettings::reset() {
     planner.max_jerk[X_AXIS] = DEFAULT_XJERK;
     planner.max_jerk[Y_AXIS] = DEFAULT_YJERK;
     planner.max_jerk[Z_AXIS] = DEFAULT_ZJERK;
-    #if !BOTH(JUNCTION_DEVIATION, LIN_ADVANCE)
-      #if NON_E_AXES > 3
-        planner.max_jerk[I_AXIS] = DEFAULT_IJERK;
-        #if NON_E_AXES > 4
-          planner.max_jerk[J_AXIS] = DEFAULT_JJERK;
-          #if NON_E_AXES > 5
-            planner.max_jerk[K_AXIS] = DEFAULT_KJERK;
-          #endif
+
+    #if NON_E_AXES > 3
+      planner.max_jerk[I_AXIS] = DEFAULT_IJERK;
+      #if NON_E_AXES > 4
+        planner.max_jerk[J_AXIS] = DEFAULT_JJERK;
+        #if NON_E_AXES > 5
+          planner.max_jerk[K_AXIS] = DEFAULT_KJERK;
         #endif
       #endif
+    #endif
+    #if !BOTH(JUNCTION_DEVIATION, LIN_ADVANCE)
+      planner.max_jerk[E_AXIS] = DEFAULT_EJERK;
     #endif
   #endif
 
