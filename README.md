@@ -1,9 +1,11 @@
-﻿# Marlin 3D Printer Firmware
+﻿# Marlin2ForPipetBot 3D Printer and Lab Robot CNC Firmware
  
-Additional documentation can be found at the 
+Additional documentation can be found in the 
 repository [DerAndere1/Marlin at https://github.com](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot) 
 or on the [PipetBot-A8 project homepage](https://it-by-derandere.blogspot.com/p/pipetbot-a8.html) 
 that is part of the Blog [IT! by DerAndere](https://it-by-derandere.blogspot.com/). 
+For CNC machines with additional axes I, (J, (K)) that drive pumps or
+other tools. 
 Please test this firmware and let us know if it misbehaves in any way. 
 Volunteers are standing by!
 
@@ -56,8 +58,23 @@ Proposed patches should be submitted as a Pull Request against the [Marlin2ForPi
 
 ### [RepRap.org Wiki Page](http://reprap.org/wiki/Marlin)
 
-Marlin2ForPipetBot currently supports only a subset of the Marlin G-code dialect:
+Marlin2ForPipetBot supports six non-extruder axes plus extruders (XYZIJK + E). 
+Currently, only a subset of the Marlin G-code dialect is supported:
 G1, G28, G90, G91, G92 (partially), M17, M18, M43, M85, M114 (partially), M206 (partially), M500, M501, M502.
+
+Axis names are:
+
+| NON_E_AXES | Axis codes        |
+|------------|-------------------|
+|           3|X, Y, Z, E         |
+|           4|X, Y, Z, I, E      |
+|           5|X, Y, Z, I, J, E   |
+|           6|X, Y, Z, I, J, K, E|
+
+Example syntax for movement (G-code G1) with NON_E_AXES 6: 
+```
+G1 [Xx.xxxx] [Yy.yyyy] [Zz.zzzz] [Ii.iiii] [Jj.jjjj] [Kk.kkkk] [Ee.eeee] [Ff.ffff]
+```
 
 ## Credits
 
