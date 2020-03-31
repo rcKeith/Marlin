@@ -33,10 +33,19 @@
  * M17: Enable stepper motors
  */
 void GcodeSuite::M17() {
-  if (parser.seen("XYZE")) {
+  if (parser.seen("XYZIJKE")) {
     if (parser.seen('X')) enable_X();
     if (parser.seen('Y')) enable_Y();
     if (parser.seen('Z')) enable_Z();
+    #if NON_E_AXES > 3
+      if (parser.seen('I')) enable_I();
+      #if NON_E_AXES > 4
+        if (parser.seen('J')) enable_J();
+        #if NON_E_AXES > 5
+          if (parser.seen('K')) enable_K();
+        #endif
+      #endif
+    #endif
     #if HAS_E_STEPPER_ENABLE
       if (parser.seen('E')) enable_e_steppers();
     #endif
@@ -55,11 +64,20 @@ void GcodeSuite::M18_M84() {
     stepper_inactive_time = parser.value_millis_from_seconds();
   }
   else {
-    if (parser.seen("XYZE")) {
+    if (parser.seen("XYZIJKE")) {
       planner.synchronize();
       if (parser.seen('X')) disable_X();
       if (parser.seen('Y')) disable_Y();
       if (parser.seen('Z')) disable_Z();
+      #if NON_E_AXES > 3
+        if (parser.seen('I')) disable_I();
+        #if NON_E_AXES > 4
+          if (parser.seen('J')) disable_J();
+          #if NON_E_AXES > 5
+            if (parser.seen('K')) disable_K();
+          #endif
+        #endif
+      #endif
       #if HAS_E_STEPPER_ENABLE
         if (parser.seen('E')) disable_e_steppers();
       #endif

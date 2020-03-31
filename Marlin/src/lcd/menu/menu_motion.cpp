@@ -113,6 +113,37 @@ static void _lcd_move_xyz(PGM_P name, AxisEnum axis) {
           #if ENABLED(MAX_SOFTWARE_ENDSTOP_Z)
             max = soft_endstop[Z_AXIS].max;
           #endif
+          break;
+        #if NON_E_AXES > 3
+          case I_AXIS:
+            #if ENABLED(MIN_SOFTWARE_ENDSTOP_I)
+              min = soft_endstop[I_AXIS].min;
+            #endif
+            #if ENABLED(MAX_SOFTWARE_ENDSTOP_I)
+              max = soft_endstop[I_AXIS].max;
+            #endif
+            break;
+          #if NON_E_AXES > 4
+            case J_AXIS:
+              #if ENABLED(MIN_SOFTWARE_ENDSTOP_J)
+                min = soft_endstop[J_AXIS].min;
+              #endif
+              #if ENABLED(MAX_SOFTWARE_ENDSTOP_J)
+                max = soft_endstop[J_AXIS].max;
+              #endif
+              break;
+            #if NON_E_AXES > 5
+              case K_AXIS:
+                #if ENABLED(MIN_SOFTWARE_ENDSTOP_K)
+                  min = soft_endstop[K_AXIS].min;
+                #endif
+                #if ENABLED(MAX_SOFTWARE_ENDSTOP_K)
+                  max = soft_endstop[K_AXIS].max;
+                #endif
+                break;
+            #endif
+          #endif
+        #endif
         default: break;
       }
     #endif // HAS_SOFTWARE_ENDSTOPS
@@ -158,17 +189,15 @@ static void _lcd_move_xyz(PGM_P name, AxisEnum axis) {
 void lcd_move_x() { _lcd_move_xyz(PSTR(MSG_MOVE_X), X_AXIS); }
 void lcd_move_y() { _lcd_move_xyz(PSTR(MSG_MOVE_Y), Y_AXIS); }
 void lcd_move_z() { _lcd_move_xyz(PSTR(MSG_MOVE_Z), Z_AXIS); }
-
 #if NON_E_AXES > 3
-      void lcd_move_i() { _lcd_move_xyz(PSTR(MSG_MOVE_I), I_AXIS); }
-      #if NON_E_AXES > 4
-        void lcd_move_j() { _lcd_move_xyz(PSTR(MSG_MOVE_J), J_AXIS); }
-        #if NON_E_AXES > 5
-          void lcd_move_k() { _lcd_move_xyz(PSTR(MSG_MOVE_K), K_AXIS); }
-        #endif
-      #endif
+  void lcd_move_i() { _lcd_move_xyz(PSTR(MSG_MOVE_I), I_AXIS); }
+  #if NON_E_AXES > 4
+    void lcd_move_j() { _lcd_move_xyz(PSTR(MSG_MOVE_J), J_AXIS); }
+    #if NON_E_AXES > 5
+      void lcd_move_k() { _lcd_move_xyz(PSTR(MSG_MOVE_K), K_AXIS); }
     #endif
-
+  #endif
+#endif
 
 #if E_MANUAL
 
@@ -276,6 +305,15 @@ void _menu_move_distance(const AxisEnum axis, const screenFunc_t func, const int
       case X_AXIS: STATIC_ITEM(MSG_MOVE_X, true, true); break;
       case Y_AXIS: STATIC_ITEM(MSG_MOVE_Y, true, true); break;
       case Z_AXIS: STATIC_ITEM(MSG_MOVE_Z, true, true); break;
+      #if NON_E_AXES > 3
+        case I_AXIS: STATIC_ITEM(MSG_MOVE_I, true, true); break;
+        #if NON_E_AXES > 4
+          case J_AXIS: STATIC_ITEM(MSG_MOVE_J, true, true); break;
+          #if NON_E_AXES > 5
+            case K_AXIS: STATIC_ITEM(MSG_MOVE_K, true, true); break;
+          #endif
+        #endif
+      #endif
       default:
         #if ENABLED(MANUAL_E_MOVES_RELATIVE)
           manual_move_e_origin = current_position[E_AXIS];

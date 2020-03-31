@@ -47,15 +47,24 @@
     SERIAL_EOL();
   }
 
-  inline void report_xyz(const float pos[]) { report_xyze(pos, 3); }
+  inline void report_xyz(const float pos[]) { report_xyze(pos, NON_E_AXES); }
 
   void report_current_position_detail() {
 
     SERIAL_ECHOPGM("\nLogical:");
-    const float logical[XYZ] = {
+    const float logical[NON_E_AXES] = {
       LOGICAL_X_POSITION(current_position[X_AXIS]),
       LOGICAL_Y_POSITION(current_position[Y_AXIS]),
       LOGICAL_Z_POSITION(current_position[Z_AXIS])
+      #if NON_E_AXES > 3
+        , LOGICAL_I_POSITION(current_position[I_AXIS])
+        #if NON_E_AXES > 4
+          , LOGICAL_J_POSITION(current_position[J_AXIS])
+          #if NON_E_AXES > 5
+            , LOGICAL_K_POSITION(current_position[K_AXIS])
+          #endif
+        #endif
+      #endif
     };
     report_xyz(logical);
 
