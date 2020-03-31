@@ -42,7 +42,7 @@
 
 // Check the integrity of data offsets.
 // Can be disabled for production build.
-#define DEBUG_EEPROM_READWRITE
+//#define DEBUG_EEPROM_READWRITE
 
 #include "configuration_store.h"
 
@@ -176,7 +176,7 @@ typedef struct SettingsDataStruct {
   // HAS_BED_PROBE
   //
 
-  float probe_offset[XYZ];
+  float zprobe_zoffset;
 
   //
   // ABL_PLANAR
@@ -613,8 +613,12 @@ void MarlinSettings::postprocess() {
     // Probe Z Offset
     //
     {
-      _FIELD_TEST(probe_offset[Z_AXIS]);
-      EEPROM_WRITE(probe_offset);
+      _FIELD_TEST(zprobe_zoffset);
+
+      #if !HAS_BED_PROBE
+        const float zprobe_zoffset = 0;
+      #endif
+      EEPROM_WRITE(zprobe_zoffset);
     }
 
     //
@@ -1415,14 +1419,12 @@ void MarlinSettings::postprocess() {
       // Probe Z Offset
       //
       {
-        _FIELD_TEST(probe_offset[Z_AXIS]);
+        _FIELD_TEST(zprobe_zoffset);
 
-        #if HAS_BED_PROBE
-          float (&zpo)[XYZ] = probe_offset;
-        #else
-          float zpo[XYZ];
+        #if !HAS_BED_PROBE
+          float zprobe_zoffset;
         #endif
-        EEPROM_READ(zpo);
+        EEPROM_READ(zprobe_zoffset);
       }
 
       //
@@ -2327,12 +2329,7 @@ void MarlinSettings::reset() {
   #endif
 
   #if HAS_BED_PROBE
-    #ifndef NOZZLE_TO_PROBE_OFFSET
-      #define NOZZLE_TO_PROBE_OFFSET { 0, 0, 0 }
-    #endif
-    constexpr float dpo[XYZ] = NOZZLE_TO_PROBE_OFFSET;
-    static_assert(COUNT(dpo) == 3, "NOZZLE_TO_PROBE_OFFSET must contain offsets for X, Y, and Z.");
-    LOOP_XYZ(a) probe_offset[a] = dpo[a];
+    zprobe_zoffset = Z_PROBE_OFFSET_FROM_EXTRUDER;
   #endif
 
   //
@@ -3108,9 +3105,7 @@ void MarlinSettings::reset() {
         say_units(true);
       }
       CONFIG_ECHO_START();
-      SERIAL_ECHOLNPAIR("  M851 X", LINEAR_UNIT(probe_offset[X_AXIS]),
-                              " Y", LINEAR_UNIT(probe_offset[Y_AXIS]),
-                              " Z", LINEAR_UNIT(probe_offset[Z_AXIS]));
+      SERIAL_ECHOLNPAIR("  M851 Z", LINEAR_UNIT(zprobe_zoffset));
     #endif
 
     /**
