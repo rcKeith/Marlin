@@ -145,7 +145,10 @@
  * not supported. Can be used for cartesian machines where additional axes
  * I, J, K do not affect the positioning of the main tool. NON_E_AXES > 3
  * requires definition of {I, J, K}_STEP_PIN, {I, J, K}_ENABLE_PIN,
- * {I, J, K}_DIR_PIN, {I, J, K}_STOP_PIN, USE_{I, J, K}[MIN || MAX]_PLUG.
+ * {I, J, K}_DIR_PIN, {I, J, K}_STOP_PIN, USE_{I, J, K}[MIN || MAX]_PLUG and
+ * definition of the respective parameters of DEFAULT_AXIS_STEPS_PER_UNIT,
+ * DEFAULT_MAX_FEEDRATE, DEFAULT_MAX_ACCELERATION, AXIS_RELATIVE_MODES,
+ * MICROSTEP_MODES and MANUAL_FEEDRATE.
  */
 #define NON_E_AXES 4
 
@@ -755,7 +758,7 @@
 /**
  * Default Axis Steps Per Unit (steps/mm)
  * Override with M92
- *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4[, E5]]]]]
+ *                                      X, Y, Z, [I ,[J ,[K ,]]] E0 [, E1[, E2[, E3[, E4[, E5]]]]]
  */
 #define DEFAULT_AXIS_STEPS_PER_UNIT   { 100, 100, 400, 400, 400 }
 
