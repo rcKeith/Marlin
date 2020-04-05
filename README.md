@@ -3,9 +3,9 @@
 Additional documentation can be found in the 
 repository [DerAndere1/Marlin at https://github.com](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot) 
 or on the [PipetBot-A8 project homepage](https://it-by-derandere.blogspot.com/p/pipetbot-a8.html) 
-that is part of the Blog [IT! by DerAndere](https://it-by-derandere.blogspot.com/). 
-For CNC machines with additional axes I, (J, (K)) that drive pumps or
-other tools. 
+that is part of the blog [IT! by DerAndere](https://it-by-derandere.blogspot.com/). 
+For CNC machines with additional axes I, (J, (K)) that drive pumps or other tools:
+lab robots (liquid handling robots, "pipetting robots"). 
 Please test this firmware and let us know if it misbehaves in any way. 
 Volunteers are standing by!
 
@@ -13,9 +13,31 @@ Volunteers are standing by!
 
 __Not for production use. Use with caution!__
 
-Marlin2forPipetBot is a branch of the Marlin fork by DerAndere (based on https://github.com/MarlinFirmware/Marlin/commit/ee7558a6228747a7502ab50e2817234fb8a6feb4 ). This branch is for use with cartesian robots (also known as lab robots, liquid handling robots or pipetting robots).
+Marlin2forPipetBot is a branch of the Marlin fork by DerAndere (based on 
+https://github.com/MarlinFirmware/Marlin/commit/ee7558a6228747a7502ab50e2817234fb8a6feb4 ). 
 
-This branch is for patches to the latest Marlin2ForPipetBot release version
+This branch is for patches to the latest Marlin2ForPipetBot release version.
+
+Marlin2ForPipetBot supports up to six non-extruder axes (NON_E_AXES) plus 
+extruders (XYZIJK + E). 
+Currently, only a subset of the Marlin G-code dialect is supported:
+
+- G1, G28, G90, G91, G92 (partially) 
+- M17, M18, M43, M85, M114 (partially), M206 (partially), M500, M501, M502
+
+Axis names are:
+
+| NON_E_AXES | Axis codes        |
+|------------|-------------------|
+|           3|X, Y, Z, E         |
+|           4|X, Y, Z, I, E      |
+|           5|X, Y, Z, I, J, E   |
+|           6|X, Y, Z, I, J, K, E|
+
+Example syntax for movement (G-code G1) with NON_E_AXES 6: 
+```
+G1 [Xx.xxxx] [Yy.yyyy] [Zz.zzzz] [Ii.iiii] [Jj.jjjj] [Kk.kkkk] [Ee.eeee] [Ff.ffff]
+```
 
 ## Building Marlin2ForPipetBot
 
@@ -57,24 +79,6 @@ Proposed patches should be submitted as a Pull Request against the [Marlin2ForPi
 - Please submit your questions and concerns to the [Issue Queue](https://github.com/DerAndere1/Marlin/issues).
 
 ### [RepRap.org Wiki Page](http://reprap.org/wiki/Marlin)
-
-Marlin2ForPipetBot supports six non-extruder axes plus extruders (XYZIJK + E). 
-Currently, only a subset of the Marlin G-code dialect is supported:
-G1, G28, G90, G91, G92 (partially), M17, M18, M43, M85, M114 (partially), M206 (partially), M500, M501, M502.
-
-Axis names are:
-
-| NON_E_AXES | Axis codes        |
-|------------|-------------------|
-|           3|X, Y, Z, E         |
-|           4|X, Y, Z, I, E      |
-|           5|X, Y, Z, I, J, E   |
-|           6|X, Y, Z, I, J, K, E|
-
-Example syntax for movement (G-code G1) with NON_E_AXES 6: 
-```
-G1 [Xx.xxxx] [Yy.yyyy] [Zz.zzzz] [Ii.iiii] [Jj.jjjj] [Kk.kkkk] [Ee.eeee] [Ff.ffff]
-```
 
 ## Credits
 
