@@ -94,6 +94,8 @@ The current Marlin dev team consists of:
 Marlin2ForPipetBot is modified by:
 
  - DerAndere [[@DerAndere1](https://github.com/DerAndere1)] - Germany
+ - Garbriel Beraldo [@GabrielBeraldo](https://github.com/GabrielBeraldo)] - Brasil
+ - Olivier Briand [@hobiseven](https://github.com/hobiseven)] - Undisclosed
 
 ## License
 
