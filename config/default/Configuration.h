@@ -68,6 +68,23 @@
 // config/examples/SCARA and customize for your machine.
 //
 
+//===========================================================================
+//========================= ASYNC_SECONDARY_AXES ============================
+//===========================================================================
+// For a CNC machine with NON_E_AXES > 3 where only primary axes XYZ are
+// coordinated. Optional additional axes I(, J(, K)) are uncoordinated
+// (asynchronous). Disable for coordinated movement of all axes.
+//
+//#define ASYNC_SECONDARY_AXES
+
+//===========================================================================
+//=========================== FOAMCUTTER_XY_IJ ==============================
+//===========================================================================
+// For a hot wire cutter where the hight of the two wire ends are controlled by
+// axes I, J (parallel axes in z direction).
+//
+//#define FOAMCUTTER_XY_IJ
+
 // @section info
 
 // Author info of this build printed to the host during boot and M115
@@ -141,14 +158,12 @@
 
 /**
  * This defines the number of axes that are not used for extruders (axes that
- * benefit from endstops and homing). Non-cartesian kinematics are currently
- * not supported. Can be used for cartesian machines where additional axes
- * I, J, K do not affect the positioning of the main tool. NON_E_AXES > 3
- * requires definition of {I, J, K}_STEP_PIN, {I, J, K}_ENABLE_PIN,
- * {I, J, K}_DIR_PIN, {I, J, K}_STOP_PIN, USE_{I, J, K}[MIN || MAX]_PLUG and
- * definition of the respective parameters of DEFAULT_AXIS_STEPS_PER_UNIT,
- * DEFAULT_MAX_FEEDRATE, DEFAULT_MAX_ACCELERATION, AXIS_RELATIVE_MODES,
- * MICROSTEP_MODES and MANUAL_FEEDRATE.
+ * benefit from endstops and homing). NON_E_AXES > 3 requires definition of
+ * {I, J, K}_STEP_PIN, {I, J, K}_ENABLE_PIN, {I, J, K}_DIR_PIN,
+ * {I, J, K}_STOP_PIN, USE_{I, J, K}[MIN || MAX]_PLUG and definition of the
+ * respective parameters of DEFAULT_AXIS_STEPS_PER_UNIT, DEFAULT_MAX_FEEDRATE,
+ * DEFAULT_MAX_ACCELERATION, AXIS_RELATIVE_MODES, MICROSTEP_MODES and
+ * MANUAL_FEEDRATE.
  */
 #define NON_E_AXES 3
 

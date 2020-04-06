@@ -1914,9 +1914,16 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
               #endif
             #endif
           #endif
-          
+
+       #elif defined(ASYNC_SECONDARY_AXES)
+         // XYZ vector magnitude. If one of the secondary axes IJK moves further
+         // than the XYZ vector magnitude, take the largest single-axis move, instead.
+         sq(delta_mm[X_AXIS]) + sq(delta_mm[Y_AXIS]) + sq(delta_mm[Z_AXIS]) > _MAX(sq(delta_mm[I_AXIS]), sq(delta_mm[J_AXIS]), sq(delta_mm[K_AXIS]))
+           ? sq(delta_mm[X_AXIS]) + sq(delta_mm[Y_AXIS]) + sq(delta_mm[Z_AXIS])
+           : _MAX(sq(delta_mm[I_AXIS]), sq(delta_mm[J_AXIS]), sq(delta_mm[K_AXIS]));
+
         #elif defined(FOAMCUTTER_XY_IJ)
-          // return the largest distance move from either X/Y or I/J plane
+          // largest distance from either X/Y or I/J plane
           sq(delta_mm[X_AXIS]) + sq(delta_mm[Y_AXIS]) > sq(delta_mm[I_AXIS]) + sq(delta_mm[J_AXIS])
             ? sq(delta_mm[X_AXIS]) + sq(delta_mm[Y_AXIS])
             : sq(delta_mm[I_AXIS]) + sq(delta_mm[J_AXIS]);
