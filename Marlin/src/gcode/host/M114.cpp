@@ -131,6 +131,21 @@
       #if AXIS_DRIVER_TYPE_Z3(L6470)
         REPORT_ABSOLUTE_POS(Z3);
       #endif
+      #if NON_E_AXES > 3
+        #if AXIS_DRIVER_TYPE_I(L6470)
+          REPORT_ABSOLUTE_POS(I);
+        #endif
+        #if NON_E_AXES > 4
+          #if AXIS_DRIVER_TYPE_J(L6470)
+            REPORT_ABSOLUTE_POS(J);
+          #endif
+          #if NON_E_AXES > 5
+            #if AXIS_DRIVER_TYPE_K(L6470)
+              REPORT_ABSOLUTE_POS(K);
+            #endif
+          #endif
+        #endif
+      #endif
       #if AXIS_DRIVER_TYPE_E0(L6470)
         REPORT_ABSOLUTE_POS(E0);
       #endif
@@ -153,7 +168,7 @@
     #endif // HAS_DRIVER(L6470)
 
     SERIAL_ECHOPGM("Stepper:");
-    LOOP_XYZE(i) {
+    LOOP_NUM_AXIS(i) {
       SERIAL_CHAR(' ');
       SERIAL_CHAR(axis_codes[i]);
       SERIAL_CHAR(':');

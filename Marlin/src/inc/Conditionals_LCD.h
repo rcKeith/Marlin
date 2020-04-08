@@ -553,6 +553,21 @@
 #ifndef INVERT_Z_DIR
   #define INVERT_Z_DIR false
 #endif
+#if NON_E_AXES > 3
+  #ifndef INVERT_I_DIR
+    #define INVERT_I_DIR false
+  #endif
+  #if NON_E_AXES > 4
+    #ifndef INVERT_J_DIR
+      #define INVERT_J_DIR false
+    #endif
+    #if NON_E_AXES > 5
+      #ifndef INVERT_K_DIR
+        #define INVERT_K_DIR false
+      #endif
+    #endif
+  #endif
+#endif
 #ifndef INVERT_E_DIR
   #define INVERT_E_DIR false
 #endif

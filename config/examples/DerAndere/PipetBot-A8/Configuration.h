@@ -80,8 +80,8 @@
 //===========================================================================
 //=========================== FOAMCUTTER_XY_IJ ==============================
 //===========================================================================
-// For a hot wire cutter where the hight of the two wire ends are controlled by
-// axes I, J (parallel axes in z direction).
+// For a hot wire cutter with parallel horizontal axes X, I where the hights
+// of the two wire ends are controlled by parallel axes Y, J.
 //
 //#define FOAMCUTTER_XY_IJ
 
