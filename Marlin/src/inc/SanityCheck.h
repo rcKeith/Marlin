@@ -1820,7 +1820,9 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
 #if _AXIS_PLUG_UNUSED_TEST(Z)
   #error "You must enable USE_ZMIN_PLUG or USE_ZMAX_PLUG."
 #endif
-
+#if ENABLED(E_AXIS_HOMING) && _AXIS_PLUG_UNUSED_TEST(E)
+  #error "You must enable USE_EMIN_PLUG or USE_EMAX_PLUG."
+#endif
 // Delta and Cartesian use 3 homing endstops
 #if !IS_SCARA
   #if X_HOME_DIR < 0 && DISABLED(USE_XMIN_PLUG)
@@ -1831,6 +1833,13 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
     #error "Enable USE_YMIN_PLUG when homing Y to MIN."
   #elif Y_HOME_DIR > 0 && DISABLED(USE_YMAX_PLUG)
     #error "Enable USE_YMAX_PLUG when homing Y to MAX."
+  #endif
+  #if ENABLED(E_AXIS_HOMING)
+    #if E_HOME_DIR < 0 && DISABLED(USE_EMIN_PLUG)
+      #error "Enable USE_EMIN_PLUG when homing E to MIN."
+    #elif E_HOME_DIR > 0 && DISABLED(USE_EMAX_PLUG)
+      #error "Enable USE_EMAX_PLUG when homing E to MAX."
+    #endif
   #endif
 #endif
 #if Z_HOME_DIR < 0 && DISABLED(USE_ZMIN_PLUG)

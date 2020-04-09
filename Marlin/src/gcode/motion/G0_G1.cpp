@@ -55,7 +55,11 @@ void GcodeSuite::G0_G1(
       && !axis_unhomed_error(
           (parser.seen('X') ? _BV(X_AXIS) : 0)
         | (parser.seen('Y') ? _BV(Y_AXIS) : 0)
-        | (parser.seen('Z') ? _BV(Z_AXIS) : 0) )
+        | (parser.seen('Z') ? _BV(Z_AXIS) : 0) 
+	  #if ENABLED(E_AXIS_HOMING)
+        | parser.seen('E')  ? _BV(E_AXIS) : 0) 
+      #endif
+	  )
     #endif
   ) {
 

@@ -36,7 +36,11 @@
 
 // Axis homed and known-position states
 extern uint8_t axis_homed, axis_known_position;
-constexpr uint8_t xyz_bits = _BV(X_AXIS) | _BV(Y_AXIS) | _BV(Z_AXIS);
+constexpr uint8_t xyz_bits = _BV(X_AXIS) | _BV(Y_AXIS) | _BV(Z_AXIS)
+  #if ENABLED(E_AXIS_HOMING)
+    | _BV(E_AXIS)
+  #endif
+;
 FORCE_INLINE bool no_axes_homed() { return !axis_homed; }
 FORCE_INLINE bool all_axes_homed() { return (axis_homed & xyz_bits) == xyz_bits; }
 FORCE_INLINE bool all_axes_known() { return (axis_known_position & xyz_bits) == xyz_bits; }
@@ -64,11 +68,11 @@ extern xyze_pos_t current_position,  // High-level current tool position
 // G60/G61 Position Save and Return
 #if SAVED_POSITIONS
   extern uint8_t saved_slots[(SAVED_POSITIONS + 7) >> 3];
-  extern xyz_pos_t stored_position[SAVED_POSITIONS];
+  extern xyze_pos_t stored_position[SAVED_POSITIONS];
 #endif
 
 // Scratch space for a cartesian result
-extern xyz_pos_t cartes;
+extern xyze_pos_t cartes;
 
 // Until kinematics.cpp is created, declare this here
 #if IS_KINEMATIC
@@ -92,7 +96,11 @@ extern xyz_pos_t cartes;
  * Feed rates are often configured with mm/m
  * but the planner and stepper like mm/s units.
  */
+#if ENABLED(E_AXIS_HOMING)
+extern const feedRate_t homing_feedrate_mm_s[XYZE];
+#else
 extern const feedRate_t homing_feedrate_mm_s[XYZ];
+#endif
 FORCE_INLINE feedRate_t homing_feedrate(const AxisEnum a) { return pgm_read_float(&homing_feedrate_mm_s[a]); }
 feedRate_t get_homing_bump_feedrate(const AxisEnum axis);
 
@@ -106,6 +114,7 @@ extern int16_t feedrate_percentage;
 // The active extruder (tool). Set with T<extruder> command.
 #if EXTRUDERS > 1
   extern uint8_t active_extruder;
+  extern float  extruder_position[EXTRUDERS];
 #else
   constexpr uint8_t active_extruder = 0;
 #endif
@@ -118,7 +127,7 @@ FORCE_INLINE float pgm_read_any(const float *p) { return pgm_read_float(p); }
 FORCE_INLINE signed char pgm_read_any(const signed char *p) { return pgm_read_byte(p); }
 
 #define XYZ_DEFS(T, NAME, OPT) \
-  extern const XYZval<T> NAME##_P; \
+  extern const XYZEval<T> NAME##_P; \
   FORCE_INLINE T NAME(AxisEnum axis) { return pgm_read_any(&NAME##_P[axis]); }
 
 XYZ_DEFS(float, base_min_pos,   MIN_POS);
@@ -142,12 +151,15 @@ XYZ_DEFS(signed char, home_dir, HOME_DIR);
 #else
   constexpr xyz_pos_t hotend_offset[1] = { { 0 } };
 #endif
-
+#if ENABLED(E_AXIS_HOMING)
+typedef struct { xyze_pos_t min, max; } axis_limits_t;
+#else
 typedef struct { xyz_pos_t min, max; } axis_limits_t;
+#endif
 #if HAS_SOFTWARE_ENDSTOPS
   extern bool soft_endstops_enabled;
   extern axis_limits_t soft_endstop;
-  void apply_motion_limits(xyz_pos_t &target);
+  void apply_motion_limits(xyze_pos_t &target);
   void update_software_endstops(const AxisEnum axis
     #if HAS_HOTEND_OFFSET
       , const uint8_t old_tool_index=0, const uint8_t new_tool_index=0
@@ -257,13 +269,13 @@ void homeaxis(const AxisEnum axis);
  */
 #if HAS_HOME_OFFSET || HAS_POSITION_SHIFT
   #if HAS_HOME_OFFSET
-    extern xyz_pos_t home_offset;
+    extern xyze_pos_t home_offset;
   #endif
   #if HAS_POSITION_SHIFT
-    extern xyz_pos_t position_shift;
+    extern xyze_pos_t position_shift;
   #endif
   #if HAS_HOME_OFFSET && HAS_POSITION_SHIFT
-    extern xyz_pos_t workspace_offset;
+    extern xyze_pos_t workspace_offset;
     #define _WS workspace_offset
   #elif HAS_HOME_OFFSET
     #define _WS home_offset
@@ -294,7 +306,10 @@ void homeaxis(const AxisEnum axis);
 #define RAW_X_POSITION(POS)     LOGICAL_TO_NATIVE(POS, X_AXIS)
 #define RAW_Y_POSITION(POS)     LOGICAL_TO_NATIVE(POS, Y_AXIS)
 #define RAW_Z_POSITION(POS)     LOGICAL_TO_NATIVE(POS, Z_AXIS)
-
+#if ENABLED(E_AXIS_HOMING)
+  #define LOGICAL_E_POSITION(POS) NATIVE_TO_LOGICAL(POS, E_AXIS)
+  #define RAW_E_POSITION(POS)     LOGICAL_TO_NATIVE(POS, E_AXIS)
+#endif
 /**
  * position_is_reachable family of functions
  */

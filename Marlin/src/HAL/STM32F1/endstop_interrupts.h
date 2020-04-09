@@ -92,4 +92,11 @@ void setup_endstop_interrupts() {
   #if HAS_Z_MIN_PROBE_PIN
     attachInterrupt(Z_MIN_PROBE_PIN, endstop_ISR, CHANGE);
   #endif
+  #if HAS_E_MAX
+    attachInterrupt(E_MAX_PIN, endstop_ISR, CHANGE);
+  #endif
+  #if HAS_E_MIN
+    attachInterrupt(E_MIN_PIN, endstop_ISR, CHANGE);
+  #endif
+
 }

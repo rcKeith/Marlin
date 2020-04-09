@@ -122,4 +122,16 @@ void setup_endstop_interrupts() {
     #endif
     _ATTACH(Z_MIN_PROBE_PIN);
   #endif
+  #if HAS_E_MAX
+    #if !LPC1768_PIN_INTERRUPT_M(E_MAX_PIN)
+      #error "E_MAX_PIN is not INTERRUPT-capable."
+    #endif
+      _ATTACH(E_MAX_PIN);
+    #endif
+  #if HAS_E_MIN
+    #if !LPC1768_PIN_INTERRUPT_M(E_MIN_PIN)
+      #error "E_MIN_PIN is not INTERRUPT-capable."
+    #endif
+    _ATTACH(E_MIN_PIN);
+  #endif
 }

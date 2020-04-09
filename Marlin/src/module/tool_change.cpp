@@ -872,7 +872,7 @@ void tool_change(const uint8_t new_tool, bool no_move/*=false*/) {
     #endif
 
     if (new_tool != old_tool) {
-
+    extruder_position[old_tool]=planner.get_axis_position_mm(E_AXIS);
       #if SWITCHING_NOZZLE_TWO_SERVOS
         raise_nozzle(old_tool);
       #endif
@@ -958,7 +958,8 @@ void tool_change(const uint8_t new_tool, bool no_move/*=false*/) {
       // The newly-selected extruder XYZ is actually at...
       if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPAIR("Offset Tool XYZ by { ", diff.x, ", ", diff.y, ", ", diff.z, " }");
       current_position += diff;
-
+      // Set position back
+      current_position.e=extruder_position[new_tool]; //restore extruder position
       // Tell the planner the new "current position"
       sync_plan_position();
 

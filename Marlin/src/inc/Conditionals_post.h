@@ -69,7 +69,9 @@
 #define X_MAX_LENGTH (X_MAX_POS - (X_MIN_POS))
 #define Y_MAX_LENGTH (Y_MAX_POS - (Y_MIN_POS))
 #define Z_MAX_LENGTH (Z_MAX_POS - (Z_MIN_POS))
-
+#if ENABLED(E_AXIS_HOMING)
+  #define E_MAX_LENGTH (E_MAX_POS - (E_MIN_POS))
+#endif
 // Defined only if the sanity-check is bypassed
 #ifndef X_BED_SIZE
   #define X_BED_SIZE X_MAX_LENGTH
@@ -88,7 +90,9 @@
 #define _Y_HALF_BED ((Y_BED_SIZE) / 2)
 #define X_CENTER TERN(BED_CENTER_AT_0_0, 0, _X_HALF_BED)
 #define Y_CENTER TERN(BED_CENTER_AT_0_0, 0, _Y_HALF_BED)
-
+#if ENABLED(E_AXIS_HOMING)
+  #define E_CENTER ((E_MIN_POS + E_MAX_POS) / 2)
+#endif
 // Get the linear boundaries of the bed
 #define X_MIN_BED (X_CENTER - _X_HALF_BED)
 #define X_MAX_BED (X_MIN_BED + X_BED_SIZE)
@@ -200,6 +204,13 @@
   #define Z_HOME_POS (Z_HOME_DIR < 0 ? Z_MIN_POS : Z_MAX_POS)
 #endif
 
+#if ENABLED(E_AXIS_HOMING)
+  #ifdef MANUAL_E_HOME_POS
+    #define E_HOME_POS MANUAL_E_HOME_POS
+  #else
+    #define E_HOME_POS (E_HOME_DIR < 0 ? E_MIN_POS : E_MAX_POS)
+  #endif
+#endif
 /**
  * If DELTA_HEIGHT isn't defined use the old setting
  */
@@ -1215,6 +1226,9 @@
   #if ENABLED(USE_ZMAX_PLUG)
     #define ENDSTOPPULLUP_ZMAX
   #endif
+  #if ENABLED(USE_EMAX_PLUG)
+    #define ENDSTOPPULLUP_EMAX
+  #endif
   #if ENABLED(USE_XMIN_PLUG)
     #define ENDSTOPPULLUP_XMIN
   #endif
@@ -1223,6 +1237,9 @@
   #endif
   #if ENABLED(USE_ZMIN_PLUG)
     #define ENDSTOPPULLUP_ZMIN
+  #endif
+  #if ENABLED(USE_EMIN_PLUG)
+    #define ENDSTOPPULLUP_EMIN
   #endif
 #endif
 
@@ -1239,6 +1256,10 @@
   #if ENABLED(USE_ZMAX_PLUG)
     #define ENDSTOPPULLDOWN_ZMAX
   #endif
+  #if ENABLED(USE_EMAX_PLUG)
+    #define ENDSTOPPULLDOWN_EMAX
+  #endif
+
   #if ENABLED(USE_XMIN_PLUG)
     #define ENDSTOPPULLDOWN_XMIN
   #endif
@@ -1247,6 +1268,9 @@
   #endif
   #if ENABLED(USE_ZMIN_PLUG)
     #define ENDSTOPPULLDOWN_ZMIN
+  #endif
+  #if ENABLED(USE_EMIN_PLUG)
+    #define ENDSTOPPULLDOWN_EMIN
   #endif
 #endif
 
@@ -1411,6 +1435,8 @@
 #define HAS_Y_MAX _HAS_STOP(Y,MAX)
 #define HAS_Z_MIN _HAS_STOP(Z,MIN)
 #define HAS_Z_MAX _HAS_STOP(Z,MAX)
+#define HAS_E_MIN _HAS_STOP(E,MIN)
+#define HAS_E_MAX _HAS_STOP(E,MAX)
 #define HAS_X2_MIN (PIN_EXISTS(X2_MIN))
 #define HAS_X2_MAX (PIN_EXISTS(X2_MAX))
 #define HAS_Y2_MIN (PIN_EXISTS(Y2_MIN))

@@ -39,6 +39,8 @@
 #define _XMAX_   101
 #define _YMAX_   201
 #define _ZMAX_   301
+#define _EMIN_   400
+#define _EMAX_   401
 #define _XDIAG_  102
 #define _YDIAG_  202
 #define _ZDIAG_  302
