@@ -266,18 +266,20 @@ G29_TYPE GcodeSuite::G29() {
     #endif
 
     // Probe at 3 arbitrary points
-// TODO (DerAndere1): Test
-/**
+// TODO (DerAndere1): Test removing variant a) to use variant b)
     ABL_VAR vector_3 points[3] = {
       vector_3(PROBE_PT_1_X, PROBE_PT_1_Y, 0),
       vector_3(PROBE_PT_2_X, PROBE_PT_2_Y, 0),
       vector_3(PROBE_PT_3_X, PROBE_PT_3_Y, 0)
- */
-    const float x_min = probe_min_x(), x_max = probe_max_x(), y_min = probe_min_y(), y_max = probe_max_y();
-    ABL_VAR vector_3 points[3] = {
-      vector_3(x_min, y_min, 0),
-      vector_3(x_max, y_min, 0),
-      vector_3((x_max - x_min) / 2, y_max, 0)
+// TODO (DerAndere1): end of variant a) above
+
+// TODO (DerAndere): Uncomment to use variant b)
+//    const float x_min = probe_min_x(), x_max = probe_max_x(), y_min = probe_min_y(), y_max = probe_max_y();
+//    ABL_VAR vector_3 points[3] = {
+//      vector_3(x_min, y_min, 0),
+//      vector_3(x_max, y_min, 0),
+//      vector_3((x_max - x_min) / 2, y_max, 0)
+// TODO (DerAndere1): end of variant b) above
     };
 
   #endif // AUTO_BED_LEVELING_3POINT
@@ -399,30 +401,19 @@ G29_TYPE GcodeSuite::G29() {
 
       xy_probe_feedrate_mm_s = MMM_TO_MMS(parser.linearval('S', XY_PROBE_SPEED));
 
-//TODO (DerAndere): Test
-      const float x_min = probe_min_x(), x_max = probe_max_x(),
-                  y_min = probe_min_y(), y_max = probe_max_y();
-
+//TODO (DerAndere): Uncomment to test variant b)
+//      const float x_min = probe_min_x(), x_max = probe_max_x(),
+//                  y_min = probe_min_y(), y_max = probe_max_y();
+//TODO (DerAndere): End of variant b) above
       if (parser.seen('H')) {
         const int16_t size = (int16_t)parser.value_linear_units();
-/**
-        left_probe_bed_position  = _MAX(X_CENTER - size / 2, x_min);
-        right_probe_bed_position = _MIN(left_probe_bed_position + size, x_max);
-        front_probe_bed_position = _MAX(Y_CENTER - size / 2, y_min);
-        back_probe_bed_position  = _MIN(front_probe_bed_position + size, y_max);
- */
+
         left_probe_bed_position  = _MAX(X_CENTER - size / 2, MIN_PROBE_X);
         right_probe_bed_position = _MIN(left_probe_bed_position + size, MAX_PROBE_X);
         front_probe_bed_position = _MAX(Y_CENTER - size / 2, MIN_PROBE_Y);
         back_probe_bed_position  = _MIN(front_probe_bed_position + size, MAX_PROBE_Y);
       }
       else {
-/**
-        left_probe_bed_position  = parser.seenval('L') ? (int)RAW_X_POSITION(parser.value_linear_units()) : _MAX(X_CENTER - X_BED_SIZE / 2, x_min);
-        right_probe_bed_position = parser.seenval('R') ? (int)RAW_X_POSITION(parser.value_linear_units()) : _MIN(left_probe_bed_position + X_BED_SIZE, x_max);
-        front_probe_bed_position = parser.seenval('F') ? (int)RAW_Y_POSITION(parser.value_linear_units()) : _MAX(Y_CENTER - Y_BED_SIZE / 2, y_min);
-        back_probe_bed_position  = parser.seenval('B') ? (int)RAW_Y_POSITION(parser.value_linear_units()) : _MIN(front_probe_bed_position + Y_BED_SIZE, y_max);
- */
         left_probe_bed_position  = parser.seenval('L') ? (int)RAW_X_POSITION(parser.value_linear_units()) : LEFT_PROBE_BED_POSITION;
         right_probe_bed_position = parser.seenval('R') ? (int)RAW_X_POSITION(parser.value_linear_units()) : RIGHT_PROBE_BED_POSITION;
         front_probe_bed_position = parser.seenval('F') ? (int)RAW_Y_POSITION(parser.value_linear_units()) : FRONT_PROBE_BED_POSITION;
@@ -469,7 +460,6 @@ G29_TYPE GcodeSuite::G29() {
         G29_RETURN(false);
       }
     #endif
-
     if (!faux) remember_feedrate_scaling_off();
 
     #if ENABLED(AUTO_BED_LEVELING_BILINEAR)
@@ -793,7 +783,16 @@ G29_TYPE GcodeSuite::G29() {
 
       if (!dryrun && !isnan(measured_z)) {
         vector_3 planeNormal = vector_3::cross(points[0] - points[1], points[2] - points[1]).get_normal();
-        if (planeNormal.z < 0) planeNormal *= -1;
+//TODO (DerAndere1): Test removing variant a) to use variant b)
+        if (planeNormal.z < 0) {
+          planeNormal.x *= -1;
+          planeNormal.y *= -1;
+          planeNormal.z *= -1;
+        }
+//TODO (DerAndere1): Uncomment to test variant b)
+//        if (planeNormal.z < 0) planeNormal *= -1;
+//TODO (DerAndere1): End of variant b) above
+
         planner.bed_level_matrix = matrix_3x3::create_look_at(planeNormal);
 
         // Can't re-enable (on error) until the new grid is written

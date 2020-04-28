@@ -2,10 +2,10 @@
  
 Additional documentation can be found in the 
 repository [DerAndere1/Marlin at https://github.com](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot) 
-or on the [PipetBot-A8 project homepage](https://it-by-derandere.blogspot.com/p/pipetbot-a8.html) 
-that is part of the blog [IT! by DerAndere](https://it-by-derandere.blogspot.com/). 
-For CNC machines with additional axes I, (J, (K)) that drive pumps or other tools:
-lab robots (liquid handling robots, "pipetting robots"). 
+or on the [PipetBot-A8 project homepage](https://derandere.gitlab.io/pipetbot-a8.html) 
+that is part of the [authors homepage](https://derandere.gitlab.io). 
+For CNC machines with additional axes I, (J, (K)) that drive pumps or other tools,
+e.g. lab robots (liquid handling robots, "pipetting robots"). 
 Please test this firmware and let us know if it misbehaves in any way. 
 Volunteers are standing by!
 
