@@ -72,7 +72,11 @@ extern xyze_pos_t current_position,  // High-level current tool position
 #endif
 
 // Scratch space for a cartesian result
-extern xyze_pos_t cartes;
+#if ENABLED(E_AXIS_HOMING)
+  extern xyze_pos_t cartes;
+#else
+  extern xyz_pos_t cartes;
+#endif
 
 // Until kinematics.cpp is created, declare this here
 #if IS_KINEMATIC
@@ -125,11 +129,15 @@ extern int16_t feedrate_percentage;
 
 FORCE_INLINE float pgm_read_any(const float *p) { return pgm_read_float(p); }
 FORCE_INLINE signed char pgm_read_any(const signed char *p) { return pgm_read_byte(p); }
-
+#if ENABLED(E_AXIS_HOMING)
+  #define XYZ_DEFS(T, NAME, OPT) \
+    extern const XYZEval<T> NAME##_P; \
+    FORCE_INLINE T NAME(AxisEnum axis) { return pgm_read_any(&NAME##_P[axis]); }
+#else
 #define XYZ_DEFS(T, NAME, OPT) \
-  extern const XYZEval<T> NAME##_P; \
+  extern const XYZval<T> NAME##_P; \
   FORCE_INLINE T NAME(AxisEnum axis) { return pgm_read_any(&NAME##_P[axis]); }
-
+#endif
 XYZ_DEFS(float, base_min_pos,   MIN_POS);
 XYZ_DEFS(float, base_max_pos,   MAX_POS);
 XYZ_DEFS(float, base_home_pos,  HOME_POS);
@@ -152,18 +160,22 @@ XYZ_DEFS(signed char, home_dir, HOME_DIR);
   constexpr xyz_pos_t hotend_offset[1] = { { 0 } };
 #endif
 #if ENABLED(E_AXIS_HOMING)
-typedef struct { xyze_pos_t min, max; } axis_limits_t;
+  typedef struct { xyze_pos_t min, max; } axis_limits_t;
 #else
-typedef struct { xyz_pos_t min, max; } axis_limits_t;
+  typedef struct { xyz_pos_t min, max; } axis_limits_t;
 #endif
 #if HAS_SOFTWARE_ENDSTOPS
   extern bool soft_endstops_enabled;
   extern axis_limits_t soft_endstop;
-  void apply_motion_limits(xyze_pos_t &target);
+  #if ENABLED(E_AXIS_HOMING)
+    void apply_motion_limits(xyze_pos_t &target);
+  #else
+    void apply_motion_limits(xyz_pos_t &target);
+  #endif
   void update_software_endstops(const AxisEnum axis
-    #if HAS_HOTEND_OFFSET
-      , const uint8_t old_tool_index=0, const uint8_t new_tool_index=0
-    #endif
+  #if HAS_HOTEND_OFFSET
+    , const uint8_t old_tool_index=0, const uint8_t new_tool_index=0
+  #endif
   );
 #else
   constexpr bool soft_endstops_enabled = false;
@@ -248,10 +260,13 @@ void restore_feedrate_and_scaling();
 //
 // Homing
 //
-
-uint8_t axes_need_homing(uint8_t axis_bits=0x07);
-bool axis_unhomed_error(uint8_t axis_bits=0x07);
-
+#if ENABLED(E_AXIS_HOMING)
+  uint8_t axes_need_homing(uint8_t axis_bits=0xf); // Binary(0xf) = 1111. This bit mask means "all 4 axes: yes"
+  bool axis_unhomed_error(uint8_t axis_bits=0xf); // Binary(0xf) = 1111. This bit mask means "all 4 axes: yes"
+#else
+  uint8_t axes_need_homing(uint8_t axis_bits=0x07); // Binary(0x07) = 111. This bit mask means "all 3 axes: yes"
+  bool axis_unhomed_error(uint8_t axis_bits=0x07); // Binary(0x07) = 111. This bit mask means "all 3 axes: yes"
+#endif
 #if ENABLED(NO_MOTION_BEFORE_HOMING)
   #define MOTION_CONDITIONS (IsRunning() && !axis_unhomed_error())
 #else
@@ -269,13 +284,25 @@ void homeaxis(const AxisEnum axis);
  */
 #if HAS_HOME_OFFSET || HAS_POSITION_SHIFT
   #if HAS_HOME_OFFSET
-    extern xyze_pos_t home_offset;
+    #if ENABLED(E_AXIS_HOMING)
+      extern xyze_pos_t home_offset;
+    #else
+      extern xyz_pos_t home_offset;
+    #endif
   #endif
   #if HAS_POSITION_SHIFT
-    extern xyze_pos_t position_shift;
+    #if ENABLED(E_AXIS_HOMING)
+      extern xyze_pos_t position_shift;
+    #else
+      extern xyz_pos_t position_shift;
+    #endif
   #endif
   #if HAS_HOME_OFFSET && HAS_POSITION_SHIFT
-    extern xyze_pos_t workspace_offset;
+    #if ENABLED(E_AXIS_HOMING)
+      extern xyze_pos_t workspace_offset;
+    #else
+      extern xyz_pos_t workspace_offset;
+    #endif
     #define _WS workspace_offset
   #elif HAS_HOME_OFFSET
     #define _WS home_offset

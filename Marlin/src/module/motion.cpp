@@ -74,7 +74,11 @@
 #define DEBUG_OUT ENABLED(DEBUG_LEVELING_FEATURE)
 #include "../core/debug_out.h"
 
-#define XYZ_CONSTS(T, NAME, OPT) const PROGMEM XYZEval<T> NAME##_P = { X_##OPT, Y_##OPT, Z_##OPT }
+#if ENABLED(E_AXIS_HOMING)
+  #define XYZ_CONSTS(T, NAME, OPT) const PROGMEM XYZEval<T> NAME##_P = { X_##OPT, Y_##OPT, Z_##OPT, E_##OPT }
+#else
+  #define XYZ_CONSTS(T, NAME, OPT) const PROGMEM XYZval<T> NAME##_P = { X_##OPT, Y_##OPT, Z_##OPT }
+#endif
 
 XYZ_CONSTS(float, base_min_pos,   MIN_POS);
 XYZ_CONSTS(float, base_max_pos,   MAX_POS);
@@ -123,11 +127,14 @@ xyze_pos_t destination; // {0}
   xyz_pos_t stored_position[SAVED_POSITIONS];
 #endif
 
-// The active extruder (tool). Set with T<extruder> command.
-#if EXTRUDERS > 1
-  uint8_t active_extruder = 0; // = 0
-    float extruder_position[EXTRUDERS];//variable to store individual e pos
-#endif
+// TODO (DerAndere1): Test
+// #if ENABLED(E_AXIS_HOMING)
+//// The active extruder (tool). Set with T<extruder> command.
+//  #if EXTRUDERS > 1
+//    uint8_t active_extruder = 0; // = 0
+//    float extruder_position[EXTRUDERS];//variable to store individual e pos
+//  #endif
+//#endif
 
 #if ENABLED(LCD_SHOW_E_TOTAL)
   float e_move_accumulator; // = 0
@@ -159,7 +166,7 @@ int16_t feedrate_percentage = 100;
 
 // Homing feedrate is const progmem - compare to constexpr in the header
 #if ENABLED(E_AXIS_HOMING)
-	const feedRate_t homing_feedrate_mm_s[XYZE] PROGMEM = {	
+  const feedRate_t homing_feedrate_mm_s[XYZE] PROGMEM = {
   #if ENABLED(DELTA)
     MMM_TO_MMS(HOMING_FEEDRATE_Z), MMM_TO_MMS(HOMING_FEEDRATE_Z),
   #else
@@ -168,7 +175,7 @@ int16_t feedrate_percentage = 100;
   MMM_TO_MMS(HOMING_FEEDRATE_Z),
   MMM_TO_MMS(HOMING_FEEDRATE_E)
 #else
-	const feedRate_t homing_feedrate_mm_s[XYZ] PROGMEM = {	
+  const feedRate_t homing_feedrate_mm_s[XYZ] PROGMEM = {
   #if ENABLED(DELTA)
     MMM_TO_MMS(HOMING_FEEDRATE_Z), MMM_TO_MMS(HOMING_FEEDRATE_Z),
   #else
@@ -179,8 +186,11 @@ int16_t feedrate_percentage = 100;
 };
 
 // Cartesian conversion result goes here:
-xyze_pos_t cartes;
-
+#if ENABLED(E_AXIS_HOMING)
+  xyze_pos_t cartes;
+#else
+  xyz_pos_t cartes;
+#endif
 #if IS_KINEMATIC
 
   abc_pos_t delta;
@@ -207,16 +217,28 @@ xyze_pos_t cartes;
  */
 #if HAS_POSITION_SHIFT
   // The distance that XYZ has been offset by G92. Reset by G28.
-  xyze_pos_t position_shift{0};
+  #if ENABLED(E_AXIS_HOMING)
+    xyze_pos_t position_shift{0};
+  #else
+    xyz_pos_t position_shift{0};
+  #endif
 #endif
 #if HAS_HOME_OFFSET
   // This offset is added to the configured home position.
   // Set by M206, M428, or menu item. Saved to EEPROM.
-  xyze_pos_t home_offset{0};
+  #if ENABLED(E_AXIS_HOMING)
+    xyze_pos_t home_offset{0};
+  #else
+    xyz_pos_t home_offset{0};
+  #endif
 #endif
 #if HAS_HOME_OFFSET && HAS_POSITION_SHIFT
   // The above two are combined to save on computes
-  xyze_pos_t workspace_offset{0};
+  #if ENABLED(E_AXIS_HOMING)
+    xyze_pos_t workspace_offset{0};
+  #else
+    xyz_pos_t workspace_offset{0};
+  #endif
 #endif
 
 #if HAS_ABL_NOT_UBL
@@ -274,23 +296,29 @@ void report_current_position() {
 void report_current_position_projected() {
   report_logical_position(current_position);
   stepper.report_a_position(planner.position);
-  extruder_position[active_extruder]=current_position.e;
-  #if EXTRUDERS >0
-    SERIAL_ECHOPAIR(" E0:", LOGICAL_Z_POSITION(extruder_position[0]));
+  #if ENABLED(E_AXIS_HOMING)
+    #if EXTRUDERS == 1
+      SERIAL_ECHOPAIR(" E0:", LOGICAL_Z_POSITION(current_position.e));
+    #else
+      extruder_position[active_extruder]=current_position.e;
+      #if EXTRUDERS >0
+        SERIAL_ECHOPAIR(" E0:", LOGICAL_Z_POSITION(extruder_position[0]));
+      #endif
+      #if EXTRUDERS >1
+        SERIAL_ECHOPAIR(" E1:", LOGICAL_Z_POSITION(extruder_position[1]));
+      #endif
+      #if EXTRUDERS >2
+        SERIAL_ECHOPAIR(" E2:", LOGICAL_Z_POSITION(extruder_position[2]));
+      #endif
+        #if EXTRUDERS >3
+      SERIAL_ECHOPAIR(" E3:", LOGICAL_Z_POSITION(extruder_position[3]));
+      #endif
+        #if EXTRUDERS >4
+      SERIAL_ECHOPAIR(" E4:", LOGICAL_Z_POSITION(extruder_position[4]));
+      #endif
+      SERIAL_EOL();
+    #endif
   #endif
-  #if EXTRUDERS >1
-    SERIAL_ECHOPAIR(" E1:", LOGICAL_Z_POSITION(extruder_position[1]));
-  #endif
-  #if EXTRUDERS >2
-    SERIAL_ECHOPAIR(" E2:", LOGICAL_Z_POSITION(extruder_position[2]));
-  #endif
-    #if EXTRUDERS >3
-  SERIAL_ECHOPAIR(" E3:", LOGICAL_Z_POSITION(extruder_position[3]));
-  #endif
-    #if EXTRUDERS >4
-  SERIAL_ECHOPAIR(" E4:", LOGICAL_Z_POSITION(extruder_position[4]));
-  #endif
-  SERIAL_EOL();
 }
 
 /**
@@ -692,9 +720,9 @@ void restore_feedrate_and_scaling() {
     { X_MIN_POS, Y_MIN_POS, Z_MIN_POS, E_MIN_POS },
     { X_MAX_POS, Y_MAX_POS, Z_MAX_POS, E_MAX_POS }
   #else
-  axis_limits_t soft_endstop = {
-    { X_MIN_POS, Y_MIN_POS, Z_MIN_POS },
-    { X_MAX_POS, Y_MAX_POS, Z_MAX_POS }
+    axis_limits_t soft_endstop = {
+      { X_MIN_POS, Y_MIN_POS, Z_MIN_POS },
+      { X_MAX_POS, Y_MAX_POS, Z_MAX_POS }
   #endif
   };
 
@@ -793,8 +821,11 @@ void restore_feedrate_and_scaling() {
    * For DELTA/SCARA the XY constraint is based on the smallest
    * radius within the set software endstops.
    */
-  void apply_motion_limits(xyze_pos_t &target) {
-
+  #if ENABLED(E_AXIS_HOMING)
+    void apply_motion_limits(xyze_pos_t &target) {
+  #else
+    void apply_motion_limits(xyz_pos_t &target) {
+  #endif
     if (!soft_endstops_enabled) return;
 
     #if IS_KINEMATIC
@@ -851,14 +882,16 @@ void restore_feedrate_and_scaling() {
         NOMORE(target.z, soft_endstop.max.z);
       #endif
     }
-	    if (TEST(axis_homed, E_AXIS)) {
-      #if !HAS_SOFTWARE_ENDSTOPS || ENABLED(MIN_SOFTWARE_ENDSTOP_Z)
-        NOLESS(target.e, soft_endstop.min.e);
-      #endif
-      #if !HAS_SOFTWARE_ENDSTOPS || ENABLED(MAX_SOFTWARE_ENDSTOP_Z)
-        NOMORE(target.e, soft_endstop.max.e);
-      #endif
-    }
+    #if ENABLED(E_AXIS_HOMING)
+      if (TEST(axis_homed, E_AXIS)) {
+        #if !HAS_SOFTWARE_ENDSTOPS || ENABLED(MIN_SOFTWARE_ENDSTOP_E)
+          NOLESS(target.e, soft_endstop.min.e);
+        #endif
+        #if !HAS_SOFTWARE_ENDSTOPS || ENABLED(MAX_SOFTWARE_ENDSTOP_E)
+          NOMORE(target.e, soft_endstop.max.e);
+        #endif
+      }
+    #endif
   }
 
 #endif // HAS_SOFTWARE_ENDSTOPS
@@ -1274,7 +1307,7 @@ void prepare_line_to_destination() {
   current_position = destination;
 }
 
-uint8_t axes_need_homing(uint8_t axis_bits/*=0x07*/) {
+uint8_t axes_need_homing(uint8_t axis_bits/*#if ENABLED(E_AXIS_HOMING) =0xf #else =0x07 #endif*/) {
   #if ENABLED(HOME_AFTER_DEACTIVATE)
     #define HOMED_FLAGS axis_known_position
   #else
@@ -1288,7 +1321,7 @@ uint8_t axes_need_homing(uint8_t axis_bits/*=0x07*/) {
 }
 
 
-bool axis_unhomed_error(uint8_t axis_bits/*=0x07*/) {
+bool axis_unhomed_error(uint8_t axis_bits/*#if ENABLED(E_AXIS_HOMING) =0xf #else =0x07 #endif*/) {
   if ((axis_bits = axes_need_homing(axis_bits))) {
     PGM_P home_first = GET_TEXT(MSG_HOME_FIRST);
     char msg[strlen_P(home_first)+1];
@@ -1680,8 +1713,14 @@ void homeaxis(const AxisEnum axis) {
     #else
       #define CAN_HOME_Z _CAN_HOME(Z)
     #endif
-     #define CAN_HOME_E _CAN_HOME(E)
-    if (!CAN_HOME_X && !CAN_HOME_Y && !CAN_HOME_Z && !CAN_HOME_E) return;
+    #if ENABLED(E_AXIS_HOMING)
+      #define CAN_HOME_E _CAN_HOME(E)
+    #endif
+    if (!CAN_HOME_X && !CAN_HOME_Y && !CAN_HOME_Z
+      #if ENABLED(E_AXIS_HOMING)
+        && !CAN_HOME_E
+      #endif
+    ) return;
   #endif
 
   if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPAIR(">>> homeaxis(", axis_codes[axis], ")");

@@ -610,21 +610,25 @@
 // @section homing
 
 /**
- * E_AXIS_HOMING (status: Experimental). See https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot-v1 .
- * Should NEVER be enabled if the E-axis is used for an actual extruder. Only use if the E-axis stepper motor is repurposed (4 axis robot). Uncommenting the option below
- * enables homing of four axes (XYZ and E). Only possible if
- * all of the following conditions are true:
- * 1) cartesian 4 axis robot (not CORE, DELTA or SCARA).
+ * E_AXIS_HOMING (status: Experimental).
+ * See https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot-v1 .
+ * Should NEVER be enabled if the E-axis is used for an actual extruder.
+ * Only use if the E-axis stepper motor is repurposed (4 axis robot).
+ * Uncommenting the option below enables homing of four axes (XYZ and E).
+ * Only possible if all of the following conditions are true:
+ * 1) cartesian 4 axis robot (CORE, DELTA and SCARA kinematics are untested).
  * 2) Not more than one endstop (limit switch) per axis (untested).
- * 3) E_STOP_PIN > 0 defined (usually in pins_MOTHERBOARD.h file, where
+ * 3) E_STOP_PIN > 0 or (E_MIN_PIN > 0 and/or E_MIN_PIN > 0) defined
+ *     (usually in pins_MOTHERBOARD.h file, where
  *     MOTHERBOARD is the identifier for the controller board in use) and
  *     connected to the limit switch for the E-axis
- * 4) No multi-carriage setup (untested)
+ * 4) No DUAL_X_CARRIAGE (untested)
  * 5) No multiple stepper drivers per axis (untested)
- * 6) LINEAR_ADVANCE disabled
- * 7) No z-probe (untested)
+ * 6) No LINEAR_ADVANCE
+ * 8) No SENSORLESS_HOMING (untested)
+ * 9) Only EXTRUDERS 1. EXTRUDERS > 1 may work if SINGLENOZZLE is enabled (untested)
  * When E_AXIS_HOMING is enabled (#define E_AXIS_HOMING), enabling
- * MIN_SOFTWARE_ENDSTOP_E and MAX_SOFTWARE_ENDSTOP_E (see below) is recommended
+ * (USE_EMIN_PLUG or USE_EMAX_PLUG), MIN_SOFTWARE_ENDSTOP_E and MAX_SOFTWARE_ENDSTOP_E (see below) is recommended.
  */
 //#define E_AXIS_HOMING
 
@@ -1134,7 +1138,7 @@
 #define Z_MAX_POS 200
 #if ENABLED(E_AXIS_HOMING)
   #define E_MIN_POS 0
-  #define E_MAX_POS 296
+  #define E_MAX_POS 200
 #endif
 
 

@@ -37,7 +37,7 @@
  */
 
 // Change EEPROM version if the structure changes
-#define EEPROM_VERSION "V77"
+#define EEPROM_VERSION "V78"
 #define EEPROM_OFFSET 100
 
 // Check the integrity of data offsets.
@@ -428,7 +428,11 @@ void MarlinSettings::postprocess() {
   #endif
 
   // Software endstops depend on home_offset
-  LOOP_XYZ(i) {
+  #if ENABLED(E_AXIS_HOMING)
+    LOOP_XYZE(i) {
+  #else
+    LOOP_XYZ(i) {
+  #endif
     update_workspace_offset((AxisEnum)i);
     update_software_endstops((AxisEnum)i);
   }

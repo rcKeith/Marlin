@@ -597,13 +597,7 @@ void Endstops::update() {
   #else
     #define Z_AXIS_HEAD Z_AXIS
   #endif
- #if ENABLED(E_AXIS_HOMING)
-    #if CORE_IS_XY || CORE_IS_XZ
-      #define E_AXIS_HEAD E_HEAD
-    #else
-      #define E_AXIS_HEAD E_AXIS
-  #endif
-#endif
+
   /**
    * Check and update endstops
    */
@@ -878,7 +872,7 @@ void Endstops::update() {
   }
     #if ENABLED(E_AXIS_HOMING)
     if (stepper.axis_is_moving(E_AXIS)) {
-      if (stepper.motor_direction(E_AXIS_HEAD)) { // -direction
+      if (stepper.motor_direction(E_AXIS)) { // -direction
         #if HAS_E_MIN
           PROCESS_ENDSTOP(E, MIN);
         #endif
@@ -897,6 +891,9 @@ void Endstops::update() {
   #define X_STOP (X_HOME_DIR < 0 ? X_MIN : X_MAX)
   #define Y_STOP (Y_HOME_DIR < 0 ? Y_MIN : Y_MAX)
   #define Z_STOP (Z_HOME_DIR < 0 ? Z_MIN : Z_MAX)
+  #if ENABLED(E_AXIS_HOMING)
+    #define E_STOP (E_HOME_DIR < 0 ? E_MIN : E_MAX)
+  #endif
 
   bool Endstops::tmc_spi_homing_check() {
     bool hit = false;
@@ -918,6 +915,14 @@ void Endstops::update() {
         hit = true;
       }
     #endif
+    #if E_AXIS_HOMING
+      #if E_SPI_SENSORLESS
+        if (tmc_spi_homing.e && stepperE.test_stall_status()) {
+          SBI(live_state, E_STOP);
+          hit = true;
+        }
+      #endif
+    #endif
     return hit;
   }
 
@@ -930,6 +935,11 @@ void Endstops::update() {
     #endif
     #if Z_SPI_SENSORLESS
       CBI(live_state, Z_STOP);
+    #endif
+    #if ENABLED(E_AXIS_HOMING)
+      #if Z_SPI_SENSORLESS
+        CBI(live_state, E_STOP);
+      #endif
     #endif
   }
 
@@ -1007,14 +1017,14 @@ void Endstops::update() {
     #if HAS_Z4_MAX
       ES_GET_STATE(Z4_MAX);
     #endif
-#if ENABLED(E_AXIS_HOMING)
+    #if ENABLED(E_AXIS_HOMING)
       #if HAS_E_MAX
         ES_GET_STATE(E_MAX);
       #endif
       #if HAS_E_MIN
         ES_GET_STATE(E_MIN);
       #endif
-#endif
+    #endif
     uint16_t endstop_change = live_state_local ^ old_live_state_local;
     #define ES_REPORT_CHANGE(S) if (TEST(endstop_change, S)) SERIAL_ECHOPAIR("  " STRINGIFY(S) ":", TEST(live_state_local, S))
 
@@ -1070,14 +1080,14 @@ void Endstops::update() {
       #if HAS_Z4_MAX
         ES_REPORT_CHANGE(Z4_MAX);
       #endif
-#if ENABLED(E_AXIS_HOMING)
+      #if ENABLED(E_AXIS_HOMING)
         #if HAS_E_MIN
           ES_REPORT_CHANGE(E_MIN);
         #endif
         #if HAS_E_MAX
           ES_REPORT_CHANGE(E_MAX);
         #endif
-#endif
+      #endif
       SERIAL_ECHOLNPGM("\n");
       analogWrite(pin_t(LED_PIN), local_LED_status);
       local_LED_status ^= 255;

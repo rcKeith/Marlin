@@ -49,6 +49,10 @@ class Endstops {
   public:
     #if HAS_EXTRA_ENDSTOPS || ENABLED(E_AXIS_HOMING)
       typedef uint16_t esbits_t;
+    #else
+      typedef uint8_t esbits_t;
+    #endif
+    #if HAS_EXTRA_ENDSTOPS
       #if ENABLED(X_DUAL_ENDSTOPS)
         static float x2_endstop_adj;
       #endif
@@ -64,15 +68,13 @@ class Endstops {
       #if ENABLED(Z_MULTI_ENDSTOPS) && NUM_Z_STEPPER_DRIVERS >= 4
         static float z4_endstop_adj;
       #endif
-    #else
-      typedef uint8_t esbits_t;
     #endif
 
   private:
     static bool enabled, enabled_globally;
     static esbits_t live_state;
-	    #if ENABLED(E_AXIS_HOMING)
-      static volatile uint16_t  hit_state;   
+    #if ENABLED(E_AXIS_HOMING)
+      static volatile uint16_t  hit_state;
     #else
       static volatile uint8_t hit_state;      // Use X_MIN, Y_MIN, Z_MIN and Z_MIN_PROBE as BIT index
     #endif
@@ -181,7 +183,11 @@ class Endstops {
       typedef struct {
         union {
           bool any;
-          struct { bool x:1, y:1, z:1; };
+          struct { bool x:1, y:1, z:1
+            #if ENABLED(E_AXIS_HOMING)
+              , e:1
+            #endif
+          ; };
         };
       } tmc_spi_homing_t;
       static tmc_spi_homing_t tmc_spi_homing;
