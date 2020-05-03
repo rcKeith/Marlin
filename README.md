@@ -1,28 +1,49 @@
 # Marlin 3D Printer Firmware
 
-![GitHub](https://img.shields.io/github/license/marlinfirmware/marlin.svg)
-![GitHub contributors](https://img.shields.io/github/contributors/marlinfirmware/marlin.svg)
-![GitHub Release Date](https://img.shields.io/github/release-date/marlinfirmware/marlin.svg)
-[![Build Status](https://github.com/MarlinFirmware/Marlin/workflows/CI/badge.svg?branch=bugfix-2.0.x)](https://github.com/MarlinFirmware/Marlin/actions)
+Additional documentation can be found in the 
+repository [DerAndere1/Marlin at https://github.com](https://github.com/DerAndere1/Marlin/tree/2.0.x_E_homing) 
+For CNC machines with E-axis repurposed to drive pumps or other tools,
+e.g. lab robots (liquid handling robots, "pipetting robots"). Note that the focus 
+of our development efforts shifted towards [adding true multi-axis support to Marlin 
+(up to six axes plus extruders)](https://github.com/DerAndere1/Marlin/commits/bf2_6axis_dev13). 
+Only use Marlin 2.0.x_E_homing if you are unable to contribute to [bf2_6axis_dev13](https://github.com/DerAndere1/Marlin/commits/bf2_6axis_dev13) or [Marlin2ForPipetBot](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot).  
+Please test this firmware and let us know if it misbehaves in any way. 
+Volunteers are standing by!
 
-<img align="right" width=175 src="buildroot/share/pixmaps/logo/marlin-250.png" />
-
-Additional documentation can be found at the [Marlin Home Page](http://marlinfw.org/).
-Please test this firmware and let us know if it misbehaves in any way. Volunteers are standing by!
-
-## Marlin 2.0 Bugfix Branch
+## Marlin 2.0.x_E_homing Branch
 
 __Not for production use. Use with caution!__
 
-Marlin 2.0 takes this popular RepRap firmware to the next level by adding support for much faster 32-bit and ARM-based boards while improving support for 8-bit AVR boards. Read about Marlin's decision to use a "Hardware Abstraction Layer" below.
+Marlin 2.0.x_E_homing is a branch of the Marlin fork by DerAndere (based on 
+https://github.com/MarlinFirmware/Marlin/tree/bugfix-2.0.x). 
 
-This branch is for patches to the latest 2.0.x release version. Periodically this branch will form the basis for the next minor 2.0.x release.
+This branch is for patches to the latest Marlin 2.0.x_E_homing release version.
 
-Download earlier versions of Marlin on the [Releases page](https://github.com/MarlinFirmware/Marlin/releases).
+Marlin 2.0.x_E_homing adds the E_AXIS_HOMING feature (status: Experimental).
+See https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot-v1 .
+Should NEVER be enabled if the E-axis is used for an actual extruder.
+Only use if the E-axis stepper motor is repurposed (4 axis robot).
+Uncommenting the option below enables homing of four axes (XYZ and E).
+Currently only works if all of the following conditions are true:
 
-## Building Marlin 2.0
+1) Cartesian 4 axis robot (CORE, DELTA and SCARA kinematics are untested).
+2) Not more than one endstop (limit switch) per axis (untested).
+3) E_STOP_PIN or (E_MIN_PIN and/or E_MIN_PIN) defined and positive
+    (usually in pins_MOTHERBOARD.h file, where
+    MOTHERBOARD is the identifier for the controller board in use) and
+    connected to the limit switch for the E-axis
+4) No DUAL_X_CARRIAGE (untested)
+5) No multiple stepper drivers per axis (untested)
+6) No LINEAR_ADVANCE
+7) No SENSORLESS_HOMING (untested)
+8) Only EXTRUDERS 1. EXTRUDERS > 1 may work if SINGLENOZZLE is enabled (untested)
 
-To build Marlin 2.0 you'll need [Arduino IDE 1.8.8 or newer](https://www.arduino.cc/en/main/software) or [PlatformIO](http://docs.platformio.org/en/latest/ide.html#platformio-ide). We've posted detailed instructions on [Building Marlin with Arduino](http://marlinfw.org/docs/basics/install_arduino.html) and [Building Marlin with PlatformIO for ReArm](http://marlinfw.org/docs/basics/install_rearm.html) (which applies well to other 32-bit boards).
+When E_AXIS_HOMING is enabled (#define E_AXIS_HOMING), enabling
+(USE_EMIN_PLUG or USE_EMAX_PLUG), MIN_SOFTWARE_ENDSTOP_E and MAX_SOFTWARE_ENDSTOP_E is recommended.
+
+## Building Marlin 2.0.x_E_homing
+
+To build Marlin 2.0.x_E_homing you'll need [PlatformIO](http://docs.platformio.org/en/latest/ide.html#platformio-ide).you'll need [PlatformIO](http://docs.platformio.org/en/latest/ide.html#platformio-ide). The MarlinFirmware team has posted detailed instructions on [Building Marlin with PlatformIO](https://marlinfw.org/docs/basics/install_platformio.html).
 
 ## Hardware Abstraction Layer (HAL)
 
@@ -92,11 +113,11 @@ Marlin 2.0 introduces a layer of abstraction so that all the existing high-level
 
 ## Submitting Patches
 
-Proposed patches should be submitted as a Pull Request against the ([bugfix-2.0.x](https://github.com/MarlinFirmware/Marlin/tree/bugfix-2.0.x)) branch.
+Proposed patches should be submitted as a Pull Request against the ([bugfix-2.0.x](https://github.com/MarlinFirmware/Marlin/tree/2.0.x_E_homing)) branch.
 
 - This branch is for fixing bugs and integrating any new features for the duration of the Marlin 2.0.x life-cycle.
 - Follow the [Coding Standards](http://marlinfw.org/docs/development/coding_standards.html) to gain points with the maintainers.
-- Please submit your questions and concerns to the [Issue Queue](https://github.com/MarlinFirmware/Marlin/issues).
+- Please submit your questions and concerns to the [Issue Queue](https://github.com/DerAndere1/Marlin/issues).
 
 ### [RepRap.org Wiki Page](http://reprap.org/wiki/Marlin)
 
@@ -111,8 +132,12 @@ The current Marlin dev team consists of:
  - João Brazio [[@jbrazio](https://github.com/jbrazio)] - Portugal
  - Erik van der Zalm [[@ErikZalm](https://github.com/ErikZalm)] - Netherlands &nbsp; [![Flattr Erik](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=ErikZalm&url=https://github.com/MarlinFirmware/Marlin&title=Marlin&language=&tags=github&category=software)
 
+Marlin 2.0.x_E_homing is modified by:
+
+ - DerAndere [[@DerAndere1](https://github.com/DerAndere1)] - Germany
+
 ## License
 
-Marlin is published under the [GPL license](/LICENSE) because we believe in open development. The GPL comes with both rights and obligations. Whether you use Marlin firmware as the driver for your open or closed-source product, you must keep Marlin open, and you must provide your compatible Marlin source code to end users upon request. The most straightforward way to comply with the Marlin license is to make a fork of Marlin on Github, perform your modifications, and direct users to your modified fork.
+Marlin 2.0.x_E_homing is published under the [GPL license](/LICENSE) because we believe in open development. The GPL comes with both rights and obligations. Whether you use Marlin firmware as the driver for your open or closed-source product, you must keep Marlin open, and you must provide your compatible Marlin source code to end users upon request. The most straightforward way to comply with the Marlin license is to make a fork of Marlin on Github, perform your modifications, and direct users to your modified fork.
 
 While we can't prevent the use of this code in products (3D printers, CNC, etc.) that are closed source or crippled by a patent, we would prefer that you choose another firmware or, better yet, make your own.
