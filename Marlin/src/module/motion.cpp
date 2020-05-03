@@ -128,13 +128,13 @@ xyze_pos_t destination; // {0}
 #endif
 
 // TODO (DerAndere1): Test
-// #if ENABLED(E_AXIS_HOMING)
-//// The active extruder (tool). Set with T<extruder> command.
-//  #if EXTRUDERS > 1
-//    uint8_t active_extruder = 0; // = 0
-//    float extruder_position[EXTRUDERS];//variable to store individual e pos
-//  #endif
-//#endif
+// The active extruder (tool). Set with T<extruder> command.
+#if EXTRUDERS > 1
+  uint8_t active_extruder = 0; // = 0
+  #if ENABLED(E_AXIS_HOMING)
+    float extruder_position[EXTRUDERS]; // {0} (variable to store individual e pos)
+  #endif
+#endif
 
 #if ENABLED(LCD_SHOW_E_TOTAL)
   float e_move_accumulator; // = 0

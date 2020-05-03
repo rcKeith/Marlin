@@ -118,7 +118,9 @@ extern int16_t feedrate_percentage;
 // The active extruder (tool). Set with T<extruder> command.
 #if EXTRUDERS > 1
   extern uint8_t active_extruder;
-  extern float  extruder_position[EXTRUDERS];
+  #if ENABLED(E_AXIS_HOMING)
+    extern float  extruder_position[EXTRUDERS];
+  #endif
 #else
   constexpr uint8_t active_extruder = 0;
 #endif

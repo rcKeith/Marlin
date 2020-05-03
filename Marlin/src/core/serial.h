@@ -292,11 +292,20 @@ void serialprint_truefalse(const bool tf);
 void serial_spaces(uint8_t count);
 
 void print_bin(const uint16_t val);
-void print_xyz(const float &x, const float &y, const float &z, PGM_P const prefix=nullptr, PGM_P const suffix=nullptr);
 
-inline void print_xyz(const xyz_pos_t &xyz, PGM_P const prefix=nullptr, PGM_P const suffix=nullptr) {
-  print_xyz(xyz.x, xyz.y, xyz.z, prefix, suffix);
+#if ENABLED(E_AXIS_HOMING)
+  void print_xyz(const float &x, const float &y, const float &z, const float &e, PGM_P const prefix=nullptr, PGM_P const suffix=nullptr);
+
+  inline void print_xyz(const xyze_pos_t &xyz, PGM_P const prefix=nullptr, PGM_P const suffix=nullptr) {
+    print_xyz(xyz.x, xyz.y, xyz.z, xyz.e, prefix, suffix);
 }
+#else
+  void print_xyz(const float &x, const float &y, const float &z, PGM_P const prefix=nullptr, PGM_P const suffix=nullptr);
+
+  inline void print_xyz(const xyz_pos_t &xyz, PGM_P const prefix=nullptr, PGM_P const suffix=nullptr) {
+    print_xyz(xyz.x, xyz.y, xyz.z, prefix, suffix);
+}
+#endif
 
 #define SERIAL_POS(SUFFIX,VAR) do { print_xyz(VAR, PSTR("  " STRINGIFY(VAR) "="), PSTR(" : " SUFFIX "\n")); }while(0)
 #define SERIAL_XYZ(PREFIX,V...) do { print_xyz(V, PSTR(PREFIX), nullptr); }while(0)

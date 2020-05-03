@@ -65,10 +65,20 @@ void print_bin(uint16_t val) {
   }
 }
 
-extern const char SP_X_STR[], SP_Y_STR[], SP_Z_STR[];
+#if ENABLED(E_AXIS_HOMING)
+  extern const char SP_X_STR[], SP_Y_STR[], SP_Z_STR[], SP_E_STR[];
 
-void print_xyz(const float &x, const float &y, const float &z, PGM_P const prefix/*=nullptr*/, PGM_P const suffix/*=nullptr*/) {
-  serialprintPGM(prefix);
-  SERIAL_ECHOPAIR_P(SP_X_STR, x, SP_Y_STR, y, SP_Z_STR, z);
-  if (suffix) serialprintPGM(suffix); else SERIAL_EOL();
-}
+  void print_xyz(const float &x, const float &y, const float &z, const float &e, PGM_P const prefix/*=nullptr*/, PGM_P const suffix/*=nullptr*/) {
+    serialprintPGM(prefix);
+    SERIAL_ECHOPAIR_P(SP_X_STR, x, SP_Y_STR, y, SP_Z_STR, z, SP_E_STR, e);
+    if (suffix) serialprintPGM(suffix); else SERIAL_EOL();
+  }
+#else
+  extern const char SP_X_STR[], SP_Y_STR[], SP_Z_STR[];
+
+  void print_xyz(const float &x, const float &y, const float &z, PGM_P const prefix/*=nullptr*/, PGM_P const suffix/*=nullptr*/) {
+    serialprintPGM(prefix);
+    SERIAL_ECHOPAIR_P(SP_X_STR, x, SP_Y_STR, y, SP_Z_STR, z);
+    if (suffix) serialprintPGM(suffix); else SERIAL_EOL();
+  }
+#endif
