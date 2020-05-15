@@ -2,7 +2,7 @@
  
 Additional documentation can be found in the 
 repository [DerAndere1/Marlin at https://github.com](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot) 
-or on the [PipetBot-A8 project homepage](https://derandere.gitlab.io/pipetbot-a8.html) 
+or on the [PipetBot-A8 project homepage](https://derandere.gitlab.io/pipetbot-a8) 
 that is part of the [authors homepage](https://derandere.gitlab.io). 
 For CNC machines with additional axes I, (J, (K)) that drive pumps or other tools,
 e.g. lab robots (liquid handling robots, "pipetting robots"). 
