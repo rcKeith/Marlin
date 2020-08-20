@@ -317,10 +317,30 @@ void serialprint_truefalse(const bool tf);
 void serial_spaces(uint8_t count);
 
 void print_bin(const uint16_t val);
-void print_xyz(const float &x, const float &y, const float &z, PGM_P const prefix=nullptr, PGM_P const suffix=nullptr);
+void print_xyz(const float &x, const float &y, const float &z, 
+  #if NON_E_AXES > 3 
+    const float &i,
+    #if NON_E_AXES > 4 
+      const float &j,
+      #if NON_E_AXES > 5 
+        const float &k,
+      #endif
+    #endif
+  #endif
+  PGM_P const prefix=nullptr, PGM_P const suffix=nullptr);
 
 inline void print_xyz(const xyz_pos_t &xyz, PGM_P const prefix=nullptr, PGM_P const suffix=nullptr) {
-  print_xyz(xyz.x, xyz.y, xyz.z, prefix, suffix);
+  print_xyz(xyz.x, xyz.y, xyz.z, 
+  #if NON_E_AXES > 3 
+    xyz.i,
+    #if NON_E_AXES > 4 
+      xyz.j,
+      #if NON_E_AXES > 5 
+        xyz.k,
+      #endif
+    #endif
+  #endif
+  prefix, suffix);
 }
 
 #define SERIAL_POS(SUFFIX,VAR) do { print_xyz(VAR, PSTR("  " STRINGIFY(VAR) "="), PSTR(" : " SUFFIX "\n")); }while(0)

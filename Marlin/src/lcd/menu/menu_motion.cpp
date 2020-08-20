@@ -76,6 +76,24 @@ static void _lcd_move_xyz(PGM_P const name, const AxisEnum axis) {
         case Z_AXIS:
           TERN_(MIN_SOFTWARE_ENDSTOP_Z, min = soft_endstop.min.z);
           TERN_(MAX_SOFTWARE_ENDSTOP_Z, max = soft_endstop.max.z);
+        #if NON_E_AXES > 3 // TOTO: Test for NON_E_AXES > 3
+          break;
+          case I_AXIS:
+            TERN_(MIN_SOFTWARE_ENDSTOP_I, min = soft_endstop.min.i);
+            TERN_(MIN_SOFTWARE_ENDSTOP_I, max = soft_endstop.max.i);
+          #if NON_E_AXES > 4
+            break;
+            case J_AXIS:
+            TERN_(MIN_SOFTWARE_ENDSTOP_J, min = soft_endstop.min.j);
+            TERN_(MIN_SOFTWARE_ENDSTOP_J, max = soft_endstop.max.j);
+            #if NON_E_AXES > 5
+              break;
+              case K_AXIS:
+                TERN_(MIN_SOFTWARE_ENDSTOP_K, min = soft_endstop.min.k);
+                TERN_(MIN_SOFTWARE_ENDSTOP_K, max = soft_endstop.max.k);
+            #endif
+          #endif
+        #endif
         default: break;
       }
     #endif // HAS_SOFTWARE_ENDSTOPS
@@ -120,6 +138,16 @@ static void _lcd_move_xyz(PGM_P const name, const AxisEnum axis) {
 void lcd_move_x() { _lcd_move_xyz(GET_TEXT(MSG_MOVE_X), X_AXIS); }
 void lcd_move_y() { _lcd_move_xyz(GET_TEXT(MSG_MOVE_Y), Y_AXIS); }
 void lcd_move_z() { _lcd_move_xyz(GET_TEXT(MSG_MOVE_Z), Z_AXIS); }
+  #if NON_E_AXES > 3
+    void lcd_move_i() { _lcd_move_xyz(GET_TEXT(MSG_MOVE_I), I_AXIS); }
+    #if NON_E_AXES > 4
+      void lcd_move_j() { _lcd_move_xyz(GET_TEXT(MSG_MOVE_J), J_AXIS); }
+      #if NON_E_AXES > 5
+        void lcd_move_k() { _lcd_move_xyz(GET_TEXT(MSG_MOVE_K), K_AXIS); }
+      #endif
+    #endif
+  #endif
+
 
 #if E_MANUAL
 
@@ -234,6 +262,16 @@ void menu_move() {
     #endif
 
     SUBMENU(MSG_MOVE_Z, []{ _menu_move_distance(Z_AXIS, lcd_move_z); });
+    #if NON_E_AXES > 3
+      SUBMENU(MSG_MOVE_I, []{ _menu_move_distance(I_AXIS, lcd_move_i); });
+      #if NON_E_AXES > 4
+        SUBMENU(MSG_MOVE_J, []{ _menu_move_distance(J_AXIS, lcd_move_j); });
+        #if NON_E_AXES > 5
+          SUBMENU(MSG_MOVE_K, []{ _menu_move_distance(K_AXIS, lcd_move_k); });
+        #endif
+      #endif
+    #endif
+
   }
   else
     GCODES_ITEM(MSG_AUTO_HOME, G28_STR);
@@ -328,6 +366,15 @@ void menu_motion() {
     GCODES_ITEM(MSG_AUTO_HOME_X, PSTR("G28X"));
     GCODES_ITEM(MSG_AUTO_HOME_Y, PSTR("G28Y"));
     GCODES_ITEM(MSG_AUTO_HOME_Z, PSTR("G28Z"));
+    #if NON_E_AXES > 3
+      GCODES_ITEM(MSG_AUTO_HOME_I, PSTR("G28I"));
+      #if NON_E_AXES > 4
+        GCODES_ITEM(MSG_AUTO_HOME_J, PSTR("G28J"));
+        #if NON_E_AXES > 5
+          GCODES_ITEM(MSG_AUTO_HOME_K, PSTR("G28K"));
+        #endif
+      #endif
+    #endif
   #endif
 
   //

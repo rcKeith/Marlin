@@ -155,6 +155,78 @@
 #define STR_Z3_MAX                          "z3_max"
 #define STR_Z4_MIN                          "z4_min"
 #define STR_Z4_MAX                          "z4_max"
+#if NON_E_AXES > 3
+  #if AXIS4_NAME == 'A'
+    #define STR_I_MIN                           "a_min"
+    #define STR_I_MAX                           "a_max"
+  #elif AXIS4_NAME == 'B'
+    #define STR_I_MIN                           "b_min"
+    #define STR_I_MAX                           "b_max"
+  #elif AXIS4_NAME == 'C'
+    #define STR_I_MIN                           "c_min"
+    #define STR_I_MAX                           "c_max"
+  #elif AXIS4_NAME == 'U'
+    #define STR_I_MIN                           "u_min"
+    #define STR_I_MAX                           "u_max"
+  #elif AXIS4_NAME == 'V'
+    #define STR_I_MIN                           "v_min"
+    #define STR_I_MAX                           "v_max"
+  #elif AXIS4_NAME == 'W'
+    #define STR_I_MIN                           "w_min"
+    #define STR_I_MAX                           "w_max"
+  #else
+    #define STR_I_MIN                           "i_min"
+    #define STR_I_MAX                           "i_max"
+  #endif
+  #if NON_E_AXES > 4
+    #if AXIS5_STR == 'B'
+      #define STR_J_MIN                           "b_min"
+      #define STR_J_MAX                           "b_max"
+    #elif AXIS5_NAME == 'C'
+      #define STR_J_MIN                           "c_min"
+      #define STR_J_MAX                           "c_max"
+    #elif AXIS5_NAME == 'V'
+      #define STR_J_MIN                           "v_min"
+      #define STR_J_MAX                           "v_max"
+    #elif AXIS5_NAME == 'W'
+      #define STR_J_MIN                           "w_min"
+      #define STR_J_MAX                           "w_max"
+    #else
+      #define STR_J_MIN                           "j_min"
+      #define STR_J_MAX                           "j_max"
+    #endif
+    #if NON_E_AXES > 5
+      #if AXIS6_NAME == 'C'
+        #define STR_K_MIN                           "c_min"
+        #define STR_K_MAX                           "c_max"
+      #elif AXIS6_NAME == 'W'
+        #define STR_K_MIN                           "w_min"
+        #define STR_K_MAX                           "w_max"
+      #else
+        #define STR_K_MIN                           "k_min"
+        #define STR_K_MAX                           "k_max"
+      #endif
+    #endif
+  #endif
+#endif
+#ifndef STR_I_MIN
+  #define STR_I_MIN                           "i_min"
+#endif
+#ifndef STR_I_MAX
+  #define STR_I_MAX                           "i_max"
+#endif
+#ifndef STR_J_MIN
+  #define STR_J_MIN                           "j_min"
+#endif
+#ifndef STR_J_MAX
+  #define STR_J_MAX                           "j_max"
+#endif
+#ifndef STR_K_MIN
+  #define STR_K_MIN                           "k_min"
+#endif
+#ifndef STR_K_MAX
+  #define STR_K_MAX                           "k_max"
+#endif
 #define STR_Z_PROBE                         "z_probe"
 #define STR_FILAMENT_RUNOUT_SENSOR          "filament"
 #define STR_PROBE_OFFSET                    "Probe Offset"
@@ -281,9 +353,63 @@
 #define LANGUAGE_INCL_(M) STRINGIFY_(../lcd/language/language_##M.h)
 #define LANGUAGE_INCL(M) LANGUAGE_INCL_(M)
 
+
+#if AXIS4_NAME == 'A'
+  #define AXIS4_STR "A"
+#elif AXIS4_NAME == 'B'
+  #define AXIS4_STR "B"
+#elif AXIS4_NAME == 'C'
+  #define AXIS4_STR "C"
+#elif AXIS4_NAME == 'U'
+  #define AXIS4_STR "U"
+#elif AXIS4_NAME == 'V'
+  #define AXIS4_STR "V"
+#elif AXIS4_NAME == 'W'
+  #define AXIS4_STR "W"
+#else
+  #define AXIS4_STR "I"
+#endif
+
+#if AXIS5_NAME == 'A'
+  #define AXIS5_STR "A"
+#elif AXIS5_NAME == 'B'
+  #define AXIS5_STR "B"
+#elif AXIS5_NAME == 'C'
+  #define AXIS5_STR "C"
+#elif AXIS5_NAME == 'U'
+  #define AXIS5_STR "U"
+#elif AXIS5_NAME == 'V'
+  #define AXIS5_STR "V"
+#elif AXIS5_NAME == 'W'
+  #define AXIS5_STR "W"
+#else
+  #define AXIS5_STR "J"
+#endif
+
+#if AXIS6_NAME == 'A'
+  #define AXIS6_STR "A"
+#elif AXIS6_NAME == 'B'
+  #define AXIS6_STR "B"
+#elif AXIS6_NAME == 'C'
+  #define AXIS6_STR "C"
+#elif AXIS6_NAME == 'U'
+  #define AXIS6_STR "U"
+#elif AXIS6_NAME == 'V'
+  #define AXIS6_STR "V"
+#elif AXIS6_NAME == 'W'
+  #define AXIS6_STR "W"
+#else
+  #define AXIS6_STR "K"
+#endif
+
+
 #define STR_X "X"
 #define STR_Y "Y"
 #define STR_Z "Z"
+#define STR_I AXIS4_STR
+#define STR_J AXIS5_STR
+#define STR_K AXIS6_STR
+
 #define STR_E "E"
 #if IS_KINEMATIC
   #define STR_A "A"
@@ -303,6 +429,9 @@
 #define LCD_STR_A STR_A
 #define LCD_STR_B STR_B
 #define LCD_STR_C STR_C
+#define LCD_STR_I STR_I
+#define LCD_STR_J STR_J
+#define LCD_STR_K STR_K
 #define LCD_STR_E STR_E
 
 #if HAS_CHARACTER_LCD

@@ -64,4 +64,17 @@ void setup_endstop_interrupts() {
   TERN_(HAS_Z4_MAX, _ATTACH(Z4_MAX_PIN));
   TERN_(HAS_Z4_MIN, _ATTACH(Z4_MIN_PIN));
   TERN_(HAS_Z_MIN_PROBE_PIN, _ATTACH(Z_MIN_PROBE_PIN));
+  #if NON_E_AXES > 3
+    TERN_(HAS_I_MAX, _ATTACH(I_MAX_PIN));  
+    TERN_(HAS_I_MIN, _ATTACH(I_MIN_PIN));  
+    #if NON_E_AXES > 4
+      TERN_(HAS_J_MAX, _ATTACH(J_MAX_PIN));  
+      TERN_(HAS_J_MIN, _ATTACH(J_MIN_PIN));  
+      #if NON_E_AXES > 5
+        TERN_(HAS_K_MAX, _ATTACH(K_MAX_PIN));
+        TERN_(HAS_K_MIN, _ATTACH(K_MIN_PIN));  
+      #endif
+    #endif
+  #endif
+
 }

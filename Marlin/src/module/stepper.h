@@ -150,6 +150,30 @@
 #else
   #define ISR_Z_STEPPER_CYCLES       0UL
 #endif
+#if NON_E_AXES > 3 // TODO Try commenting out
+  #if HAS_I_STEP
+    #define ISR_I_STEPPER_CYCLES       ISR_STEPPER_CYCLES
+  #else
+    #define ISR_START_I_STEPPER_CYCLES 0UL
+    #define ISR_I_STEPPER_CYCLES       0UL
+  #endif
+  #if NON_E_AXES > 4 // TODO Try commenting out
+    #if HAS_J_STEP
+      #define ISR_J_STEPPER_CYCLES       ISR_STEPPER_CYCLES
+    #else
+      #define ISR_START_J_STEPPER_CYCLES 0UL
+      #define ISR_J_STEPPER_CYCLES       0UL
+    #endif
+    #if NON_E_AXES > 5 // TODO Try commenting out
+      #if HAS_K_STEP
+        #define ISR_K_STEPPER_CYCLES       ISR_STEPPER_CYCLES
+      #else
+        #define ISR_START_K_STEPPER_CYCLES 0UL
+        #define ISR_K_STEPPER_CYCLES       0UL
+      #endif
+    #endif // TODO Try commenting out
+  #endif // TODO Try commenting out
+#endif // TODO Try commenting out
 
 // E is always interpolated, even for mixing extruders
 #define ISR_E_STEPPER_CYCLES         ISR_STEPPER_CYCLES
@@ -162,7 +186,15 @@
 #endif
 
 // And the total minimum loop time, not including the base
-#define MIN_ISR_LOOP_CYCLES (ISR_X_STEPPER_CYCLES + ISR_Y_STEPPER_CYCLES + ISR_Z_STEPPER_CYCLES + ISR_E_STEPPER_CYCLES + ISR_MIXING_STEPPER_CYCLES)
+#if NON_E_AXES == 6
+  #define MIN_ISR_LOOP_CYCLES (ISR_X_STEPPER_CYCLES + ISR_Y_STEPPER_CYCLES + ISR_Z_STEPPER_CYCLES + ISR_I_STEPPER_CYCLES + ISR_J_STEPPER_CYCLES + ISR_K_STEPPER_CYCLES + ISR_E_STEPPER_CYCLES + ISR_MIXING_STEPPER_CYCLES)
+#elif NON_E_AXES == 5
+  #define MIN_ISR_LOOP_CYCLES (ISR_X_STEPPER_CYCLES + ISR_Y_STEPPER_CYCLES + ISR_Z_STEPPER_CYCLES + ISR_I_STEPPER_CYCLES + ISR_J_STEPPER_CYCLES + ISR_E_STEPPER_CYCLES + ISR_MIXING_STEPPER_CYCLES)
+#elif NON_E_AXES == 4
+  #define MIN_ISR_LOOP_CYCLES (ISR_X_STEPPER_CYCLES + ISR_Y_STEPPER_CYCLES + ISR_Z_STEPPER_CYCLES + ISR_I_STEPPER_CYCLES + ISR_E_STEPPER_CYCLES + ISR_MIXING_STEPPER_CYCLES)
+#else
+  #define MIN_ISR_LOOP_CYCLES (ISR_X_STEPPER_CYCLES + ISR_Y_STEPPER_CYCLES + ISR_Z_STEPPER_CYCLES + ISR_E_STEPPER_CYCLES + ISR_MIXING_STEPPER_CYCLES)
+#endif
 
 // Calculate the minimum MPU cycles needed per pulse to enforce, limited to the max stepper rate
 #define _MIN_STEPPER_PULSE_CYCLES(N) _MAX(uint32_t((F_CPU) / (MAXIMUM_STEPPER_RATE)), ((F_CPU) / 500000UL) * (N))
@@ -249,7 +281,7 @@ class Stepper {
       #ifndef PWM_MOTOR_CURRENT
         #define PWM_MOTOR_CURRENT DEFAULT_PWM_MOTOR_CURRENT
       #endif
-      static uint32_t motor_current_setting[3];
+      static uint32_t motor_current_setting[3]; // TODO: longer array if NON_E_AXES > 3 ?
       static bool initialized;
     #endif
 
@@ -423,8 +455,28 @@ class Stepper {
     static int32_t position(const AxisEnum axis);
 
     // Set the current position in steps
-    static void set_position(const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &e);
-    static inline void set_position(const xyze_long_t &abce) { set_position(abce.a, abce.b, abce.c, abce.e); }
+    static void set_position(const int32_t &a, const int32_t &b, const int32_t &c
+      #if NON_E_AXES > 3
+        , const int32_t &i
+        #if NON_E_AXES > 4
+          , const int32_t &j
+          #if NON_E_AXES > 5
+            , const int32_t &k
+          #endif
+        #endif
+      #endif
+      , const int32_t &e);
+    static inline void set_position(const xyze_long_t &abce) { set_position(abce.a, abce.b, abce.c
+      #if NON_E_AXES > 3
+        , abce.i
+        #if NON_E_AXES > 4
+          , abce.j
+          #if NON_E_AXES > 5
+            , abce.k
+          #endif
+        #endif
+      #endif
+      , abce.e); }
     static void set_axis_position(const AxisEnum a, const int32_t &v);
 
     // Report the positions of the steppers, in steps
@@ -519,8 +571,28 @@ class Stepper {
   private:
 
     // Set the current position in steps
-    static void _set_position(const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &e);
-    FORCE_INLINE static void _set_position(const abce_long_t &spos) { _set_position(spos.a, spos.b, spos.c, spos.e); }
+    static void _set_position(const int32_t &a, const int32_t &b, const int32_t &c
+      #if NON_E_AXES > 3
+        , const int32_t &i
+        #if NON_E_AXES > 4
+          , const int32_t &j
+          #if NON_E_AXES > 5
+            , const int32_t &k
+          #endif
+        #endif
+      #endif
+      , const int32_t &e);
+    FORCE_INLINE static void _set_position(const abce_long_t &spos) { _set_position(spos.a, spos.b, spos.c
+      #if NON_E_AXES > 3
+        , spos.i
+        #if NON_E_AXES > 4
+          , spos.j
+          #if NON_E_AXES > 5
+            , spos.k
+          #endif
+        #endif
+      #endif
+      , spos.e); }
 
     FORCE_INLINE static uint32_t calc_timer_interval(uint32_t step_rate, uint8_t* loops) {
       uint32_t timer;

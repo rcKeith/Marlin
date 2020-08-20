@@ -66,7 +66,16 @@
 #define AXIS_DRIVER_TYPE_Z2(T) (NUM_Z_STEPPER_DRIVERS >= 2 && _AXIS_DRIVER_TYPE(Z2,T))
 #define AXIS_DRIVER_TYPE_Z3(T) (NUM_Z_STEPPER_DRIVERS >= 3 && _AXIS_DRIVER_TYPE(Z3,T))
 #define AXIS_DRIVER_TYPE_Z4(T) (NUM_Z_STEPPER_DRIVERS >= 4 && _AXIS_DRIVER_TYPE(Z4,T))
-
+#if NON_E_AXES > 3
+  #define AXIS_DRIVER_TYPE_I(T) _AXIS_DRIVER_TYPE(I,T)
+  #if NON_E_AXES > 4
+    #define AXIS_DRIVER_TYPE_J(T) _AXIS_DRIVER_TYPE(J,T)
+    #if NON_E_AXES > 5
+      #define AXIS_DRIVER_TYPE_K(T) _AXIS_DRIVER_TYPE(K,T)
+    #endif
+  #endif
+#endif
+ 
 #define AXIS_DRIVER_TYPE_E(N,T) (E_STEPPERS > N && _AXIS_DRIVER_TYPE(E##N,T))
 #define AXIS_DRIVER_TYPE_E0(T) AXIS_DRIVER_TYPE_E(0,T)
 #define AXIS_DRIVER_TYPE_E1(T) AXIS_DRIVER_TYPE_E(1,T)
@@ -82,9 +91,29 @@
 #define _OR_ADTE(N,T)   || AXIS_DRIVER_TYPE_E(N,T)
 #define HAS_E_DRIVER(T) (0 RREPEAT2(E_STEPPERS, _OR_ADTE, T))
 
+#if NON_E_AXES == 4
+#define HAS_DRIVER(T) (  AXIS_DRIVER_TYPE_X(T)  || AXIS_DRIVER_TYPE_Y(T)  || AXIS_DRIVER_TYPE_Z(T)  \
+                      || AXIS_DRIVER_TYPE_X2(T) || AXIS_DRIVER_TYPE_Y2(T) || AXIS_DRIVER_TYPE_Z2(T) \
+                      || AXIS_DRIVER_TYPE_Z3(T) || AXIS_DRIVER_TYPE_Z4(T) \
+                      || AXIS_DRIVER_TYPE_I(T)  \
+                      || HAS_E_DRIVER(T) )
+#elif NON_E_AXES == 5
+#define HAS_DRIVER(T) (  AXIS_DRIVER_TYPE_X(T)  || AXIS_DRIVER_TYPE_Y(T)  || AXIS_DRIVER_TYPE_Z(T)  \
+                      || AXIS_DRIVER_TYPE_X2(T) || AXIS_DRIVER_TYPE_Y2(T) || AXIS_DRIVER_TYPE_Z2(T) \
+                      || AXIS_DRIVER_TYPE_Z3(T) || AXIS_DRIVER_TYPE_Z4(T) \
+                      || AXIS_DRIVER_TYPE_I(T)  || AXIS_DRIVER_TYPE_J(T) \
+                      || HAS_E_DRIVER(T) )
+#elif NON_E_AXES == 6
+#define HAS_DRIVER(T) (  AXIS_DRIVER_TYPE_X(T)  || AXIS_DRIVER_TYPE_Y(T)  || AXIS_DRIVER_TYPE_Z(T)  \
+                      || AXIS_DRIVER_TYPE_X2(T) || AXIS_DRIVER_TYPE_Y2(T) || AXIS_DRIVER_TYPE_Z2(T) \
+                      || AXIS_DRIVER_TYPE_Z3(T) || AXIS_DRIVER_TYPE_Z4(T) \
+                      || AXIS_DRIVER_TYPE_I(T)  || AXIS_DRIVER_TYPE_J(T)  || AXIS_DRIVER_TYPE_K(T)  \
+                      || HAS_E_DRIVER(T) )
+#else
 #define HAS_DRIVER(T) (  AXIS_DRIVER_TYPE_X(T)  || AXIS_DRIVER_TYPE_Y(T)  || AXIS_DRIVER_TYPE_Z(T)  \
                       || AXIS_DRIVER_TYPE_X2(T) || AXIS_DRIVER_TYPE_Y2(T) || AXIS_DRIVER_TYPE_Z2(T) \
                       || AXIS_DRIVER_TYPE_Z3(T) || AXIS_DRIVER_TYPE_Z4(T) || HAS_E_DRIVER(T) )
+#endif
 
 //
 // Trinamic Stepper Drivers
@@ -153,9 +182,32 @@
 #define _OR_EAH(N,T)    || AXIS_HAS_##T(E##N)
 #define E_AXIS_HAS(T)   (0 _OR_EAH(0,T) _OR_EAH(1,T) _OR_EAH(2,T) _OR_EAH(3,T) _OR_EAH(4,T) _OR_EAH(5,T) _OR_EAH(6,T) _OR_EAH(7,T))
 
+#if NON_E_AXES == 6
+#define ANY_AXIS_HAS(T) (    AXIS_HAS_##T(X)  || AXIS_HAS_##T(X2) \
+                          || AXIS_HAS_##T(Y)  || AXIS_HAS_##T(Y2) \
+                          || AXIS_HAS_##T(Z)  || AXIS_HAS_##T(Z2) \
+                          || AXIS_HAS_##T(Z3) || AXIS_HAS_##T(Z4) \
+                          || AXIS_HAS_##T(I)  || AXIS_HAS_##T(J)  || AXIS_HAS_##T(K) \
+                          || E_AXIS_HAS(T) )
+#elif NON_E_AXES == 5
+#define ANY_AXIS_HAS(T) (    AXIS_HAS_##T(X)  || AXIS_HAS_##T(X2) \
+                          || AXIS_HAS_##T(Y)  || AXIS_HAS_##T(Y2) \
+                          || AXIS_HAS_##T(Z)  || AXIS_HAS_##T(Z2) \
+                          || AXIS_HAS_##T(Z3) || AXIS_HAS_##T(Z4) \
+                          || AXIS_HAS_##T(I)  || AXIS_HAS_##T(J)  \
+                          || E_AXIS_HAS(T) )
+#elif NON_E_AXES == 4
+#define ANY_AXIS_HAS(T) (    AXIS_HAS_##T(X)  || AXIS_HAS_##T(X2) \
+                          || AXIS_HAS_##T(Y)  || AXIS_HAS_##T(Y2) \
+                          || AXIS_HAS_##T(Z)  || AXIS_HAS_##T(Z2) \
+                          || AXIS_HAS_##T(Z3) || AXIS_HAS_##T(Z4) \
+                          || AXIS_HAS_##T(I) \
+                          || E_AXIS_HAS(T) )
+#else
 #define ANY_AXIS_HAS(T) (    AXIS_HAS_##T(X)  || AXIS_HAS_##T(Y)  || AXIS_HAS_##T(Z)  \
                           || AXIS_HAS_##T(X2) || AXIS_HAS_##T(Y2) || AXIS_HAS_##T(Z2) \
                           || AXIS_HAS_##T(Z3) || AXIS_HAS_##T(Z4) || E_AXIS_HAS(T) )
+#endif
 
 #if ANY_AXIS_HAS(STEALTHCHOP)
   #define HAS_STEALTHCHOP 1

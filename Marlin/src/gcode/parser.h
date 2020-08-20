@@ -217,7 +217,17 @@ public:
 
   // Seen any axis parameter
   static inline bool seen_axis() {
-    return seen_test('X') || seen_test('Y') || seen_test('Z') || seen_test('E');
+    return seen_test('X') || seen_test('Y') || seen_test('Z')
+      #if NON_E_AXES > 3
+        || seen_test(AXIS4_NAME)
+        #if NON_E_AXES > 4
+          || seen_test(AXIS5_NAME)
+          #if NON_E_AXES > 5
+            || seen_test(AXIS6_NAME)
+          #endif
+        #endif
+      #endif
+      || seen_test('E');
   }
 
   #if ENABLED(GCODE_QUOTED_STRINGS)

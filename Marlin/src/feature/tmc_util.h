@@ -326,14 +326,44 @@ void tmc_print_current(TMC &st) {
 #endif
 
 void monitor_tmc_drivers();
-void test_tmc_connection(const bool test_x, const bool test_y, const bool test_z, const bool test_e);
+void test_tmc_connection(const bool test_x, const bool test_y, const bool test_z, 
+  #if NON_E_AXES > 3
+    const bool test_i, 
+    #if NON_E_AXES > 4
+      const bool test_j, 
+      #if NON_E_AXES > 5
+        const bool test_k, 
+      #endif
+    #endif
+  #endif
+const bool test_e);
 
 #if ENABLED(TMC_DEBUG)
   #if ENABLED(MONITOR_DRIVER_STATUS)
     void tmc_set_report_interval(const uint16_t update_interval);
   #endif
-  void tmc_report_all(const bool print_x, const bool print_y, const bool print_z, const bool print_e);
-  void tmc_get_registers(const bool print_x, const bool print_y, const bool print_z, const bool print_e);
+  void tmc_report_all(const bool print_x, const bool print_y, const bool print_z, 
+    #if NON_E_AXES > 3
+      const bool print_i,
+      #if NON_E_AXES > 4
+        const bool print_j,
+        #if NON_E_AXES > 5
+          const bool print_k,
+        #endif
+      #endif
+    #endif
+  const bool print_e);
+  void tmc_get_registers(const bool print_x, const bool print_y, const bool print_z, 
+    #if NON_E_AXES > 3
+      const bool print_i,
+      #if NON_E_AXES > 4
+        const bool print_j,
+        #if NON_E_AXES > 5
+          const bool print_k,
+        #endif
+      #endif
+    #endif
+  const bool print_e);
 #endif
 
 /**
@@ -346,7 +376,17 @@ void test_tmc_connection(const bool test_x, const bool test_y, const bool test_z
 #if USE_SENSORLESS
 
   // Track enabled status of stealthChop and only re-enable where applicable
-  struct sensorless_t { bool x, y, z, x2, y2, z2, z3, z4; };
+  struct sensorless_t { bool x, y, z, x2, y2, z2, z3, z4
+    #if NON_E_AXES > 3
+      , i
+      #if NON_E_AXES > 4
+        , j
+        #if NON_E_AXES > 5
+          , k
+        #endif
+      #endif
+    #endif
+  };
 
   #if ENABLED(IMPROVE_HOMING_RELIABILITY)
     extern millis_t sg_guard_period;

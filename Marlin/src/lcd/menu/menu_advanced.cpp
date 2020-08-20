@@ -364,6 +364,15 @@ void menu_backlash();
     EDIT_VMAX(A);
     EDIT_VMAX(B);
     EDIT_VMAX(C);
+    #if NON_E_AXES > 3
+      EDIT_VMAX(I);
+      #if NON_E_AXES > 4
+        EDIT_VMAX(J);
+        #if NON_E_AXES > 5
+          EDIT_VMAX(K);
+        #endif
+      #endif
+    #endif
 
     #if E_STEPPERS
       EDIT_ITEM_FAST(float3, MSG_VMAX_E, &planner.settings.max_feedrate_mm_s[E_AXIS_N(active_extruder)], 1, max_fr_edit_scaled.e);
@@ -418,6 +427,15 @@ void menu_backlash();
     EDIT_AMAX(A, 100);
     EDIT_AMAX(B, 100);
     EDIT_AMAX(C,  10);
+    #if NON_E_AXES > 3
+      EDIT_AMAX(I, 10);
+      #if NON_E_AXES > 4
+        EDIT_AMAX(J, 10);
+        #if NON_E_AXES > 5
+          EDIT_AMAX(K, 10);
+        #endif
+      #endif
+    #endif
 
     #if ENABLED(DISTINCT_E_FACTORS)
       EDIT_ITEM_FAST(long5_25, MSG_AMAX_E, &planner.settings.max_acceleration_mm_per_s2[E_AXIS_N(active_extruder)], 100, max_accel_edit_scaled.e, []{ planner.reset_acceleration_rates(); });
@@ -467,6 +485,16 @@ void menu_backlash();
       #else
         EDIT_ITEM_FAST(float52sign, MSG_VC_JERK, &planner.max_jerk.c, 0.1f, max_jerk_edit.c);
       #endif
+      #if NON_E_AXES > 3
+        EDIT_JERK(I);
+        #if NON_E_AXES > 4
+          EDIT_JERK(J);
+          #if NON_E_AXES > 5
+            EDIT_JERK(K);
+          #endif
+        #endif
+      #endif
+
       #if HAS_CLASSIC_E_JERK
         EDIT_ITEM_FAST(float52sign, MSG_VE_JERK, &planner.max_jerk.e, 0.1f, max_jerk_edit.e);
       #endif
@@ -501,6 +529,15 @@ void menu_advanced_steps_per_mm() {
   EDIT_QSTEPS(A);
   EDIT_QSTEPS(B);
   EDIT_QSTEPS(C);
+  #if NON_E_AXES > 3
+    EDIT_QSTEPS(I);
+    #if NON_E_AXES > 4
+      EDIT_QSTEPS(J);
+      #if NON_E_AXES > 5
+        EDIT_QSTEPS(K);
+      #endif
+    #endif
+  #endif
 
   #if ENABLED(DISTINCT_E_FACTORS)
     LOOP_L_N(n, E_STEPPERS)
