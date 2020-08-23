@@ -1,7 +1,7 @@
 ﻿# Marlin2ForPipetBot 3D Printer and Lab Robot CNC Firmware
  
 Additional documentation can be found in the 
-repository [DerAndere1/Marlin at https://github.com](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot) 
+repository [DerAndere1/Marlin at https://github.com](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot), the [Wiki](https://github.com/DerAndere1/Marlin/wiki)
 or on the [PipetBot-A8 project homepage](https://derandere.gitlab.io/pipetbot-a8) 
 that is part of the [authors homepage](https://derandere.gitlab.io). 
 For CNC machines with additional axes I, (J, (K)) that drive pumps or other tools,
