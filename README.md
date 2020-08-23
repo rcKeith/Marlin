@@ -23,7 +23,7 @@ extruders (XYZIJK + E).
 Currently, only a subset of the Marlin G-code dialect is supported:
 
 - G1, G28, G90, G91, G92 (partially) 
-- M17, M18, M43, M85, M114 (partially), M206 (partially), M500, M501, M502
+- M17, M18, M43, M85, M114 (partially), M206 (partially), M502
 
 Axis names are:
 
