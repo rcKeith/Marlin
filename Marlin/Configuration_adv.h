@@ -629,27 +629,9 @@
 
 //#define SENSORLESS_BACKOFF_MM  { 2, 2 }     // (mm) Backoff from endstops before sensorless homing
 
-#if NON_E_AXES == 6
-  #define HOMING_BUMP_MM      { 5, 5, 2, 2, 2, 2 }       // (mm) Backoff from endstops after first bump
-  #define HOMING_BUMP_DIVISOR { 2, 2, 4, 4, 4, 4 }       // Re-Bump Speed Divisor (Divides the Homing Feedrate)
-
-  //#define HOMING_BACKOFF_POST_MM { 2, 2, 2, 2, 2, 2 }  // (mm) Backoff from endstops after homing
-#elif NON_E_AXES == 5
-  #define HOMING_BUMP_MM      { 5, 5, 2, 2, 2 }       // (mm) Backoff from endstops after first bump
-  #define HOMING_BUMP_DIVISOR { 2, 2, 4, 4, 4 }       // Re-Bump Speed Divisor (Divides the Homing Feedrate)
-
-  //#define HOMING_BACKOFF_POST_MM { 2, 2, 2, 2, 2 }  // (mm) Backoff from endstops after homing
-#elif NON_E_AXES == 4
-  #define HOMING_BUMP_MM      { 5, 5, 2, 2 }       // (mm) Backoff from endstops after first bump
-  #define HOMING_BUMP_DIVISOR { 2, 2, 4, 4 }       // Re-Bump Speed Divisor (Divides the Homing Feedrate)
-
-  //#define HOMING_BACKOFF_POST_MM { 2, 2, 2, 2 }  // (mm) Backoff from endstops after homing
-#else
-  #define HOMING_BUMP_MM      { 5, 5, 2 }       // (mm) Backoff from endstops after first bump
-  #define HOMING_BUMP_DIVISOR { 2, 2, 4 }       // Re-Bump Speed Divisor (Divides the Homing Feedrate)
-
-  //#define HOMING_BACKOFF_POST_MM { 2, 2, 2 }  // (mm) Backoff from endstops after homing
-#endif
+#define HOMING_BUMP_MM      ARRAY_N(NON_E_AXES, 5, 5, 2, 2, 2, 2)       // (mm) Backoff from endstops after first bump
+#define HOMING_BUMP_DIVISOR ARRAY_N(NON_E_AXES, 2, 2, 4, 4, 4, 4)       // Re-Bump Speed Divisor (Divides the Homing Feedrate)
+//#define HOMING_BACKOFF_POST_MM ARRAY_N(NON_E_AXES, 2, 2, 2, 2, 2, 2)  // (mm) Backoff from endstops after homing
 
 //#define QUICK_HOME                          // If G28 contains XY do a diagonal move first
 //#define HOME_Y_BEFORE_X                     // If G28 contains XY home Y before X
@@ -814,15 +796,8 @@
 #endif
 
 // @section motion
-#if NON_E_AXES == 6
-  #define AXIS_RELATIVE_MODES { false, false, false, false, false, false, false }
-#elif NON_E_AXES == 5
-  #define AXIS_RELATIVE_MODES { false, false, false, false, false, false }
-#elif NON_E_AXES == 4
-  #define AXIS_RELATIVE_MODES { false, false, false, false, false }
-#else
-  #define AXIS_RELATIVE_MODES { false, false, false, false }
-#endif
+#define AXIS_RELATIVE_MODES ARRAY_N(INCREMENT(NON_E_AXES), false, false, false, false, false, false, false)
+
 // Add a Duplicate option for well-separated conjoined nozzles
 //#define MULTI_NOZZLE_DUPLICATION
 
@@ -830,15 +805,9 @@
 #define INVERT_X_STEP_PIN false
 #define INVERT_Y_STEP_PIN false
 #define INVERT_Z_STEP_PIN false
-#if NON_E_AXES > 3
-  #define INVERT_I_STEP_PIN false
-#endif
-  #if NON_E_AXES > 4
-  #define INVERT_J_STEP_PIN false
-#endif
-#if NON_E_AXES > 5
-  #define INVERT_K_STEP_PIN false
-#endif
+#define INVERT_I_STEP_PIN false
+#define INVERT_J_STEP_PIN false
+#define INVERT_K_STEP_PIN false
 #define INVERT_E_STEP_PIN false
 
 /**
@@ -850,15 +819,9 @@
 #define DISABLE_INACTIVE_X true
 #define DISABLE_INACTIVE_Y true
 #define DISABLE_INACTIVE_Z true  // Set 'false' if the nozzle could fall onto your printed part!
-#if NON_E_AXES > 3
-  #define DISABLE_INACTIVE_I true
-#endif
-#if NON_E_AXES > 4
-  #define DISABLE_INACTIVE_J true
-#endif
-#if NON_E_AXES > 5
-  #define DISABLE_INACTIVE_K true
-#endif
+#define DISABLE_INACTIVE_I true
+#define DISABLE_INACTIVE_J true
+#define DISABLE_INACTIVE_K true
 #define DISABLE_INACTIVE_E true
 
 // If the Nozzle or Bed falls when the Z stepper is disabled, set its resting position here.
@@ -904,15 +867,7 @@
 #if ENABLED(BACKLASH_COMPENSATION)
   // Define values for backlash distance and correction.
   // If BACKLASH_GCODE is enabled these values are the defaults.
-  #if NON_E_AXES == 6
-    #define BACKLASH_DISTANCE_MM { 0, 0, 0, 0, 0, 0 } // (mm)
-  #elif NON_E_AXES == 5
-    #define BACKLASH_DISTANCE_MM { 0, 0, 0, 0, 0 } // (mm)
-  #elif NON_E_AXES == 4
-    #define BACKLASH_DISTANCE_MM { 0, 0, 0, 0 } // (mm)
-  #else
-    #define BACKLASH_DISTANCE_MM { 0, 0, 0 } // (mm)
-  #endif
+  #define BACKLASH_DISTANCE_MM ARRAY_N(NON_E_AXES, 0, 0, 0, 0, 0, 0) // (mm)
   #define BACKLASH_CORRECTION    0.0       // 0.0 = no correction; 1.0 = full correction
 
   // Set BACKLASH_SMOOTHING_MM to spread backlash correction over multiple segments
@@ -979,18 +934,13 @@
   #define CALIBRATION_MEASURE_FRONT
   #define CALIBRATION_MEASURE_LEFT
   #define CALIBRATION_MEASURE_BACK
-  #if NON_E_AXES > 3
-    #define CALIBRATION_MEASURE_IMIN
-    #define CALIBRATION_MEASURE_IMAX
-  #endif
-  #if NON_E_AXES > 4
-    #define CALIBRATION_MEASURE_JMIN
-    #define CALIBRATION_MEASURE_JMAX
-  #endif
-  #if NON_E_AXES > 5
-    #define CALIBRATION_MEASURE_KMIN
-    #define CALIBRATION_MEASURE_KMAX
-  #endif
+
+  //#define CALIBRATION_MEASURE_IMIN
+  //#define CALIBRATION_MEASURE_IMAX
+  //#define CALIBRATION_MEASURE_JMIN
+  //#define CALIBRATION_MEASURE_JMAX
+  //#define CALIBRATION_MEASURE_KMIN
+  //#define CALIBRATION_MEASURE_KMAX
 
   // Probing at the exact top center only works if the center is flat. If
   // probing on a screwhead or hollow washer, probe near the edges.
@@ -1025,15 +975,7 @@
 //#define MICROSTEP32 HIGH,LOW,HIGH
 
 // Microstep settings (Requires a board with pins named X_MS1, X_MS2, etc.)
-#if NON_E_AXES == 6
-  #define MICROSTEP_MODES { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 } // [1,2,4,8,16]
-#elif NON_E_AXES == 5
-  #define MICROSTEP_MODES { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 } // [1,2,4,8,16]
-#elif NON_E_AXES == 4
-  #define MICROSTEP_MODES { 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16 } // [1,2,4,8,16]
-#else
-  #define MICROSTEP_MODES { 16, 16, 16, 16, 16, 16 } // [1,2,4,8,16]
-#endif
+#define MICROSTEP_MODES { 16, 16, 16, 16, 16, 16 } // [1,2,4,8,16]
 
 /**
  *  @section  stepper motor current
@@ -1055,23 +997,9 @@
  *    M908 - BQ_ZUM_MEGA_3D, RAMBO, PRINTRBOARD_REVF, RIGIDBOARD_V2 & SCOOVO_X9H
  *    M909, M910 & LCD - only PRINTRBOARD_REVF & RIGIDBOARD_V2
  */
-#if NON_E_AXES == 6
-  //#define PWM_MOTOR_CURRENT { 1300, 1300, 1250, 1250, 1250, 1250 }          // Values in milliamps
-  //#define DIGIPOT_MOTOR_CURRENT { 135,135,135,135,135,135,135,135 }   // Values 0-255 (RAMBO 135 = ~0.75A, 185 = ~1A)
-  //#define DAC_MOTOR_CURRENT_DEFAULT { 70, 80, 90, 90, 90, 90, 80 }    // Default drive percent - X, Y, Z, I, J, K, E axis
-#elif NON_E_AXES == 5
-  //#define PWM_MOTOR_CURRENT { 1300, 1300, 1250, 1250, 1250 }          // Values in milliamps
-  //#define DIGIPOT_MOTOR_CURRENT { 135,135,135,135,135,135,135 }   // Values 0-255 (RAMBO 135 = ~0.75A, 185 = ~1A)
-  //#define DAC_MOTOR_CURRENT_DEFAULT { 70, 80, 90, 90, 90, 80 }    // Default drive percent - X, Y, Z, I, J, E axis
-#elif NON_E_AXES == 4
-  //#define PWM_MOTOR_CURRENT { 1300, 1300, 1250, 1250 }          // Values in milliamps
-  //#define DIGIPOT_MOTOR_CURRENT { 135,135,135,135,135,135 }   // Values 0-255 (RAMBO 135 = ~0.75A, 185 = ~1A)
-  //#define DAC_MOTOR_CURRENT_DEFAULT { 70, 80, 90, 90, 80 }    // Default drive percent - X, Y, Z, I, E axis
-#else
- //#define PWM_MOTOR_CURRENT { 1300, 1300, 1250 }          // Values in milliamps
-  //#define DIGIPOT_MOTOR_CURRENT { 135,135,135,135,135 }   // Values 0-255 (RAMBO 135 = ~0.75A, 185 = ~1A)
-  //#define DAC_MOTOR_CURRENT_DEFAULT { 70, 80, 90, 80 }    // Default drive percent - X, Y, Z, E axis
-#endif
+//#define PWM_MOTOR_CURRENT { 1300, 1300, 1250 }          // Values in milliamps
+//#define DIGIPOT_MOTOR_CURRENT { 135,135,135,135,135 }   // Values 0-255 (RAMBO 135 = ~0.75A, 185 = ~1A)
+//#define DAC_MOTOR_CURRENT_DEFAULT { 70, 80, 90, 80 }    // Default drive percent - X, Y, Z, E axis
 
 /**
  * I2C-based DIGIPOTs (e.g., Azteeg X3 Pro)
@@ -1108,15 +1036,7 @@
 // @section lcd
 
 #if EITHER(ULTIPANEL, EXTENSIBLE_UI)
-  #if NON_E_AXES == 6
-    #define MANUAL_FEEDRATE { 50*60, 50*60, 4*60, 4*60, 4*60, 4*60, 2*60 } // (mm/min) Feedrates for manual moves along X, Y, Z, I, J, K, E from panel
-  #elif NON_E_AXES == 5
-    #define MANUAL_FEEDRATE { 50*60, 50*60, 4*60, 4*60, 4*60, 2*60 } // (mm/min) Feedrates for manual moves along X, Y, Z, I, J, E from panel
-  #elif NON_E_AXES == 4
-    #define MANUAL_FEEDRATE { 50*60, 50*60, 4*60, 4*60, 2*60 } // (mm/min) Feedrates for manual moves along X, Y, Z, I, E from panel
-  #else
-    #define MANUAL_FEEDRATE { 50*60, 50*60, 4*60, 2*60 } // (mm/min) Feedrates for manual moves along X, Y, Z, E from panel
-  #endif
+  #define MANUAL_FEEDRATE { 50*60, 50*60, 4*60, 2*60 } // (mm/min) Feedrates for manual moves along X, Y, Z, E from panel
   #define SHORT_MANUAL_Z_MOVE 0.025 // (mm) Smallest manual Z move (< 0.1mm)
   #if ENABLED(ULTIPANEL)
     #define MANUAL_E_MOVES_RELATIVE // Display extruder move distance rather than "position"
@@ -2237,29 +2157,23 @@
     #define Z4_MICROSTEPS       16
   #endif
 
-#if NON_E_AXES > 3
   #if AXIS_DRIVER_TYPE_I(TMC26X)
     #define I_MAX_CURRENT    1000
     #define I_SENSE_RESISTOR   91
     #define I_MICROSTEPS       16
   #endif
-#endif
 
-#if NON_E_AXES > 4
   #if AXIS_DRIVER_TYPE_J(TMC26X)
     #define J_MAX_CURRENT    1000
     #define J_SENSE_RESISTOR   91
     #define J_MICROSTEPS       16
   #endif
-#endif
 
-#if NON_E_AXES > 5
   #if AXIS_DRIVER_TYPE_K(TMC26X)
     #define K_MAX_CURRENT    1000
     #define K_SENSE_RESISTOR   91
     #define K_MICROSTEPS       16
   #endif
-#endif
 
   #if AXIS_DRIVER_TYPE_E0(TMC26X)
     #define E0_MAX_CURRENT    1000
@@ -2398,34 +2312,28 @@
     #define Z4_CHAIN_POS     -1
   #endif
 
-  #if NON_E_AXES > 3
-    #if AXIS_IS_TMC(I)
-      #define I_CURRENT      800
-      #define I_CURRENT_HOME I_CURRENT
-      #define I_MICROSTEPS    16
-      #define I_RSENSE         0.11
-      #define I_CHAIN_POS     -1
-    #endif
+  #if AXIS_IS_TMC(I)
+    #define I_CURRENT      800
+    #define I_CURRENT_HOME I_CURRENT
+    #define I_MICROSTEPS    16
+    #define I_RSENSE         0.11
+    #define I_CHAIN_POS     -1
   #endif
 
-  #if NON_E_AXES > 4
-    #if AXIS_IS_TMC(J)
-      #define J_CURRENT      800
-      #define J_CURRENT_HOME J_CURRENT
-      #define J_MICROSTEPS    16
-      #define J_RSENSE         0.11
-      #define J_CHAIN_POS     -1
-    #endif
+  #if AXIS_IS_TMC(J)
+    #define J_CURRENT      800
+    #define J_CURRENT_HOME J_CURRENT
+    #define J_MICROSTEPS    16
+    #define J_RSENSE         0.11
+    #define J_CHAIN_POS     -1
   #endif
 
-  #if NON_E_AXES > 5
-    #if AXIS_IS_TMC(K)
-      #define K_CURRENT      800
-      #define K_CURRENT_HOME K_CURRENT
-      #define K_MICROSTEPS    16
-      #define K_RSENSE         0.11
-      #define K_CHAIN_POS     -1
-    #endif
+  #if AXIS_IS_TMC(K)
+    #define K_CURRENT      800
+    #define K_CURRENT_HOME K_CURRENT
+    #define K_MICROSTEPS    16
+    #define K_RSENSE         0.11
+    #define K_CHAIN_POS     -1
   #endif
 
   #if AXIS_IS_TMC(E0)
@@ -2532,20 +2440,14 @@
   #define  X_SLAVE_ADDRESS 0
   #define  Y_SLAVE_ADDRESS 0
   #define  Z_SLAVE_ADDRESS 0
+  #define  I_SLAVE_ADDRESS 0
+  #define  J_SLAVE_ADDRESS 0
+  #define  K_SLAVE_ADDRESS 0
   #define X2_SLAVE_ADDRESS 0
   #define Y2_SLAVE_ADDRESS 0
   #define Z2_SLAVE_ADDRESS 0
   #define Z3_SLAVE_ADDRESS 0
   #define Z4_SLAVE_ADDRESS 0
-  #if NON_E_AXES > 3
-    #define I_SLAVE_ADDRESS 0
-  #endif
-  #if NON_E_AXES > 4
-    #define J_SLAVE_ADDRESS 0
-  #endif
-  #if NON_E_AXES > 5
-    #define K_SLAVE_ADDRESS 0
-  #endif
   #define E0_SLAVE_ADDRESS 0
   #define E1_SLAVE_ADDRESS 0
   #define E2_SLAVE_ADDRESS 0
@@ -2570,15 +2472,9 @@
    */
   #define STEALTHCHOP_XY
   #define STEALTHCHOP_Z
-  #if NON_E_AXES > 3
-    #define STEALTHCHOP_I
-  #endif
-  #if NON_E_AXES > 4
-    #define STEALTHCHOP_J
-  #endif
-  #if NON_E_AXES > 5
-    #define STEALTHCHOP_K
-  #endif
+  #define STEALTHCHOP_I
+  #define STEALTHCHOP_J
+  #define STEALTHCHOP_K
   #define STEALTHCHOP_E
 
   /**
@@ -2634,15 +2530,9 @@
   #define Z2_HYBRID_THRESHOLD      3
   #define Z3_HYBRID_THRESHOLD      3
   #define Z4_HYBRID_THRESHOLD      3
-  #if NON_E_AXES > 3
-    #define I_HYBRID_THRESHOLD     3
-  #endif
-  #if NON_E_AXES > 4
-    #define J_HYBRID_THRESHOLD     3
-  #endif
-  #if NON_E_AXES > 5
-    #define K_HYBRID_THRESHOLD     3
-  #endif
+  #define I_HYBRID_THRESHOLD     100
+  #define J_HYBRID_THRESHOLD     100
+  #define K_HYBRID_THRESHOLD     100
   #define E0_HYBRID_THRESHOLD     30
   #define E1_HYBRID_THRESHOLD     30
   #define E2_HYBRID_THRESHOLD     30
