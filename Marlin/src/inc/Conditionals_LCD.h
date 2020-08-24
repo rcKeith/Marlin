@@ -471,7 +471,9 @@
  *
  */
 
-#if EXTRUDERS == 0
+#if EXTRUDERS
+  #define HAS_EXTRUDERS 1
+#else
   #undef EXTRUDERS
   #define EXTRUDERS 0
   #undef SINGLENOZZLE
@@ -581,9 +583,9 @@
  * DISTINCT_E_FACTORS affects how some E factors are accessed
  */
 #if EXTRUDERS == 0
-  #define NUM_AXIS (NON_E_AXES)
+  #define NUM_AXIS (LINEAR_AXES)
 #else
-  #define NUM_AXIS (NON_E_AXES + 1)
+  #define NUM_AXIS (LINEAR_AXES + 1)
 #endif
 #if ENABLED(DISTINCT_E_FACTORS) && E_STEPPERS > 1
   #define DISTINCT_E E_STEPPERS
@@ -599,7 +601,7 @@
   #define E_AXIS_N(E) E_AXIS
   #define UNUSED_E(E) UNUSED(E)
 #endif
-#define NUM_AXIS_N NON_E_AXES + E_STEPPERS
+#define NUM_AXIS_N LINEAR_AXES + E_STEPPERS
 
 #if ENABLED(DWIN_CREALITY_LCD)
   #define SERIAL_CATCHALL 0
@@ -749,20 +751,14 @@
 #ifndef INVERT_Z_DIR
   #define INVERT_Z_DIR false
 #endif
-#if NON_E_AXES > 3
-  #ifndef INVERT_I_DIR
-    #define INVERT_I_DIR false
-  #endif
-  #if NON_E_AXES > 4
-    #ifndef INVERT_J_DIR
-      #define INVERT_J_DIR false
-    #endif
-    #if NON_E_AXES > 5
-      #ifndef INVERT_K_DIR
-        #define INVERT_K_DIR false
-      #endif
-    #endif
-  #endif
+#if LINEAR_AXES >= 4 && !defined(INVERT_I_DIR)
+  #define INVERT_I_DIR false
+#endif
+#if LINEAR_AXES >= 5 && !defined(INVERT_J_DIR)
+  #define INVERT_J_DIR false
+#endif
+#if LINEAR_AXES >= 6 && !defined(INVERT_K_DIR)
+  #define INVERT_K_DIR false
 #endif
 #ifndef INVERT_E_DIR
   #define INVERT_E_DIR false

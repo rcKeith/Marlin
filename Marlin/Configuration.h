@@ -71,7 +71,7 @@
 //===========================================================================
 //========================= ASYNC_SECONDARY_AXES ============================
 //===========================================================================
-// For a CNC machine with NON_E_AXES > 3 where primary axes XYZ are
+// For a CNC machine with LINEAR_AXES >= 4 where primary axes XYZ are
 // coordinated. Optional additional axes I(, J(, K)) are uncoordinated
 // (asynchronous). Disable for coordinated movement of all axes.
 //
@@ -157,41 +157,41 @@
 
 /**
  * This defines the number of axes that are not used for extruders (axes that
- * benefit from endstops and homing). NON_E_AXES > 3 requires definition of
+ * benefit from endstops and homing). LINEAR_AXES >= 4 requires definition of
  * [[I, [J, [K]]]_STEP_PIN, [I, [J, [K]]]_ENABLE_PIN, [I, [J, [K]]]_DIR_PIN,
  * [I, [J, [K]]]_STOP_PIN, USE_[I, [J, [K]]][MIN || MAX]_PLUG and definition of the
  * respective values of DEFAULT_AXIS_STEPS_PER_UNIT, DEFAULT_MAX_FEEDRATE,
  * DEFAULT_MAX_ACCELERATION, AXIS_RELATIVE_MODES, MICROSTEP_MODES and
  * MANUAL_FEEDRATE.
- * 
+ *
  * See https://github.com/DerAndere1/Marlin/wiki
  * :[3, 4, 5, 6]
  */
-#define NON_E_AXES 3
+#define LINEAR_AXES 3
 
 /**
-   * Axis codes for additional axes:
-   * This defines the axis code that is used in G-code commands to 
-   * reference a specific axis. 
-   * 'I' for generic 4th axis
-   * 'J' for generic 5th axis
-   * 'K' for generic 6th axis
-   * 'A' for rotational axis parallel to X
-   * 'B' for rotational axis parallel to Y
-   * 'C' for rotational axis parallel to Z
-   * 'U' for secondary linear axis parallel to X
-   * 'V' for secondary linear axis parallel to Y
-   * 'W' for secondary linear axis parallel to Z
-   * Regardless of the settings, firmware-internal axis IDs are
-   * I (AXIS4), J (AXIS5), K (AXIS6).
-   */
-#if NON_E_AXES > 3
+ * Axis codes for additional axes:
+ * This defines the axis code that is used in G-code commands to
+ * reference a specific axis.
+ * 'I' for generic 4th axis
+ * 'J' for generic 5th axis
+ * 'K' for generic 6th axis
+ * 'A' for rotational axis parallel to X
+ * 'B' for rotational axis parallel to Y
+ * 'C' for rotational axis parallel to Z
+ * 'U' for secondary linear axis parallel to X
+ * 'V' for secondary linear axis parallel to Y
+ * 'W' for secondary linear axis parallel to Z
+ * Regardless of the settings, firmware-internal axis IDs are
+ * I (AXIS4), J (AXIS5), K (AXIS6).
+ */
+#if LINEAR_AXES >= 4
   #define AXIS4_NAME 'I' // :['I', 'A', 'B', 'C', 'U', 'V', 'W']
 #endif
-#if NON_E_AXES > 4
+#if LINEAR_AXES >= 5
   #define AXIS5_NAME 'J' // :['J', 'A', 'B', 'C', 'U', 'V', 'W']
 #endif
-#if NON_E_AXES > 5
+#if LINEAR_AXES >= 6
   #define AXIS6_NAME 'K' // :['K', 'A', 'B', 'C', 'U', 'V', 'W']
 #endif
 
@@ -831,41 +831,18 @@
  * Override with M92
  *                                      X, Y, Z, [I ,[J ,[K ,]]] E0 [, E1[, E2...]]
  */
-#if NON_E_AXES == 6
-  #define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 4000, 4000, 4000, 4000, 500}
-#elif NON_E_AXES == 5
-  #define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 4000, 4000, 4000, 500}
-#elif NON_E_AXES == 4
-  #define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 4000, 4000, 500}
-#else
-  #define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 4000, 500}
-#endif
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 4000, 500}
+
 /**
  * Default Max Feed Rate (mm/s)
  * Override with M203
  *                                      X, Y, Z, [I ,[J ,[K ,]]] E0 [, E1[, E2...]]
  */
-#if NON_E_AXES == 6
-  #define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 5, 5, 5, 25 }
-#elif NON_E_AXES == 5
-  #define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 5, 5, 25 }
-#elif NON_E_AXES == 4
-  #define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 5, 25 }
-#else
-  #define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }
-#endif
+#define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
-  #if NON_E_AXES == 6
-    #define MAX_FEEDRATE_EDIT_VALUES    { 600, 600, 10, 10, 10, 10, 50 } // ...or, set your own edit limits
-  #elif NON_E_AXES == 5
-    #define MAX_FEEDRATE_EDIT_VALUES    { 600, 600, 10, 10, 10, 50 } // ...or, set your own edit limits
-  #elif NON_E_AXES == 4
-    #define MAX_FEEDRATE_EDIT_VALUES    { 600, 600, 10, 10, 50 } // ...or, set your own edit limits
-  #else
-    #define MAX_FEEDRATE_EDIT_VALUES    { 600, 600, 10, 50 } // ...or, set your own edit limits
-  #endif
+  #define MAX_FEEDRATE_EDIT_VALUES    { 600, 600, 10, 50 } // ...or, set your own edit limits
 #endif
 
 /**
@@ -874,27 +851,11 @@
  * Override with M201
  *                                      X, Y, Z, [I ,[J ,[K ,]]] E0 [, E1[, E2...]]
  */
-#if NON_E_AXES == 6
-  #define DEFAULT_MAX_ACCELERATION      { 3000, 3000, 100, 100, 100, 100, 10000 }
-#elif NON_E_AXES == 5
-  #define DEFAULT_MAX_ACCELERATION      { 3000, 3000, 100, 100, 100, 10000 }
-#elif NON_E_AXES == 4
-  #define DEFAULT_MAX_ACCELERATION      { 3000, 3000, 100, 100, 10000 }
-#else
-  #define DEFAULT_MAX_ACCELERATION      { 3000, 3000, 100, 10000 }
-#endif
+#define DEFAULT_MAX_ACCELERATION      { 3000, 3000, 100, 10000 }
 
 //#define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
-  #if NON_E_AXES == 6
-    #define MAX_ACCEL_EDIT_VALUES       { 6000, 6000, 200, 200, 200, 200, 20000 } // ...or, set your own edit limits
-  #elif NON_E_AXES == 5
-    #define MAX_ACCEL_EDIT_VALUES       { 6000, 6000, 200, 200, 200, 20000 } // ...or, set your own edit limits
-  #elif NON_E_AXES == 4
-    #define MAX_ACCEL_EDIT_VALUES       { 6000, 6000, 200, 200, 20000 } // ...or, set your own edit limits
-  #else
-    #define MAX_ACCEL_EDIT_VALUES       { 6000, 6000, 200, 20000 } // ...or, set your own edit limits
-  #endif
+  #define MAX_ACCEL_EDIT_VALUES       { 6000, 6000, 200, 20000 } // ...or, set your own edit limits
 #endif
 
 /**
@@ -922,29 +883,15 @@
   #define DEFAULT_XJERK 10.0
   #define DEFAULT_YJERK 10.0
   #define DEFAULT_ZJERK  0.3
-  #if NON_E_AXES > 3
-    #define DEFAULT_IJERK  0.3
-  #endif
-  #if NON_E_AXES > 4
-    #define DEFAULT_JJERK  0.3
-  #endif
-  #if NON_E_AXES > 5
-    #define DEFAULT_KJERK  0.3
-  #endif
+  //#define DEFAULT_IJERK  0.3
+  //#define DEFAULT_JJERK  0.3
+  //#define DEFAULT_KJERK  0.3
 
   //#define TRAVEL_EXTRA_XYJERK 0.0     // Additional jerk allowance for all travel moves
 
   //#define LIMITED_JERK_EDITING        // Limit edit via M205 or LCD to DEFAULT_aJERK * 2
   #if ENABLED(LIMITED_JERK_EDITING)
-    #if NON_E_AXES == 6
-      #define MAX_JERK_EDIT_VALUES { 20, 20, 0.6, 0.6, 0.6, 0.6, 10 } // ...or, set your own edit limits
-    #elif NON_E_AXES == 5
-      #define MAX_JERK_EDIT_VALUES { 20, 20, 0.6, 0.6, 0.6, 10 } // ...or, set your own edit limits
-    #elif NON_E_AXES == 4
-      #define MAX_JERK_EDIT_VALUES { 20, 20, 0.6, 0.6, 10 } // ...or, set your own edit limits
-    #else
-      #define MAX_JERK_EDIT_VALUES { 20, 20, 0.6, 10 } // ...or, set your own edit limits
-    #endif
+    #define MAX_JERK_EDIT_VALUES { 20, 20, 0.6, 10 } // ...or, set your own edit limits
   #endif
 #endif
 
@@ -1214,31 +1161,19 @@
 #define X_ENABLE_ON 0
 #define Y_ENABLE_ON 0
 #define Z_ENABLE_ON 0
-#if NON_E_AXES > 3
-  #define I_ENABLE_ON 0
-#endif
-#if NON_E_AXES > 4
-  #define J_ENABLE_ON 0
-#endif
-#if NON_E_AXES > 5
-  #define K_ENABLE_ON 0
-#endif
 #define E_ENABLE_ON 0 // For all extruders
+//#define I_ENABLE_ON 0
+//#define J_ENABLE_ON 0
+//#define K_ENABLE_ON 0
 
 // Disable axis steppers immediately when they're not being stepped.
 // WARNING: When motors turn off there is a chance of losing position accuracy!
 #define DISABLE_X false
 #define DISABLE_Y false
 #define DISABLE_Z false
-#if NON_E_AXES > 3
-  #define DISABLE_I false
-#endif
-#if NON_E_AXES > 4
-  #define DISABLE_J false
-#endif
-#if NON_E_AXES > 5
-  #define DISABLE_K false
-#endif
+//#define DISABLE_I false
+//#define DISABLE_J false
+//#define DISABLE_K false
 
 // Turn off the display blinking that warns about possible accuracy reduction
 //#define DISABLE_REDUCED_ACCURACY_WARNING
@@ -1254,15 +1189,9 @@
 #define INVERT_X_DIR false
 #define INVERT_Y_DIR true
 #define INVERT_Z_DIR false
-#if NON_E_AXES > 3
-  #define INVERT_I_DIR false
-#endif
-#if NON_E_AXES > 4
-  #define INVERT_J_DIR false
-#endif
-#if NON_E_AXES > 5
-  #define INVERT_K_DIR false
-#endif
+//#define INVERT_I_DIR false
+//#define INVERT_J_DIR false
+//#define INVERT_K_DIR false
 
 // @section extruder
 
@@ -1292,15 +1221,9 @@
 #define X_HOME_DIR -1
 #define Y_HOME_DIR -1
 #define Z_HOME_DIR -1
-#if NON_E_AXES > 3
-  #define I_HOME_DIR -1
-#endif
-#if NON_E_AXES > 4
-  #define J_HOME_DIR -1
-#endif
-#if NON_E_AXES > 5
-  #define K_HOME_DIR -1
-#endif
+//#define I_HOME_DIR -1
+//#define J_HOME_DIR -1
+//#define K_HOME_DIR -1
 
 // @section machine
 
@@ -1315,18 +1238,12 @@
 #define X_MAX_POS X_BED_SIZE
 #define Y_MAX_POS Y_BED_SIZE
 #define Z_MAX_POS 200
-#if NON_E_AXES > 3
-  #define I_MIN_POS 0
-  #define I_MAX_POS 50
-#endif
-#if NON_E_AXES > 4
-  #define J_MIN_POS 0
-  #define J_MAX_POS 50
-#endif
-#if NON_E_AXES > 5
-  #define K_MIN_POS 0
-  #define K_MAX_POS 50
-#endif
+//#define I_MIN_POS 0
+//#define I_MAX_POS 50
+//#define J_MIN_POS 0
+//#define J_MAX_POS 50
+//#define K_MIN_POS 0
+//#define K_MAX_POS 50
 
 /**
  * Software Endstops
@@ -1599,15 +1516,9 @@
 // Homing speeds (mm/min)
 #define HOMING_FEEDRATE_XY (50*60)
 #define HOMING_FEEDRATE_Z  (4*60)
-#if NON_E_AXES > 3
-  #define HOMING_FEEDRATE_I (4*60)
-#endif  
-#if NON_E_AXES > 4
-    #define HOMING_FEEDRATE_J (4*60)
-#endif
-#if NON_E_AXES > 5
-  #define HOMING_FEEDRATE_K (4*60)
-#endif
+//#define HOMING_FEEDRATE_I (4*60)
+//#define HOMING_FEEDRATE_J (4*60)
+//#define HOMING_FEEDRATE_K (4*60)
 
 // Validate that endstops are triggered on homing moves
 #define VALIDATE_HOMING_ENDSTOPS

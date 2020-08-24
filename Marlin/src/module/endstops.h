@@ -44,12 +44,9 @@ enum EndstopEnum : char {
 
 class Endstops {
   public:
-    #if NON_E_AXES > 3 || HAS_EXTRA_ENDSTOPS
-      typedef uint16_t esbits_t;
-    #else
-      typedef uint8_t esbits_t;
-    #endif
-  
+    typedef IF<(LINEAR_AXES >= 4 || ENABLED(HAS_EXTRA_ENDSTOPS)), uint16_t, uint8_t>::type esbits_t;
+    typedef IF<(LINEAR_AXES >= 4), uint16_t, uint8_t>::type hitbits_t;
+
     #if HAS_EXTRA_ENDSTOPS
       TERN_(X_DUAL_ENDSTOPS, static float x2_endstop_adj);
       TERN_(Y_DUAL_ENDSTOPS, static float y2_endstop_adj);
@@ -65,11 +62,7 @@ class Endstops {
   private:
     static bool enabled, enabled_globally;
     static esbits_t live_state;
-    #if NON_E_AXES > 3
-      static volatile uint16_t hit_state;      // Use X_MIN, Y_MIN, Z_MIN and Z_MIN_PROBE as BIT index
-    #else
-      static volatile uint8_t hit_state;      // Use X_MIN, Y_MIN, Z_MIN and Z_MIN_PROBE as BIT index
-    #endif
+    static volatile hitbits_t hit_state;    // Use X_MIN, Y_MIN, Z_MIN and Z_MIN_PROBE as BIT index
 
     #if ENDSTOP_NOISE_THRESHOLD
       static esbits_t validated_live_state;
@@ -108,11 +101,7 @@ class Endstops {
     /**
      * Get Endstop hit state.
      */
-    #if NON_E_AXES > 3
-      FORCE_INLINE static uint16_t trigger_state() { return hit_state; }
-    #else
-      FORCE_INLINE static uint8_t trigger_state() { return hit_state; }
-    #endif
+    FORCE_INLINE static hitbits_t trigger_state() { return hit_state; }
 
     /**
      * Get current endstops state

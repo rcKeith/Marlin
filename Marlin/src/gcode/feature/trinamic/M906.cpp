@@ -48,22 +48,8 @@ void GcodeSuite::M906() {
 
   bool report = true;
 
-  #if NON_E_AXES == 6
-    #if AXIS_IS_TMC(X) || AXIS_IS_TMC(X2) || AXIS_IS_TMC(Y) || AXIS_IS_TMC(Y2) || AXIS_IS_TMC(Z) || AXIS_IS_TMC(Z2) || AXIS_IS_TMC(Z3) || AXIS_IS_TMC(Z4) || AXIS_IS_TMC(I) || AXIS_IS_TMC(J) || AXIS_IS_TMC(K)
-      const uint8_t index = parser.byteval('I');
-    #endif
-  #elif NON_E_AXES == 5
-    #if AXIS_IS_TMC(X) || AXIS_IS_TMC(X2) || AXIS_IS_TMC(Y) || AXIS_IS_TMC(Y2) || AXIS_IS_TMC(Z) || AXIS_IS_TMC(Z2) || AXIS_IS_TMC(Z3) || AXIS_IS_TMC(Z4) || AXIS_IS_TMC(I) || AXIS_IS_TMC(J)
-      const uint8_t index = parser.byteval('I');
-    #endif
-  #elif NON_E_AXES == 4
-    #if AXIS_IS_TMC(X) || AXIS_IS_TMC(X2) || AXIS_IS_TMC(Y) || AXIS_IS_TMC(Y2) || AXIS_IS_TMC(Z) || AXIS_IS_TMC(Z2) || AXIS_IS_TMC(Z3) || AXIS_IS_TMC(Z4) || AXIS_IS_TMC(I)
-      const uint8_t index = parser.byteval('I');
-    #endif
-  #else
-    #if AXIS_IS_TMC(X) || AXIS_IS_TMC(X2) || AXIS_IS_TMC(Y) || AXIS_IS_TMC(Y2) || AXIS_IS_TMC(Z) || AXIS_IS_TMC(Z2) || AXIS_IS_TMC(Z3) || AXIS_IS_TMC(Z4)
-      const uint8_t index = parser.byteval('I');
-    #endif
+  #if AXIS_IS_TMC(X) || AXIS_IS_TMC(X2) || AXIS_IS_TMC(Y) || AXIS_IS_TMC(Y2) || AXIS_IS_TMC(Z) || AXIS_IS_TMC(Z2) || AXIS_IS_TMC(Z3) || AXIS_IS_TMC(Z4) || AXIS_IS_TMC(I) || AXIS_IS_TMC(J) || AXIS_IS_TMC(K)
+    const uint8_t index = parser.byteval('I');
   #endif
 
   LOOP_NUM_AXIS(i) if (uint16_t value = parser.intval(axis_codes[i])) {
@@ -99,26 +85,15 @@ void GcodeSuite::M906() {
           if (index == 3) TMC_SET_CURRENT(Z4);
         #endif
         break;
-      #if NON_E_AXES > 3
-        case I_AXIS:
-          #if AXIS_IS_TMC(I)
-            if (index == 0) TMC_SET_CURRENT(I);
-          #endif
-          break;
-        #if NON_E_AXES > 4
-          case J_AXIS:
-            #if AXIS_IS_TMC(J)
-              if (index == 0) TMC_SET_CURRENT(J);
-            #endif
-            break;
-          #if NON_E_AXES > 5
-            case K_AXIS:
-              #if AXIS_IS_TMC(K)
-                if (index == 0) TMC_SET_CURRENT(K);
-              #endif
-              break;
-          #endif
-        #endif
+
+      #if AXIS_IS_TMC(I)
+        case I_AXIS: TMC_SET_CURRENT(I); break;
+      #endif
+      #if AXIS_IS_TMC(J)
+        case J_AXIS: TMC_SET_CURRENT(J); break;
+      #endif
+      #if AXIS_IS_TMC(K)
+        case K_AXIS: TMC_SET_CURRENT(K); break;
       #endif
 
       case E_AXIS: {
@@ -179,20 +154,14 @@ void GcodeSuite::M906() {
     #if AXIS_IS_TMC(Z4)
       TMC_SAY_CURRENT(Z4);
     #endif
-    #if NON_E_AXES > 3
-      #if AXIS_IS_TMC(I)
-        TMC_SAY_CURRENT(I);
-      #endif
-      #if NON_E_AXES > 4
-        #if AXIS_IS_TMC(J)
-          TMC_SAY_CURRENT(J);
-        #endif
-        #if NON_E_AXES > 5
-          #if AXIS_IS_TMC(K)
-            TMC_SAY_CURRENT(K);
-          #endif
-        #endif
-      #endif
+    #if AXIS_IS_TMC(I)
+      TMC_SAY_CURRENT(I);
+    #endif
+    #if AXIS_IS_TMC(J)
+      TMC_SAY_CURRENT(J);
+    #endif
+    #if AXIS_IS_TMC(K)
+      TMC_SAY_CURRENT(K);
     #endif
     #if AXIS_IS_TMC(E0)
       TMC_SAY_CURRENT(E0);

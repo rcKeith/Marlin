@@ -53,11 +53,7 @@ Endstops endstops;
 // private:
 
 bool Endstops::enabled, Endstops::enabled_globally; // Initialized by settings.load()
-#if NON_E_AXES > 3
-  volatile uint16_t Endstops::hit_state;
-#else
-  volatile uint8_t Endstops::hit_state;
-#endif
+volatile hitbits_t Endstops::hit_state;
 
 Endstops::esbits_t Endstops::live_state = 0;
 
@@ -411,26 +407,13 @@ void Endstops::resync() {
 #endif
 
 void Endstops::event_handler() {
-  #if NON_E_AXES > 3
-    static uint16_t prev_hit_state; // = 0
-  #else
-    static uint8_t prev_hit_state; // = 0
-  #endif
+  static hitbits_t prev_hit_state; // = 0
   if (hit_state == prev_hit_state) return;
   prev_hit_state = hit_state;
   if (hit_state) {
     #if HAS_SPI_LCD
-      char chrX = ' ', chrY = ' ', chrZ = ' '
-        #if NON_E_AXES > 3
-          , chrI = ' '
-          #if NON_E_AXES > 4
-            , chrJ = ' '
-            #if NON_E_AXES > 5
-              , chrK = ' '
-            #endif
-          #endif
-        #endif
-      , chrP = ' ';
+      char LIST_N(LINEAR_AXES, chrX = ' ', chrY = ' ', chrZ = ' ', chrI = ' ', chrJ = ' ', chrK = ' '),
+           chrP = ' ';
       #define _SET_STOP_CHAR(A,C) (chr## A = C)
     #else
       #define _SET_STOP_CHAR(A,C) ;
@@ -447,46 +430,36 @@ void Endstops::event_handler() {
     #define ENDSTOP_HIT_TEST_X() _ENDSTOP_HIT_TEST(X,'X')
     #define ENDSTOP_HIT_TEST_Y() _ENDSTOP_HIT_TEST(Y,'Y')
     #define ENDSTOP_HIT_TEST_Z() _ENDSTOP_HIT_TEST(Z,'Z')
-    #if NON_E_AXES > 3
-      #define ENDSTOP_HIT_TEST_I() _ENDSTOP_HIT_TEST(I,'I')
-      #if NON_E_AXES > 4
-        #define ENDSTOP_HIT_TEST_J() _ENDSTOP_HIT_TEST(J,'J')
-        #if NON_E_AXES > 5
-          #define ENDSTOP_HIT_TEST_K() _ENDSTOP_HIT_TEST(K,'K')
-        #endif
-      #endif
-    #endif
-    
+
     SERIAL_ECHO_START();
     SERIAL_ECHOPGM(STR_ENDSTOPS_HIT);
     ENDSTOP_HIT_TEST_X();
     ENDSTOP_HIT_TEST_Y();
     ENDSTOP_HIT_TEST_Z();
-    #if NON_E_AXES > 3
-      ENDSTOP_HIT_TEST_I();
-      #if NON_E_AXES > 4
-        ENDSTOP_HIT_TEST_J();
-        #if NON_E_AXES > 5
-          ENDSTOP_HIT_TEST_K();
-        #endif
-      #endif
+
+    #if LINEAR_AXES >= 4
+      _ENDSTOP_HIT_TEST(I,'I');
     #endif
-    
+    #if LINEAR_AXES >= 5
+      _ENDSTOP_HIT_TEST(J,'J');
+    #endif
+    #if LINEAR_AXES >= 6
+      _ENDSTOP_HIT_TEST(K,'K');
+    #endif
+
     #if HAS_CUSTOM_PROBE_PIN
       #define P_AXIS Z_AXIS
       if (TEST(hit_state, Z_MIN_PROBE)) _ENDSTOP_HIT_ECHO(P, 'P');
     #endif
     SERIAL_EOL();
 
-    #if NON_E_AXES == 6
-      TERN_(HAS_SPI_LCD, ui.status_printf_P(0, PSTR(S_FMT " %c %c %c %c %c %c %c"), GET_TEXT(MSG_LCD_ENDSTOPS), chrX, chrY, chrZ, chrI, chrJ, chrK, chrP));
-    #elif NON_E_AXES == 5
-      TERN_(HAS_SPI_LCD, ui.status_printf_P(0, PSTR(S_FMT " %c %c %c %c %c %c"), GET_TEXT(MSG_LCD_ENDSTOPS), chrX, chrY, chrZ, chrI, chrJ, chrP));
-    #elif NON_E_AXES == 6
-      TERN_(HAS_SPI_LCD, ui.status_printf_P(0, PSTR(S_FMT " %c %c %c %c %c"), GET_TEXT(MSG_LCD_ENDSTOPS), chrX, chrY, chrZ, chrI, chrP));
-    #else
-      TERN_(HAS_SPI_LCD, ui.status_printf_P(0, PSTR(S_FMT " %c %c %c %c"), GET_TEXT(MSG_LCD_ENDSTOPS), chrX, chrY, chrZ, chrP));
-    #endif
+    TERN_(HAS_SPI_LCD,
+      ui.status_printf_P(0,
+        PSTR(S_FMT GANG_N(LINEAR_AXES, " %c", " %c", " %c", " %c", " %c", " %c") " %c"),
+        GET_TEXT(MSG_LCD_ENDSTOPS),
+        LIST_N(LINEAR_AXES, chrX, chrY, chrZ, chrI, chrJ, chrK), chrP
+      )
+    );
 
     #if BOTH(SD_ABORT_ON_ENDSTOP_HIT, SDSUPPORT)
       if (planner.abort_on_endstop_hit) {
@@ -569,7 +542,7 @@ void _O2 Endstops::report_states() {
   #endif
   #if HAS_J_MAX
     ES_REPORT(J_MAX);
-  #endif  
+  #endif
     #if HAS_K_MIN
     ES_REPORT(K_MIN);
   #endif
@@ -651,15 +624,10 @@ void Endstops::update() {
   #else
     #define Z_AXIS_HEAD Z_AXIS
   #endif
-  #if NON_E_AXES > 3
-    #define I_AXIS_HEAD I_AXIS
-    #if NON_E_AXES > 4
-      #define J_AXIS_HEAD J_AXIS
-      #if NON_E_AXES > 5
-        #define K_AXIS_HEAD K_AXIS
-      #endif
-    #endif
-  #endif
+
+  #define I_AXIS_HEAD I_AXIS
+  #define J_AXIS_HEAD J_AXIS
+  #define K_AXIS_HEAD K_AXIS
 
   /**
    * Check and update endstops
@@ -1067,7 +1035,7 @@ void Endstops::update() {
     }
   }
 
-  #if NON_E_AXES > 3
+  #if LINEAR_AXES >= 4
     if (stepper.axis_is_moving(I_AXIS)) {
       if (stepper.motor_direction(I_AXIS_HEAD)) { // -direction
         #if HAS_I_MIN || (I_SPI_SENSORLESS && I_HOME_DIR < 0)
@@ -1080,37 +1048,37 @@ void Endstops::update() {
         #endif
       }
     }
+  #endif
 
-    #if NON_E_AXES > 4
-      if (stepper.axis_is_moving(J_AXIS)) {
-        if (stepper.motor_direction(J_AXIS_HEAD)) { // -direction
-          #if HAS_J_MIN || (J_SPI_SENSORLESS && J_HOME_DIR < 0)
-            PROCESS_ENDSTOP(J, MIN);
-          #endif
-        }
-        else { // +direction
-          #if HAS_J_MAX || (J_SPI_SENSORLESS && J_HOME_DIR > 0)
-            PROCESS_ENDSTOP(J, MAX);
-          #endif
-        }
+  #if LINEAR_AXES >= 5
+    if (stepper.axis_is_moving(J_AXIS)) {
+      if (stepper.motor_direction(J_AXIS_HEAD)) { // -direction
+        #if HAS_J_MIN || (J_SPI_SENSORLESS && J_HOME_DIR < 0)
+          PROCESS_ENDSTOP(J, MIN);
+        #endif
       }
+      else { // +direction
+        #if HAS_J_MAX || (J_SPI_SENSORLESS && J_HOME_DIR > 0)
+          PROCESS_ENDSTOP(J, MAX);
+        #endif
+      }
+    }
+  #endif
 
-      #if NON_E_AXES > 5
-        if (stepper.axis_is_moving(K_AXIS)) {
-          if (stepper.motor_direction(K_AXIS_HEAD)) { // -direction
-            #if HAS_K_MIN || (K_SPI_SENSORLESS && K_HOME_DIR < 0)
-              PROCESS_ENDSTOP(K, MIN);
-            #endif
-          }
-          else { // +direction
-            #if HAS_K_MAX || (K_SPI_SENSORLESS && K_HOME_DIR > 0)
-              PROCESS_ENDSTOP(K, MAX);
-            #endif
-          }
-        }
-      #endif // NON_E_AXES > 5
-    #endif // NON_E_AXES > 4
-  #endif // NON_E_AXES > 3
+  #if LINEAR_AXES >= 6
+    if (stepper.axis_is_moving(K_AXIS)) {
+      if (stepper.motor_direction(K_AXIS_HEAD)) { // -direction
+        #if HAS_K_MIN || (K_SPI_SENSORLESS && K_HOME_DIR < 0)
+          PROCESS_ENDSTOP(K, MIN);
+        #endif
+      }
+      else { // +direction
+        #if HAS_K_MAX || (K_SPI_SENSORLESS && K_HOME_DIR > 0)
+          PROCESS_ENDSTOP(K, MAX);
+        #endif
+      }
+    }
+  #endif
 } // Endstops::update()
 
 #if ENABLED(SPI_ENDSTOPS)

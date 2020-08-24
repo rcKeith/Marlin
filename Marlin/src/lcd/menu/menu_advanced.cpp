@@ -364,14 +364,14 @@ void menu_backlash();
     EDIT_VMAX(A);
     EDIT_VMAX(B);
     EDIT_VMAX(C);
-    #if NON_E_AXES > 3
+    #if LINEAR_AXES >= 4
       EDIT_VMAX(I);
-      #if NON_E_AXES > 4
-        EDIT_VMAX(J);
-        #if NON_E_AXES > 5
-          EDIT_VMAX(K);
-        #endif
-      #endif
+    #endif
+    #if LINEAR_AXES >= 5
+      EDIT_VMAX(J);
+    #endif
+    #if LINEAR_AXES >= 6
+      EDIT_VMAX(K);
     #endif
 
     #if E_STEPPERS
@@ -427,14 +427,14 @@ void menu_backlash();
     EDIT_AMAX(A, 100);
     EDIT_AMAX(B, 100);
     EDIT_AMAX(C,  10);
-    #if NON_E_AXES > 3
+    #if LINEAR_AXES >= 4
       EDIT_AMAX(I, 10);
-      #if NON_E_AXES > 4
-        EDIT_AMAX(J, 10);
-        #if NON_E_AXES > 5
-          EDIT_AMAX(K, 10);
-        #endif
-      #endif
+    #endif
+    #if LINEAR_AXES >= 5
+      EDIT_AMAX(J, 10);
+    #endif
+    #if LINEAR_AXES >= 6
+      EDIT_AMAX(K, 10);
     #endif
 
     #if ENABLED(DISTINCT_E_FACTORS)
@@ -485,14 +485,14 @@ void menu_backlash();
       #else
         EDIT_ITEM_FAST(float52sign, MSG_VC_JERK, &planner.max_jerk.c, 0.1f, max_jerk_edit.c);
       #endif
-      #if NON_E_AXES > 3
+      #if LINEAR_AXES >= 4
         EDIT_JERK(I);
-        #if NON_E_AXES > 4
-          EDIT_JERK(J);
-          #if NON_E_AXES > 5
-            EDIT_JERK(K);
-          #endif
-        #endif
+      #endif
+      #if LINEAR_AXES >= 5
+        EDIT_JERK(J);
+      #endif
+      #if LINEAR_AXES >= 6
+        EDIT_JERK(K);
       #endif
 
       #if HAS_CLASSIC_E_JERK
@@ -529,14 +529,14 @@ void menu_advanced_steps_per_mm() {
   EDIT_QSTEPS(A);
   EDIT_QSTEPS(B);
   EDIT_QSTEPS(C);
-  #if NON_E_AXES > 3
+  #if LINEAR_AXES >= 4
     EDIT_QSTEPS(I);
-    #if NON_E_AXES > 4
-      EDIT_QSTEPS(J);
-      #if NON_E_AXES > 5
-        EDIT_QSTEPS(K);
-      #endif
-    #endif
+  #endif
+  #if LINEAR_AXES >= 5
+    EDIT_QSTEPS(J);
+  #endif
+  #if LINEAR_AXES >= 6
+    EDIT_QSTEPS(K);
   #endif
 
   #if ENABLED(DISTINCT_E_FACTORS)

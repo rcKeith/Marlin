@@ -53,18 +53,13 @@ void GcodeSuite::G0_G1(
   if (IsRunning()
     #if ENABLED(NO_MOTION_BEFORE_HOMING)
       && !axis_unhomed_error(
-          (parser.seen('X') ? _BV(X_AXIS) : 0)
-        | (parser.seen('Y') ? _BV(Y_AXIS) : 0)
-        | (parser.seen('Z') ? _BV(Z_AXIS) : 0)
-        #if NON_E_AXES > 3
-          | (parser.seen(AXIS4_NAME) ? _BV(I_AXIS) : 0)
-          #if NON_E_AXES > 4
-            | (parser.seen(AXIS5_NAME) ? _BV(J_AXIS) : 0)
-            #if NON_E_AXES > 5
-              | (parser.seen(AXIS6_NAME) ? _BV(K_AXIS) : 0)
-            #endif
-          #endif
-        #endif
+        GANG_N(LINEAR_AXES,
+            (parser.seen('X') ? _BV(X_AXIS) : 0),
+          | (parser.seen('Y') ? _BV(Y_AXIS) : 0),
+          | (parser.seen('Z') ? _BV(Z_AXIS) : 0),
+          | (parser.seen(AXIS4_NAME) ? _BV(I_AXIS) : 0),
+          | (parser.seen(AXIS5_NAME) ? _BV(J_AXIS) : 0),
+          | (parser.seen(AXIS6_NAME) ? _BV(K_AXIS) : 0))
       )
     #endif
   ) {
@@ -96,17 +91,16 @@ void GcodeSuite::G0_G1(
 
       if (MIN_AUTORETRACT <= MAX_AUTORETRACT) {
         // When M209 Autoretract is enabled, convert E-only moves to firmware retract/recover moves
-        if (fwretract.autoretract_enabled && parser.seen('E') && !(parser.seen('X') || parser.seen('Y') || parser.seen('Z')
-          #if NON_E_AXES > 3
-            && parser.seen(AXIS4_NAME)
-            #if NON_E_AXES > 4
-              && parser.seen(AXIS5_NAME)
-              #if NON_E_AXES > 5
-                && parser.seen(AXIS6_NAME)
-              #endif
-            #endif
-          #endif
-        )) {
+        if (fwretract.autoretract_enabled && parser.seen('E')
+          && !(GANG_N(LINEAR_AXES,
+                   parser.seen('X'),
+                || parser.seen('Y'),
+                || parser.seen('Z'),
+                || parser.seen(AXIS4_NAME),
+                || parser.seen(AXIS5_NAME),
+                || parser.seen(AXIS6_NAME))
+              )
+        ) {
           const float echange = destination.e - current_position.e;
           // Is this a retract or recover move?
           if (WITHIN(ABS(echange), MIN_AUTORETRACT, MAX_AUTORETRACT) && fwretract.retracted[active_extruder] == (echange > 0.0)) {

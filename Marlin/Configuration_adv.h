@@ -629,9 +629,9 @@
 
 //#define SENSORLESS_BACKOFF_MM  { 2, 2 }     // (mm) Backoff from endstops before sensorless homing
 
-#define HOMING_BUMP_MM      ARRAY_N(NON_E_AXES, 5, 5, 2, 2, 2, 2)       // (mm) Backoff from endstops after first bump
-#define HOMING_BUMP_DIVISOR ARRAY_N(NON_E_AXES, 2, 2, 4, 4, 4, 4)       // Re-Bump Speed Divisor (Divides the Homing Feedrate)
-//#define HOMING_BACKOFF_POST_MM ARRAY_N(NON_E_AXES, 2, 2, 2, 2, 2, 2)  // (mm) Backoff from endstops after homing
+#define HOMING_BUMP_MM      ARRAY_N(LINEAR_AXES, 5, 5, 2, 2, 2, 2)       // (mm) Backoff from endstops after first bump
+#define HOMING_BUMP_DIVISOR ARRAY_N(LINEAR_AXES, 2, 2, 4, 4, 4, 4)       // Re-Bump Speed Divisor (Divides the Homing Feedrate)
+//#define HOMING_BACKOFF_POST_MM ARRAY_N(LINEAR_AXES, 2, 2, 2, 2, 2, 2)  // (mm) Backoff from endstops after homing
 
 //#define QUICK_HOME                          // If G28 contains XY do a diagonal move first
 //#define HOME_Y_BEFORE_X                     // If G28 contains XY home Y before X
@@ -796,7 +796,7 @@
 #endif
 
 // @section motion
-#define AXIS_RELATIVE_MODES ARRAY_N(INCREMENT(NON_E_AXES), false, false, false, false, false, false, false)
+#define AXIS_RELATIVE_MODES ARRAY_N(INCREMENT(LINEAR_AXES), false, false, false, false, false, false, false)
 
 // Add a Duplicate option for well-separated conjoined nozzles
 //#define MULTI_NOZZLE_DUPLICATION
@@ -867,7 +867,7 @@
 #if ENABLED(BACKLASH_COMPENSATION)
   // Define values for backlash distance and correction.
   // If BACKLASH_GCODE is enabled these values are the defaults.
-  #define BACKLASH_DISTANCE_MM ARRAY_N(NON_E_AXES, 0, 0, 0, 0, 0, 0) // (mm)
+  #define BACKLASH_DISTANCE_MM ARRAY_N(LINEAR_AXES, 0, 0, 0, 0, 0, 0) // (mm)
   #define BACKLASH_CORRECTION    0.0       // 0.0 = no correction; 1.0 = full correction
 
   // Set BACKLASH_SMOOTHING_MM to spread backlash correction over multiple segments

@@ -28,16 +28,16 @@ void report_M92(const bool echo=true, const int8_t e=-1) {
   SERIAL_ECHOPAIR_P(PSTR(" M92 X"), LINEAR_UNIT(planner.settings.axis_steps_per_mm[X_AXIS]),
                           SP_Y_STR, LINEAR_UNIT(planner.settings.axis_steps_per_mm[Y_AXIS]),
                           SP_Z_STR, LINEAR_UNIT(planner.settings.axis_steps_per_mm[Z_AXIS])
-                          #if NON_E_AXES > 3
+                          #if LINEAR_AXES >= 4
                             , SP_I_STR, LINEAR_UNIT(planner.settings.axis_steps_per_mm[I_AXIS]) // FIXME: Devision by 4.0 to work around issue that seemmingly, internally used steps_per_mm[I_AXIS] = DEFAULT_STEPS_PER_UNIT[I_AXIS]/4.0 ?
-                            #if NON_E_AXES > 4
+                            #if LINEAR_AXES >= 5
                               , SP_J_STR, LINEAR_UNIT(planner.settings.axis_steps_per_mm[J_AXIS])
-                              #if NON_E_AXES > 5
+                              #if LINEAR_AXES >= 6
                                 , SP_K_STR, LINEAR_UNIT(planner.settings.axis_steps_per_mm[K_AXIS])
                               #endif
                             #endif
                           #endif
-                          );
+                    );
   #if DISABLED(DISTINCT_E_FACTORS)
     SERIAL_ECHOPAIR_P(SP_E_STR, VOLUMETRIC_UNIT(planner.settings.axis_steps_per_mm[E_AXIS]));
   #endif
@@ -74,19 +74,9 @@ void GcodeSuite::M92() {
   if (target_extruder < 0) return;
 
   // No arguments? Show M92 report.
-  if (!parser.seen("XYZE"
-    #if NON_E_AXES > 3
-      "I"
-      #if NON_E_AXES > 4
-        "J"
-        #if NON_E_AXES > 5
-          "K"
-        #endif
-      #endif
-    #endif
-    #if ENABLED(MAGIC_NUMBERS_GCODE)
-      "HL"
-    #endif
+  if (!parser.seen("E"
+    GANG_N(LINEAR_AXES, "X", "Y", "Z", AXIS4_STR AXIS5_STR AXIS6_STR)
+    TERN_(MAGIC_NUMBERS_GCODE, "HL")
   )) return report_M92(true, target_extruder);
 
   LOOP_NUM_AXIS(i) { // TODO (DerAndere): Test LOOP_NUM_AXIS_N
@@ -104,15 +94,9 @@ void GcodeSuite::M92() {
         planner.settings.axis_steps_per_mm[E_AXIS_N(target_extruder)] = value;
       }
       else {
-        #if NON_E_AXES > 3 // FIXME (DerAndere): Work around issue that actual internal steps_per_mm for the I_AXIS is only a quater of the STEPS_PER_UNIT
-          if (i == 3) {
-            planner.settings.axis_steps_per_mm[i] = parser.value_per_axis_units((AxisEnum)i) * 4.0;
-          }
-          else {
-            planner.settings.axis_steps_per_mm[i] = parser.value_per_axis_units((AxisEnum)i);
-          }
-        #else
-          planner.settings.axis_steps_per_mm[i] = parser.value_per_axis_units((AxisEnum)i);
+        planner.settings.axis_steps_per_mm[i] = parser.value_per_axis_units((AxisEnum)i);
+        #if LINEAR_AXES >= 4 // FIXME (DerAndere): Work around issue that actual internal steps_per_mm for the I_AXIS is only a quater of the STEPS_PER_UNIT
+          if (i == 3) planner.settings.axis_steps_per_mm[i] *= 4.0f;
         #endif
       }
     }

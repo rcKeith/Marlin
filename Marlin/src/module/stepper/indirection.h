@@ -202,61 +202,61 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
 #endif
 
 // I Stepper
-#if NON_E_AXES > 3
-#ifndef I_ENABLE_INIT
-  #define I_ENABLE_INIT() SET_OUTPUT(I_ENABLE_PIN)
-  #define I_ENABLE_WRITE(STATE) WRITE(I_ENABLE_PIN,STATE)
-  #define I_ENABLE_READ() bool(READ(I_ENABLE_PIN))
+#if LINEAR_AXES >= 4
+  #ifndef I_ENABLE_INIT
+    #define I_ENABLE_INIT() SET_OUTPUT(I_ENABLE_PIN)
+    #define I_ENABLE_WRITE(STATE) WRITE(I_ENABLE_PIN,STATE)
+    #define I_ENABLE_READ() bool(READ(I_ENABLE_PIN))
+  #endif
+  #ifndef I_DIR_INIT
+    #define I_DIR_INIT() SET_OUTPUT(I_DIR_PIN)
+    #define I_DIR_WRITE(STATE) WRITE(I_DIR_PIN,STATE)
+    #define I_DIR_READ() bool(READ(I_DIR_PIN))
+  #endif
+  #define I_STEP_INIT() SET_OUTPUT(I_STEP_PIN)
+  #ifndef I_STEP_WRITE
+    #define I_STEP_WRITE(STATE) WRITE(I_STEP_PIN,STATE)
+  #endif
+  #define I_STEP_READ() bool(READ(I_STEP_PIN))
 #endif
-#ifndef I_DIR_INIT
-  #define I_DIR_INIT() SET_OUTPUT(I_DIR_PIN)
-  #define I_DIR_WRITE(STATE) WRITE(I_DIR_PIN,STATE)
-  #define I_DIR_READ() bool(READ(I_DIR_PIN))
-#endif
-#define I_STEP_INIT() SET_OUTPUT(I_STEP_PIN)
-#ifndef I_STEP_WRITE
-  #define I_STEP_WRITE(STATE) WRITE(I_STEP_PIN,STATE)
-#endif
-#define I_STEP_READ() bool(READ(I_STEP_PIN))
 
 // J Stepper
-#if NON_E_AXES > 4
-#ifndef J_ENABLE_INIT
-  #define J_ENABLE_INIT() SET_OUTPUT(J_ENABLE_PIN)
-  #define J_ENABLE_WRITE(STATE) WRITE(J_ENABLE_PIN,STATE)
-  #define J_ENABLE_READ() bool(READ(J_ENABLE_PIN))
+#if LINEAR_AXES >= 5
+  #ifndef J_ENABLE_INIT
+    #define J_ENABLE_INIT() SET_OUTPUT(J_ENABLE_PIN)
+    #define J_ENABLE_WRITE(STATE) WRITE(J_ENABLE_PIN,STATE)
+    #define J_ENABLE_READ() bool(READ(J_ENABLE_PIN))
+  #endif
+  #ifndef J_DIR_INIT
+    #define J_DIR_INIT() SET_OUTPUT(J_DIR_PIN)
+    #define J_DIR_WRITE(STATE) WRITE(J_DIR_PIN,STATE)
+    #define J_DIR_READ() bool(READ(J_DIR_PIN))
+  #endif
+  #define J_STEP_INIT() SET_OUTPUT(J_STEP_PIN)
+  #ifndef J_STEP_WRITE
+    #define J_STEP_WRITE(STATE) WRITE(J_STEP_PIN,STATE)
+  #endif
+  #define J_STEP_READ() bool(READ(J_STEP_PIN))
 #endif
-#ifndef J_DIR_INIT
-  #define J_DIR_INIT() SET_OUTPUT(J_DIR_PIN)
-  #define J_DIR_WRITE(STATE) WRITE(J_DIR_PIN,STATE)
-  #define J_DIR_READ() bool(READ(J_DIR_PIN))
-#endif
-#define J_STEP_INIT() SET_OUTPUT(J_STEP_PIN)
-#ifndef J_STEP_WRITE
-  #define J_STEP_WRITE(STATE) WRITE(J_STEP_PIN,STATE)
-#endif
-#define J_STEP_READ() bool(READ(J_STEP_PIN))
 
 // K Stepper
-#if NON_E_AXES > 5
-#ifndef K_ENABLE_INIT
-  #define K_ENABLE_INIT() SET_OUTPUT(K_ENABLE_PIN)
-  #define K_ENABLE_WRITE(STATE) WRITE(K_ENABLE_PIN,STATE)
-  #define K_ENABLE_READ() bool(READ(K_ENABLE_PIN))
+#if LINEAR_AXES >= 6
+  #ifndef K_ENABLE_INIT
+    #define K_ENABLE_INIT() SET_OUTPUT(K_ENABLE_PIN)
+    #define K_ENABLE_WRITE(STATE) WRITE(K_ENABLE_PIN,STATE)
+    #define K_ENABLE_READ() bool(READ(K_ENABLE_PIN))
+  #endif
+  #ifndef K_DIR_INIT
+    #define K_DIR_INIT() SET_OUTPUT(K_DIR_PIN)
+    #define K_DIR_WRITE(STATE) WRITE(K_DIR_PIN,STATE)
+    #define K_DIR_READ() bool(READ(K_DIR_PIN))
+  #endif
+  #define K_STEP_INIT() SET_OUTPUT(K_STEP_PIN)
+  #ifndef K_STEP_WRITE
+    #define K_STEP_WRITE(STATE) WRITE(K_STEP_PIN,STATE)
+  #endif
+  #define K_STEP_READ() bool(READ(K_STEP_PIN))
 #endif
-#ifndef K_DIR_INIT
-  #define K_DIR_INIT() SET_OUTPUT(K_DIR_PIN)
-  #define K_DIR_WRITE(STATE) WRITE(K_DIR_PIN,STATE)
-  #define K_DIR_READ() bool(READ(K_DIR_PIN))
-#endif
-#define K_STEP_INIT() SET_OUTPUT(K_STEP_PIN)
-#ifndef K_STEP_WRITE
-  #define K_STEP_WRITE(STATE) WRITE(K_STEP_PIN,STATE)
-#endif
-#define K_STEP_READ() bool(READ(K_STEP_PIN))
-#endif // NON_E_AXES > 5
-#endif // NON_E_AXES > 4
-#endif // NON_E_AXES > 3
 
 // E0 Stepper
 #ifndef E0_ENABLE_INIT
@@ -958,19 +958,26 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
 #endif
 #define DISABLE_AXIS_Z() do{ DISABLE_STEPPER_Z(); DISABLE_STEPPER_Z2(); DISABLE_STEPPER_Z3(); DISABLE_STEPPER_Z4(); CBI(axis_known_position, Z_AXIS); Z_RESET(); }while(0)
 
-#if NON_E_AXES > 3
+#if LINEAR_AXES >= 4
   #define  ENABLE_AXIS_I() do{ ENABLE_STEPPER_I(); }while(0)
   #define DISABLE_AXIS_I() do{ DISABLE_STEPPER_I(); CBI(axis_known_position, I_AXIS); }while(0)
-
-  #if NON_E_AXES > 4
-    #define  ENABLE_AXIS_J() do{ ENABLE_STEPPER_J(); }while(0)
-    #define DISABLE_AXIS_J() do{ DISABLE_STEPPER_J(); CBI(axis_known_position, J_AXIS); }while(0)
-
-    #if NON_E_AXES > 5
-      #define  ENABLE_AXIS_K() do{ ENABLE_STEPPER_K(); }while(0)
-      #define DISABLE_AXIS_K() do{ DISABLE_STEPPER_K(); CBI(axis_known_position, K_AXIS); }while(0)
-    #endif
-  #endif
+#else
+  #define  ENABLE_AXIS_I() NOOP
+  #define DISABLE_AXIS_I() NOOP
+#endif
+#if LINEAR_AXES >= 5
+  #define  ENABLE_AXIS_J() do{ ENABLE_STEPPER_J(); }while(0)
+  #define DISABLE_AXIS_J() do{ DISABLE_STEPPER_J(); CBI(axis_known_position, J_AXIS); }while(0)
+#else
+  #define  ENABLE_AXIS_J() NOOP
+  #define DISABLE_AXIS_J() NOOP
+#endif
+#if LINEAR_AXES >= 6
+  #define  ENABLE_AXIS_K() do{ ENABLE_STEPPER_K(); }while(0)
+  #define DISABLE_AXIS_K() do{ DISABLE_STEPPER_K(); CBI(axis_known_position, K_AXIS); }while(0)
+#else
+  #define  ENABLE_AXIS_K() NOOP
+  #define DISABLE_AXIS_K() NOOP
 #endif
 
 //

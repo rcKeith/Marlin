@@ -298,17 +298,10 @@
   #include "../feature/encoder_i2c.h"
 #endif
 
-enum AxisRelative : uint8_t { REL_X, REL_Y, REL_Z
-  #if NON_E_AXES > 3
-    , REL_I
-    #if NON_E_AXES > 4
-      , REL_J
-      #if NON_E_AXES > 5
-        , REL_K
-      #endif
-    #endif
-  #endif
-  , REL_E, E_MODE_ABS, E_MODE_REL };
+enum AxisRelative : uint8_t {
+  LIST_N(LINEAR_AXES, REL_X, REL_Y, REL_Z, REL_I, REL_J, REL_K),
+  REL_E, E_MODE_ABS, E_MODE_REL
+};
 
 class GcodeSuite {
 public:

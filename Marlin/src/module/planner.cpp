@@ -1319,14 +1319,14 @@ void Planner::check_axes_activity() {
         if (ENABLED(DISABLE_X) && block->steps.x) axis_active.x = true;
         if (ENABLED(DISABLE_Y) && block->steps.y) axis_active.y = true;
         if (ENABLED(DISABLE_Z) && block->steps.z) axis_active.z = true;
-        #if NON_E_AXES > 3
+        #if LINEAR_AXES >= 4
           if (ENABLED(DISABLE_I) && block->steps.i) axis_active.i = true;
-          #if NON_E_AXES > 4
-            if (ENABLED(DISABLE_J) && block->steps.j) axis_active.j = true;
-            #if NON_E_AXES > 5
-              if (ENABLED(DISABLE_K) && block->steps.k) axis_active.k = true;
-            #endif
-          #endif
+        #endif
+        #if LINEAR_AXES >= 5
+          if (ENABLED(DISABLE_J) && block->steps.j) axis_active.j = true;
+        #endif
+        #if LINEAR_AXES >= 6
+          if (ENABLED(DISABLE_K) && block->steps.k) axis_active.k = true;
         #endif
         if (ENABLED(DISABLE_E) && block->steps.e) axis_active.e = true;
       }
@@ -1353,14 +1353,14 @@ void Planner::check_axes_activity() {
   if (TERN0(DISABLE_X, !axis_active.x)) DISABLE_AXIS_X();
   if (TERN0(DISABLE_Y, !axis_active.y)) DISABLE_AXIS_Y();
   if (TERN0(DISABLE_Z, !axis_active.z)) DISABLE_AXIS_Z();
-  #if NON_E_AXES > 3
+  #if LINEAR_AXES >= 4
     if (TERN0(DISABLE_I, !axis_active.i)) DISABLE_AXIS_I();
-    #if NON_E_AXES > 4
-      if (TERN0(DISABLE_J, !axis_active.j)) DISABLE_AXIS_J();
-      #if NON_E_AXES > 5
-        if (TERN0(DISABLE_K, !axis_active.k)) DISABLE_AXIS_K();
-      #endif
-    #endif
+  #endif
+  #if LINEAR_AXES >= 5
+    if (TERN0(DISABLE_J, !axis_active.j)) DISABLE_AXIS_J();
+  #endif
+  #if LINEAR_AXES >= 6
+    if (TERN0(DISABLE_K, !axis_active.k)) DISABLE_AXIS_K();
   #endif
   if (TERN0(DISABLE_E, !axis_active.e)) disable_e_steppers();
 
@@ -1750,19 +1750,14 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
   #endif
   , feedRate_t fr_mm_s, const uint8_t extruder, const float &millimeters/*=0.0*/
 ) {
-
-  const int32_t da = target.a - position.a,
-                db = target.b - position.b,
-                dc = target.c - position.c;
-  #if NON_E_AXES > 3
-    const int32_t di = target.i - position.i;
-    #if NON_E_AXES > 4
-      const int32_t dj = target.j - position.j;
-      #if NON_E_AXES > 5
-        const int32_t dk = target.k - position.k;
-      #endif
-    #endif
-  #endif
+  const int32_t LIST_N(LINEAR_AXES,
+    da = target.a - position.a,
+    db = target.b - position.b,
+    dc = target.c - position.c,
+    di = target.i - position.i,
+    dj = target.j - position.j,
+    dk = target.k - position.k
+  );
 
   #if EXTRUDERS
     int32_t de = target.e - position.e;
@@ -1839,14 +1834,14 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
     if (da < 0) SBI(dm, X_AXIS);
     if (db < 0) SBI(dm, Y_AXIS);
     if (dc < 0) SBI(dm, Z_AXIS);
-    #if NON_E_AXES > 3
+    #if LINEAR_AXES >= 4
       if (di < 0) SBI(dm, I_AXIS);
-      #if NON_E_AXES > 4
-        if (dj < 0) SBI(dm, J_AXIS);
-        #if NON_E_AXES > 5
-          if (dk < 0) SBI(dm, K_AXIS);
-        #endif
-      #endif
+    #endif
+    #if LINEAR_AXES >= 5
+      if (dj < 0) SBI(dm, J_AXIS);
+    #endif
+    #if LINEAR_AXES >= 6
+      if (dk < 0) SBI(dm, K_AXIS);
     #endif
   #endif
   if (de < 0) SBI(dm, E_AXIS);
@@ -1883,17 +1878,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
     block->steps.set(ABS(da), ABS(db), ABS(dc));
   #else
     // default non-h-bot planning
-    block->steps.set(ABS(da), ABS(db), ABS(dc)
-        #if NON_E_AXES > 3
-          , ABS(di)
-          #if NON_E_AXES > 4
-            , ABS(dj)
-            #if NON_E_AXES > 5
-              , ABS(dk)
-            #endif
-          #endif
-        #endif
-        );
+    block->steps.set(LIST_N(LINEAR_AXES, ABS(da), ABS(db), ABS(dc), ABS(di), ABS(dj), ABS(dk));
   #endif
 
   /**
@@ -1931,14 +1916,14 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
     steps_dist_mm.a = da * steps_to_mm[A_AXIS];
     steps_dist_mm.b = db * steps_to_mm[B_AXIS];
     steps_dist_mm.c = dc * steps_to_mm[C_AXIS];
-    #if NON_E_AXES > 3
+    #if LINEAR_AXES >= 4
       steps_dist_mm.i = di * steps_to_mm[I_AXIS];
-      #if NON_E_AXES > 4
-        steps_dist_mm.j = dj * steps_to_mm[J_AXIS];
-        #if NON_E_AXES > 5
-          steps_dist_mm.k = dk * steps_to_mm[K_AXIS];
-        #endif
-      #endif
+    #endif
+    #if LINEAR_AXES >= 5
+      steps_dist_mm.j = dj * steps_to_mm[J_AXIS];
+    #endif
+    #if LINEAR_AXES >= 6
+      steps_dist_mm.k = dk * steps_to_mm[K_AXIS];
     #endif
   #endif
 
@@ -1950,22 +1935,15 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
 
   TERN_(LCD_SHOW_E_TOTAL, e_move_accumulator += steps_dist_mm.e);
 
-  if (block->steps.a < MIN_STEPS_PER_SEGMENT && block->steps.b < MIN_STEPS_PER_SEGMENT && block->steps.c < MIN_STEPS_PER_SEGMENT
-      #if NON_E_AXES > 3
-        && block->steps.i < MIN_STEPS_PER_SEGMENT
-        #if NON_E_AXES > 4
-          && block->steps.j < MIN_STEPS_PER_SEGMENT
-          #if NON_E_AXES > 5
-            && block->steps.k < MIN_STEPS_PER_SEGMENT
-          #endif
-        #endif
-      #endif
-      ) {
-    block->millimeters = (0
-      #if EXTRUDERS
-        + ABS(steps_dist_mm.e)
-      #endif
-    );
+  if (GANG_N(LINEAR_AXES,
+       block->steps.a < MIN_STEPS_PER_SEGMENT,
+    && block->steps.b < MIN_STEPS_PER_SEGMENT,
+    && block->steps.c < MIN_STEPS_PER_SEGMENT,
+    && block->steps.i < MIN_STEPS_PER_SEGMENT,
+    && block->steps.j < MIN_STEPS_PER_SEGMENT,
+    && block->steps.k < MIN_STEPS_PER_SEGMENT
+  )) {
+    block->millimeters = TERN0(HAS_EXTRUDERS, ABS(steps_dist_mm.e));
   }
   else {
     if (millimeters)
@@ -1973,74 +1951,68 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
     else {
       block->millimeters = SQRT(
         #if CORE_IS_XY
-          sq(steps_dist_mm.head.x) + sq(steps_dist_mm.head.y) + sq(steps_dist_mm.z)
-          #if NON_E_AXES > 3
-            + sq(steps_dist_mm.i)
-            #if NON_E_AXES > 4
-              + sq(steps_dist_mm.j)
-              #if NON_E_AXES > 5
-                + sq(steps_dist_mm.k)
-              #endif
-            #endif
-          #endif
+          GANG_N(LINEAR_AXES,
+              sq(steps_dist_mm.head.x),
+            + sq(steps_dist_mm.head.y),
+            + sq(steps_dist_mm.z),
+            + sq(steps_dist_mm.i),
+            + sq(steps_dist_mm.j),
+            + sq(steps_dist_mm.k)
+          )
 
         #elif CORE_IS_XZ
-          sq(steps_dist_mm.head.x) + sq(steps_dist_mm.y) + sq(steps_dist_mm.head.z)
-          #if NON_E_AXES > 3
-            + sq(steps_dist_mm.i)
-            #if NON_E_AXES > 4
-              + sq(steps_dist_mm.j)
-              #if NON_E_AXES > 5
-                + sq(steps_dist_mm.k)
-              #endif
-            #endif
-          #endif
+          GANG_N(LINEAR_AXES,
+              sq(steps_dist_mm.head.x),
+            + sq(steps_dist_mm.y),
+            + sq(steps_dist_mm.head.z),
+            + sq(steps_dist_mm.i),
+            + sq(steps_dist_mm.j),
+            + sq(steps_dist_mm.k)
+          )
 
         #elif CORE_IS_YZ
           sq(steps_dist_mm.x) + sq(steps_dist_mm.head.y) + sq(steps_dist_mm.head.z)
 
-        #elif defined(ASYNC_SECONDARY_AXES)
+        #elif ENABLED(ASYNC_SECONDARY_AXES)
           // XYZ vector magnitude. If one of the secondary axes IJK moves further
           // than the XYZ vector magnitude, take the largest single-axis move, instead.
-          #if NON_E_AXES == 6
-            sq(steps_dist_mm.x) + sq(steps_dist_mm.y) + sq(steps_dist_mm.z) 
-              > _MAX(sq(steps_dist_mm.i), sq(steps_dist_mm.j), sq(steps_dist_mm.k))
-              ? sq(steps_dist_mm.x) + sq(steps_dist_mm.y) + sq(steps_dist_mm.z)
-              : _MAX(sq(steps_dist_mm.i), sq(steps_dist_mm.j), sq(steps_dist_mm.k))
-          #elif NON_E_AXES == 5
-            sq(steps_dist_mm.x) + sq(steps_dist_mm.y) + sq(steps_dist_mm.z) 
-              > _MAX(sq(steps_dist_mm.i), sq(steps_dist_mm.j))
-              ? sq(steps_dist_mm.x) + sq(steps_dist_mm.y) + sq(steps_dist_mm.z)
-              : _MAX(sq(steps_dist_mm.i), sq(steps_dist_mm.j))
-          #elif NON_E_AXES == 4
-            sq(steps_dist_mm.x) + sq(steps_dist_mm.y) + sq(steps_dist_mm.z) 
+          #if LINEAR_AXES == 6
+            _MAX(
+              sq(steps_dist_mm.x) + sq(steps_dist_mm.y) + sq(steps_dist_mm.z),
+              _MAX(sq(steps_dist_mm.i), sq(steps_dist_mm.j), sq(steps_dist_mm.k))
+            )
+          #elif LINEAR_AXES == 5
+            _MAX(
+              sq(steps_dist_mm.x) + sq(steps_dist_mm.y) + sq(steps_dist_mm.z),
+              _MAX(sq(steps_dist_mm.i), sq(steps_dist_mm.j))
+            )
+          #elif LINEAR_AXES == 4
+            sq(steps_dist_mm.x) + sq(steps_dist_mm.y) + sq(steps_dist_mm.z)
               > sq(steps_dist_mm.i)
               ? sq(steps_dist_mm.x) + sq(steps_dist_mm.y) + sq(steps_dist_mm.z)
               : sq(steps_dist_mm.i)
           #else
-            sq(steps_dist_mm.x) + sq(steps_dist_mm.y) + sq(steps_dist_mm.z) 
+            sq(steps_dist_mm.x) + sq(steps_dist_mm.y) + sq(steps_dist_mm.z)
           #endif
 
         #elif defined(FOAMCUTTER_XYUV)
           // return the largest distance move from either X/Y or I/J plane
           // largest distance from either X/Y or I/J plane
-          #if NON_E_AXES > 5
-            sq(steps_dist_mm.x) + sq(steps_dist_mm.y) > sq(steps_dist_mm.i) + sq(steps_dist_mm.j)
-              ? sq(steps_dist_mm.x) + sq(steps_dist_mm.y)
-              : sq(steps_dist_mm.i) + sq(steps_dist_mm.j)
+          #if LINEAR_AXES >= 6
+            _MAX(sq(steps_dist_mm.x) + sq(steps_dist_mm.y), sq(steps_dist_mm.i) + sq(steps_dist_mm.j))
+          #else
+            sq(steps_dist_mm.x) + sq(steps_dist_mm.y)
           #endif
 
         #else
-          sq(steps_dist_mm.x) + sq(steps_dist_mm.y) + sq(steps_dist_mm.z)
-          #if NON_E_AXES > 3
-            + sq(steps_dist_mm.i)
-            #if NON_E_AXES > 4
-              + sq(steps_dist_mm.j)
-              #if NON_E_AXES > 5
-                + sq(steps_dist_mm.k)
-              #endif
-            #endif
-          #endif
+          GANG_N(LINEAR_AXES,
+              sq(steps_dist_mm.x),
+            + sq(steps_dist_mm.y),
+            + sq(steps_dist_mm.z),
+            + sq(steps_dist_mm.i),
+            + sq(steps_dist_mm.j),
+            + sq(steps_dist_mm.k)
+          )
         #endif
       );
     }
@@ -2060,17 +2032,10 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
     block->steps.e = esteps;
   #endif
 
-  block->step_event_count = _MAX(block->steps.a, block->steps.b, block->steps.c
-      #if NON_E_AXES > 3
-        , block->steps.i
-        #if NON_E_AXES > 4
-          , block->steps.j
-          #if NON_E_AXES > 5
-            , block->steps.k
-          #endif
-        #endif
-      #endif
-      , esteps);
+  block->step_event_count = _MAX(
+    LIST_N(LINEAR_AXES, block->steps.a, block->steps.b, block->steps.c, block->steps.i, block->steps.j, block->steps.k),
+    esteps
+  );
 
   // Bail if this is a zero-length block
   if (block->step_event_count < MIN_STEPS_PER_SEGMENT) return false;
@@ -2095,19 +2060,14 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
   #endif
 
   #if ENABLED(AUTO_POWER_CONTROL)
-    if (block->steps.x || block->steps.y || block->steps.z
-        #if NON_E_AXES > 3
-          || block->steps.i
-          #if NON_E_AXES > 4
-            || block->steps.j
-            #if NON_E_AXES > 5
-              || block->steps.k
-            #endif
-          #endif
-        #endif
-        ) {
-      powerManager.power_on();
-    }
+    if (GANG_N(LINEAR_AXES,
+           block->steps.x,
+        || block->steps.y,
+        || block->steps.z,
+        || block->steps.i,
+        || block->steps.j,
+        || block->steps.k)
+    ) powerManager.power_on();
   #endif
 
   // Enable active axes
@@ -2134,14 +2094,14 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
   #else
     if (block->steps.x) ENABLE_AXIS_X();
     if (block->steps.y) ENABLE_AXIS_Y();
-    #if NON_E_AXES > 3
+    #if LINEAR_AXES >= 4
       if (block->steps.i) ENABLE_AXIS_I();
-      #if NON_E_AXES > 4
-        if (block->steps.j) ENABLE_AXIS_J();
-        #if NON_E_AXES > 5
-          if (block->steps.k) ENABLE_AXIS_K();
-        #endif
-      #endif
+    #endif
+    #if LINEAR_AXES >= 5
+      if (block->steps.j) ENABLE_AXIS_J();
+    #endif
+    #if LINEAR_AXES >= 6
+      if (block->steps.k) ENABLE_AXIS_K();
     #endif
     #if DISABLED(Z_LATE_ENABLE)
       if (block->steps.z) ENABLE_AXIS_Z();
@@ -2245,7 +2205,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
   float speed_factor = 1.0f; // factor <1 decreases speed
 
   // Linear axes first with less logic
-  LOOP_NON_E(i) {
+  LOOP_LINEAR(i) {
     current_speed[i] = steps_dist_mm[i] * inverse_secs;
     const feedRate_t cs = ABS(current_speed[i]),
                  max_fr = settings.max_feedrate_mm_s[i];
@@ -2333,17 +2293,14 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
   // Compute and limit the acceleration rate for the trapezoid generator.
   const float steps_per_mm = block->step_event_count * inverse_millimeters;
   uint32_t accel;
-  if (!block->steps.a && !block->steps.b && !block->steps.c
-      #if NON_E_AXES > 3
-        && !block->steps.i
-        #if NON_E_AXES > 4
-          && !block->steps.j
-          #if NON_E_AXES > 5
-            && !block->steps.k
-          #endif
-        #endif
-      #endif
-      ) {
+  if (GANG_N(LINEAR_AXES,
+         !block->steps.a,
+      && !block->steps.b,
+      && !block->steps.c,
+      && !block->steps.i,
+      && !block->steps.j,
+      && !block->steps.k)
+  ) {
     // convert to: acceleration steps/sec^2
     accel = CEIL(settings.retract_acceleration * steps_per_mm);
     TERN_(LIN_ADVANCE, block->use_advance_lead = false);
@@ -2481,20 +2438,14 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
 
     xyze_float_t unit_vec =
       #if HAS_DIST_MM_ARG
-        cart_dist_mm;
+        cart_dist_mm
       #else
-        { steps_dist_mm.x, steps_dist_mm.y, steps_dist_mm.z,
-          #if NON_E_AXES > 3
-            steps_dist_mm.i,
-          #if NON_E_AXES > 4
-            steps_dist_mm.j,
-            #if NON_E_AXES > 5
-              steps_dist_mm.k,
-            #endif
-          #endif
-        #endif
-        steps_dist_mm.e };
+        {
+          LIST_N(LINEAR_AXES, steps_dist_mm.x, steps_dist_mm.y, steps_dist_mm.z, steps_dist_mm.i, steps_dist_mm.j, steps_dist_mm.k),
+          steps_dist_mm.e
+        }
       #endif
+    ;
 
     /**
      * On CoreXY the length of the vector [A,B] is SQRT(2) times the length of the head movement vector [X,Y].
@@ -2511,18 +2462,14 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
     if (moves_queued && !UNEAR_ZERO(previous_nominal_speed_sqr)) {
       // Compute cosine of angle between previous and current path. (prev_unit_vec is negative)
       // NOTE: Max junction velocity is computed without sin() or acos() by trig half angle identity.
-      float junction_cos_theta = (-prev_unit_vec.x * unit_vec.x) + (-prev_unit_vec.y * unit_vec.y)
-                               + (-prev_unit_vec.z * unit_vec.z) 
-                               #if NON_E_AXES > 3
-                                 + (-prev_unit_vec.i * unit_vec.i)
-                                 #if NON_E_AXES > 4
-                                   + (-prev_unit_vec.j * unit_vec.j)
-                                   #if NON_E_AXES > 5
-                                    + (-prev_unit_vec.k * unit_vec.k)
-                                   #endif
-                                 #endif
-                               #endif
-                               + (-prev_unit_vec.e * unit_vec.e);
+      float junction_cos_theta = GANG_N(
+                                     (-prev_unit_vec.x * unit_vec.x),
+                                   + (-prev_unit_vec.y * unit_vec.y),
+                                   + (-prev_unit_vec.z * unit_vec.z),
+                                   + (-prev_unit_vec.i * unit_vec.i),
+                                   + (-prev_unit_vec.j * unit_vec.j),
+                                   + (-prev_unit_vec.k * unit_vec.k))
+                                 + (-prev_unit_vec.e * unit_vec.e);
 
       // NOTE: Computed without any expensive trig, sin() or acos(), by trig half angle identity of cos(theta).
       if (junction_cos_theta > 0.999999f) {
@@ -2668,7 +2615,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
     const float extra_xyjerk = (de <= 0) ? TRAVEL_EXTRA_XYJERK : 0;
 
     uint8_t limited = 0;
-    TERN(HAS_LINEAR_E_JERK, LOOP_NON_E, LOOP_NUM_AXIS)(i) {
+    TERN(HAS_LINEAR_E_JERK, LOOP_LINEAR, LOOP_NUM_AXIS)(i) {
       const float jerk = ABS(current_speed[i]),   // cs : Starting from zero, change in speed for this axis
                   maxj = (max_jerk[i] + (i == X_AXIS || i == Y_AXIS ? extra_xyjerk : 0.0f)); // mj : The max jerk setting for this axis
       if (jerk > maxj) {                          // cs > mj : New current speed too fast?
@@ -2706,7 +2653,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
         vmax_junction = previous_nominal_speed;
 
       // Now limit the jerk in all axes.
-      TERN(HAS_LINEAR_E_JERK, LOOP_NON_E, LOOP_NUM_AXIS)(axis) {
+      TERN(HAS_LINEAR_E_JERK, LOOP_LINEAR, LOOP_NUM_AXIS)(axis) {
         // Limit an axis. We have to differentiate: coasting, reversal of an axis, full stop.
         float v_exit = previous_speed[axis] * smaller_speed_factor,
               v_entry = current_speed[axis];
@@ -2828,17 +2775,9 @@ void Planner::buffer_sync_block() {
  *
  * Return 'false' if no segment was queued due to cleaning, cold extrusion, full queue, etc.
  */
-bool Planner::buffer_segment(const float &a, const float &b, const float &c
-    #if NON_E_AXES > 3
-      , const float &i
-      #if NON_E_AXES > 4
-        , const float &j
-        #if NON_E_AXES > 5
-          , const float &k
-        #endif
-      #endif
-    #endif
-    , const float &e
+bool Planner::buffer_segment(
+    LIST_N(LINEAR_AXES, const float &a, const float &b, const float &c, const float &i, const float &j, const float &k)
+  , const float &e
   #if HAS_DIST_MM_ARG
     , const xyze_float_t &cart_dist_mm
   #endif
@@ -2859,33 +2798,19 @@ bool Planner::buffer_segment(const float &a, const float &b, const float &c
   // The target position of the tool in absolute steps
   // Calculate target position in absolute steps
   const abce_long_t target = {
-    int32_t(LROUND(a * settings.axis_steps_per_mm[A_AXIS])),
-    int32_t(LROUND(b * settings.axis_steps_per_mm[B_AXIS])),
-    int32_t(LROUND(c * settings.axis_steps_per_mm[C_AXIS])),
-    #if NON_E_AXES > 3
-      int32_t(LROUND(i * (settings.axis_steps_per_mm[I_AXIS]))), // FIXME (DerAndere): Multiplication by 4.0 is a work-around for issue with wrong internal steps per mm
-      #if NON_E_AXES > 4
-        int32_t(LROUND(j * settings.axis_steps_per_mm[J_AXIS])),
-        #if NON_E_AXES > 5
-          int32_t(LROUND(k * settings.axis_steps_per_mm[K_AXIS])),
-        #endif
-      #endif
-    #endif
+    LIST_N(LINEAR_AXES,
+      int32_t(LROUND(a * settings.axis_steps_per_mm[A_AXIS])),
+      int32_t(LROUND(b * settings.axis_steps_per_mm[B_AXIS])),
+      int32_t(LROUND(c * settings.axis_steps_per_mm[C_AXIS])),
+      int32_t(LROUND(i * settings.axis_steps_per_mm[I_AXIS])), // FIXME (DerAndere): Multiplication by 4.0 is a work-around for issue with wrong internal steps per mm
+      int32_t(LROUND(j * settings.axis_steps_per_mm[J_AXIS])),
+      int32_t(LROUND(k * settings.axis_steps_per_mm[K_AXIS]))
+    ),
     int32_t(LROUND(e * settings.axis_steps_per_mm[E_AXIS_N(extruder)]))
   };
 
   #if HAS_POSITION_FLOAT
-    const xyze_pos_t target_float = { a, b, c
-      #if NON_E_AXES > 3
-        , i
-        #if NON_E_AXES > 4
-          , j
-          #if NON_E_AXES > 5
-            , k
-          #endif
-        #endif
-      #endif
-    , e };
+    const xyze_pos_t target_float = { LIST_N(LINEAR_AXES, a, b, c, i, j, k), e };
   #endif
 
   // DRYRUN prevents E moves from taking place
@@ -2919,23 +2844,23 @@ bool Planner::buffer_segment(const float &a, const float &b, const float &c
     SERIAL_ECHOPAIR(" (", position.z);
     SERIAL_ECHOPAIR("->", target.z);
     SERIAL_CHAR(')');
-    #if NON_E_AXES > 3
+    #if LINEAR_AXES >= 4
       SERIAL_ECHOPAIR_P(SP_I_LBL, i);
       SERIAL_ECHOPAIR(" (", position.i);
       SERIAL_ECHOPAIR("->", target.i); // FIXME (DerAndere): Introduce work-around for issue with wrong internal steps per mm and feedrate for I_AXIS
       SERIAL_CHAR(')');
-      #if NON_E_AXES > 4
-        SERIAL_ECHOPAIR_P(SP_J_LBL, j);
-        SERIAL_ECHOPAIR(" (", position.j);
-        SERIAL_ECHOPAIR("->", target.j);
-        SERIAL_CHAR(')');
-        #if NON_E_AXES > 5
-          SERIAL_ECHOPAIR_P(SP_K_LBL, k);
-          SERIAL_ECHOPAIR(" (", position.k);
-          SERIAL_ECHOPAIR("->", target.k);
-          SERIAL_CHAR(')');
-        #endif
-      #endif
+    #endif
+    #if LINEAR_AXES >= 5
+      SERIAL_ECHOPAIR_P(SP_J_LBL, j);
+      SERIAL_ECHOPAIR(" (", position.j);
+      SERIAL_ECHOPAIR("->", target.j);
+      SERIAL_CHAR(')');
+    #endif
+    #if LINEAR_AXES >= 6
+      SERIAL_ECHOPAIR_P(SP_K_LBL, k);
+      SERIAL_ECHOPAIR(" (", position.k);
+      SERIAL_ECHOPAIR("->", target.k);
+      SERIAL_CHAR(')');
     #endif
     SERIAL_ECHOPAIR_P(SP_E_LBL, e);
     SERIAL_ECHOPAIR(" (", position.e);
@@ -2945,13 +2870,13 @@ bool Planner::buffer_segment(const float &a, const float &b, const float &c
 
   // Queue the movement. Return 'false' if the move was not queued.
   if (!_buffer_steps(target
-      #if HAS_POSITION_FLOAT
-        , target_float
-      #endif
-      #if HAS_DIST_MM_ARG
-        , cart_dist_mm
-      #endif
-      , fr_mm_s, extruder, millimeters)
+    #if HAS_POSITION_FLOAT
+      , target_float
+    #endif
+    #if HAS_DIST_MM_ARG
+      , cart_dist_mm
+    #endif
+    , fr_mm_s, extruder, millimeters)
   ) return false;
 
   stepper.wake_up();
@@ -2969,32 +2894,14 @@ bool Planner::buffer_segment(const float &a, const float &b, const float &c
  *  millimeters  - the length of the movement, if known
  *  inv_duration - the reciprocal if the duration of the movement, if known (kinematic only if feeedrate scaling is enabled)
  */
-bool Planner::buffer_line(const float &rx, const float &ry, const float &rz
-    #if NON_E_AXES > 3
-      , const float &ri
-      #if NON_E_AXES > 4
-        , const float &rj
-        #if NON_E_AXES > 5
-          , const float &rk
-        #endif
-      #endif
-    #endif
-    , const float &e, const feedRate_t &fr_mm_s, const uint8_t extruder, const float millimeters
+bool Planner::buffer_line(
+    LIST_N(LINEAR_AXES, const float &rx, const float &ry, const float &rz, const float &ri, const float &rj, const float &rk)
+  , const float &e, const feedRate_t &fr_mm_s, const uint8_t extruder, const float millimeters
   #if ENABLED(SCARA_FEEDRATE_SCALING)
     , const float &inv_duration
   #endif
 ) {
-  xyze_pos_t machine = { rx, ry, rz
-    #if NON_E_AXES > 3
-      , ri
-      #if NON_E_AXES > 4
-        , rj
-        #if NON_E_AXES > 5
-          , rk
-        #endif
-      #endif
-    #endif
-  , e };
+  xyze_pos_t machine = { LIST_N(LINEAR_AXES, rx, ry, rz, ri, rj, rk), e };
   TERN_(HAS_POSITION_MODIFIERS, apply_modifiers(machine));
 
   #if IS_KINEMATIC
@@ -3110,42 +3017,23 @@ bool Planner::buffer_line(const float &rx, const float &ry, const float &rz
  * The provided ABC position is in machine units.
  */
 
-void Planner::set_machine_position_mm(const float &a, const float &b, const float &c
-    #if NON_E_AXES > 3
-      , const float &i
-      #if NON_E_AXES > 4
-        , const float &j
-          #if NON_E_AXES > 5
-            , const float &k
-          #endif
-        #endif
-      #endif
-      , const float &e) {
+void Planner::set_machine_position_mm(
+  LIST_N(LINEAR_AXES, const float &a, const float &b, const float &c, const float &i, const float &j, const float &k),
+  const float &e
+) {
   TERN_(DISTINCT_E_FACTORS, last_extruder = active_extruder);
-  TERN_(HAS_POSITION_FLOAT, position_float.set(a, b, c, 
-      #if NON_E_AXES > 3
-        i, 
-        #if NON_E_AXES > 4
-          j,
-          #if NON_E_AXES > 5
-            k, 
-          #endif
-        #endif
-      #endif
-      e));
-  position.set(LROUND(a * settings.axis_steps_per_mm[A_AXIS]),
-               LROUND(b * settings.axis_steps_per_mm[B_AXIS]),
-               LROUND(c * settings.axis_steps_per_mm[C_AXIS]),
-               #if NON_E_AXES > 3
-                 LROUND(i * settings.axis_steps_per_mm[I_AXIS]),
-                 #if NON_E_AXES > 4
-                   LROUND(j * settings.axis_steps_per_mm[J_AXIS]),
-                   #if NON_E_AXES > 5
-                     LROUND(k * settings.axis_steps_per_mm[K_AXIS]),
-                   #endif
-                 #endif
-               #endif
-               LROUND(e * settings.axis_steps_per_mm[E_AXIS_N(active_extruder)]));
+  TERN_(HAS_POSITION_FLOAT, position_float.set(LIST_N(LINEAR_AXES, a, b, c, i, j, k), e));
+  position.set(
+    LIST_N(LINEAR_AXES,
+      LROUND(a * settings.axis_steps_per_mm[A_AXIS]),
+      LROUND(b * settings.axis_steps_per_mm[B_AXIS]),
+      LROUND(c * settings.axis_steps_per_mm[C_AXIS]),
+      LROUND(i * settings.axis_steps_per_mm[I_AXIS]),
+      LROUND(j * settings.axis_steps_per_mm[J_AXIS]),
+      LROUND(k * settings.axis_steps_per_mm[K_AXIS])
+    ),
+    LROUND(e * settings.axis_steps_per_mm[E_AXIS_N(active_extruder)])
+  );
   if (has_blocks_queued()) {
     //previous_nominal_speed_sqr = 0.0; // Reset planner junction speeds. Assume start from rest.
     //previous_speed.reset();
@@ -3155,31 +3043,12 @@ void Planner::set_machine_position_mm(const float &a, const float &b, const floa
     stepper.set_position(position);
 }
 
-void Planner::set_position_mm(const float &rx, const float &ry, const float &rz
-    #if NON_E_AXES > 3
-      , const float &ri
-      #if NON_E_AXES > 4
-	    , const float &rj
-        #if NON_E_AXES > 5
-	      , const float &rk
-        #endif
-      #endif
-    #endif
-    , const float &e) {
-  xyze_pos_t machine = { rx, ry, rz
-    #if NON_E_AXES > 3
-      , ri
-      #if NON_E_AXES > 4
-        , rj
-        #if NON_E_AXES > 5
-          , rk
-        #endif
-      #endif
-    #endif
-    , e };
-  #if HAS_POSITION_MODIFIERS
-    apply_modifiers(machine, true);
-  #endif
+void Planner::set_position_mm(
+  LIST_N(LINEAR_AXES, const float &rx, const float &ry, const float &rz, const float &ri, const float &rj, const float &rk),
+  const float &e
+) {
+  xyze_pos_t machine = { LIST_N(LINEAR_AXES, rx, ry, rz, ri, rj, rk), e };
+  TERN_(HAS_POSITION_MODIFIERS, apply_modifiers(machine, true));
   #if IS_KINEMATIC
     position_cart.set(rx, ry, rz, e);
     inverse_kinematics(machine);
@@ -3270,14 +3139,9 @@ void Planner::set_max_feedrate(const uint8_t axis, float targetValue) {
     #endif
     limit_and_warn(targetValue, axis, PSTR("Feedrate"), max_fr_edit_scaled);
   #endif
-  #if NON_E_AXES > 3
-  // FIXME (DerAndere): Work-around for issue with internal feedrate for I_AXIS
-    if (axis == 3) {
-      settings.max_feedrate_mm_s[axis] = targetValue * 4.0; 
-    }
-    else {
-      settings.max_feedrate_mm_s[axis] = targetValue;
-    }
+  #if LINEAR_AXES >= 4
+    // FIXME (DerAndere): Work-around for issue with internal feedrate for I_AXIS
+    settings.max_feedrate_mm_s[axis] = targetValue * (axis == 3 ? 4.0f : 1.0f);
   #else
     settings.max_feedrate_mm_s[axis] = targetValue;
   #endif

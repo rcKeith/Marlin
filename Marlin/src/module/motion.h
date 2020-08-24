@@ -36,17 +36,7 @@
 
 // Axis homed and known-position states
 extern uint8_t axis_homed, axis_known_position;
-constexpr uint8_t xyz_bits = (_BV(X_AXIS) | _BV(Y_AXIS) | _BV(Z_AXIS)
-  #if NON_E_AXES > 3
-    | _BV(I_AXIS)
-    #if NON_E_AXES > 4
-      | _BV(J_AXIS)
-      #if NON_E_AXES > 5
-        | _BV(K_AXIS)
-      #endif
-    #endif
-  #endif
-);
+constexpr uint8_t xyz_bits = GANG_N(LINEAR_AXES, _BV(X_AXIS), | _BV(Y_AXIS), | _BV(Z_AXIS), | _BV(I_AXIS), | _BV(J_AXIS), | _BV(K_AXIS));
 FORCE_INLINE bool no_axes_homed() { return !axis_homed; }
 FORCE_INLINE bool all_axes_homed() { return (axis_homed & xyz_bits) == xyz_bits; }
 FORCE_INLINE bool all_axes_known() { return (axis_known_position & xyz_bits) == xyz_bits; }
@@ -67,7 +57,7 @@ extern xyze_pos_t current_position,  // High-level current tool position
 
 // G60/G61 Position Save and Return
 #if SAVED_POSITIONS
-  extern uint8_t saved_slots[(SAVED_POSITIONS + 7) >> 3]; // TODO: Add support for NON_E_AXES > 3. Maybe >> NON_E_AXES
+  extern uint8_t saved_slots[(SAVED_POSITIONS + 7) >> 3]; // TODO: Add support for LINEAR_AXES >= 4. Maybe >> LINEAR_AXES
   extern xyz_pos_t stored_position[SAVED_POSITIONS];
 #endif
 
@@ -96,7 +86,7 @@ extern xyz_pos_t cartes;
  * Feed rates are often configured with mm/m
  * but the planner and stepper like mm/s units.
  */
-extern const feedRate_t homing_feedrate_mm_s[NON_E_AXES];
+extern const feedRate_t homing_feedrate_mm_s[LINEAR_AXES];
 FORCE_INLINE feedRate_t homing_feedrate(const AxisEnum a) { return pgm_read_float(&homing_feedrate_mm_s[a]); }
 feedRate_t get_homing_bump_feedrate(const AxisEnum axis);
 
@@ -121,31 +111,11 @@ extern int16_t feedrate_percentage;
 inline float pgm_read_any(const float *p) { return pgm_read_float(p); }
 inline signed char pgm_read_any(const signed char *p) { return pgm_read_byte(p); }
 
-#if NON_E_AXES == 6
-  #define XYZ_DEFS(T, NAME, OPT) \
-    inline T NAME(const AxisEnum axis) { \
-        static const XYZval<T> NAME##_P PROGMEM = { X_##OPT, Y_##OPT, Z_##OPT, I_##OPT, J_##OPT, K_##OPT }; \
-      return pgm_read_any(&NAME##_P[axis]); \
-    }
-#elif NON_E_AXES == 5   
-  #define XYZ_DEFS(T, NAME, OPT) \
-    inline T NAME(const AxisEnum axis) { \
-        static const XYZval<T> NAME##_P PROGMEM = { X_##OPT, Y_##OPT, Z_##OPT, I_##OPT, J_##OPT }; \
-      return pgm_read_any(&NAME##_P[axis]); \
-    }
-#elif NON_E_AXES == 4   
-  #define XYZ_DEFS(T, NAME, OPT) \
-    inline T NAME(const AxisEnum axis) { \
-        static const XYZval<T> NAME##_P PROGMEM = { X_##OPT, Y_##OPT, Z_##OPT, I_##OPT }; \
-      return pgm_read_any(&NAME##_P[axis]); \
-    }
-#else   
-  #define XYZ_DEFS(T, NAME, OPT) \
-    inline T NAME(const AxisEnum axis) { \
-        static const XYZval<T> NAME##_P PROGMEM = { X_##OPT, Y_##OPT, Z_##OPT }; \
-      return pgm_read_any(&NAME##_P[axis]); \
-    }
-#endif    
+#define XYZ_DEFS(T, NAME, OPT) \
+  inline T NAME(const AxisEnum axis) { \
+      static const XYZval<T> NAME##_P PROGMEM = ARRAY_N(LINEAR_AXES, X_##OPT, Y_##OPT, Z_##OPT, I_##OPT, J_##OPT, K_##OPT); \
+    return pgm_read_any(&NAME##_P[axis]); \
+  }
 XYZ_DEFS(float, base_min_pos,   MIN_POS);
 XYZ_DEFS(float, base_max_pos,   MAX_POS);
 XYZ_DEFS(float, base_home_pos,  HOME_POS);
@@ -242,25 +212,18 @@ inline void prepare_internal_move_to_destination(const feedRate_t &fr_mm_s=0.0f)
 /**
  * Blocking movement and shorthand functions
  */
-void do_blocking_move_to(const float rx, const float ry, const float rz
-  #if NON_E_AXES > 3
-    , const float ri
-    #if NON_E_AXES > 4
-      , const float rj
-      #if NON_E_AXES > 5
-        , const float rk
-      #endif
-    #endif
-  #endif
-  , const feedRate_t &fr_mm_s=0.0f);
+void do_blocking_move_to(
+  LIST_N(LINEAR_AXES, const float rx, const float ry, const float rz, const float ri, const float rj, const float rk),
+  const feedRate_t &fr_mm_s=0.0f
+);
 void do_blocking_move_to(const xy_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
 void do_blocking_move_to(const xyz_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
 void do_blocking_move_to(const xyze_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
-#if NON_E_AXES > 3
+#if LINEAR_AXES >= 4
   void do_blocking_move_to(const xyzeOnly_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
-//  #if NON_E_AXES > 4
+//  #if LINEAR_AXES >= 5
 //    void do_blocking_move_to(const xyzieOnly_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
-//    #if NON_E_AXES > 5
+//    #if LINEAR_AXES >= 6
 //      void do_blocking_move_to(const xyzieOnly_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
 //    #endif
 //  #endif
@@ -268,21 +231,21 @@ void do_blocking_move_to(const xyze_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
 void do_blocking_move_to_x(const float &rx, const feedRate_t &fr_mm_s=0.0f);
 void do_blocking_move_to_y(const float &ry, const feedRate_t &fr_mm_s=0.0f);
 void do_blocking_move_to_z(const float &rz, const feedRate_t &fr_mm_s=0.0f);
-#if NON_E_AXES > 3
+#if LINEAR_AXES >= 4
   void do_blocking_move_to_i(const float &ri, const feedRate_t &fr_mm_s=0.0f);
   void do_blocking_move_to_xyz_i(const xyze_pos_t &raw, const float &i, const feedRate_t &fr_mm_s=0.0f);
-/**
+  /*
   FORCE_INLINE void do_blocking_move_to_xyz_i(const xyz_pos_t &raw, const float &i, const feedRate_t &fr_mm_s=0.0f)  { do_blocking_move_to_xyz_i(xyzOnly_pos_t(raw), i, fr_mm_s); }
   FORCE_INLINE void do_blocking_move_to_xyz_i(const xyze_pos_t &raw, const float &i, const feedRate_t &fr_mm_s=0.0f) { do_blocking_move_to_xyz_i(xyzOnly_pos_t(raw), i, fr_mm_s); }
- */
-  #if NON_E_AXES > 4
-    void do_blocking_move_to_j(const float &rj, const feedRate_t &fr_mm_s=0.0f);
-    void do_blocking_move_to_xyz_j(const xyze_pos_t &raw, const float &j, const feedRate_t &fr_mm_s=0.0f);
-    #if NON_E_AXES > 5
-      void do_blocking_move_to_k(const float &rk, const feedRate_t &fr_mm_s=0.0f);
-      void do_blocking_move_to_xyz_k(const xyze_pos_t &raw, const float &k, const feedRate_t &fr_mm_s=0.0f);
-    #endif
-  #endif
+  */
+#endif
+#if LINEAR_AXES >= 5
+  void do_blocking_move_to_j(const float &rj, const feedRate_t &fr_mm_s=0.0f);
+  void do_blocking_move_to_xyz_j(const xyze_pos_t &raw, const float &j, const feedRate_t &fr_mm_s=0.0f);
+#endif
+#if LINEAR_AXES >= 6
+  void do_blocking_move_to_k(const float &rk, const feedRate_t &fr_mm_s=0.0f);
+  void do_blocking_move_to_xyz_k(const xyze_pos_t &raw, const float &k, const feedRate_t &fr_mm_s=0.0f);
 #endif
 void do_blocking_move_to_xy(const float &rx, const float &ry, const feedRate_t &fr_mm_s=0.0f);
 void do_blocking_move_to_xy(const xy_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
@@ -302,20 +265,8 @@ void do_z_clearance(const float &zclear, const bool z_known=true, const bool rai
 //
 // Homing
 //
-
-#if NON_E_AXES == 4
-  uint8_t axes_need_homing(uint8_t axis_bits=0x0F); // 0x0F = 00001111 = all four axes
-  bool axis_unhomed_error(uint8_t axis_bits=0x0F); // 0x0F = 00001111 = all four axes
-#elif NON_E_AXES == 5
-  uint8_t axes_need_homing(uint8_t axis_bits=0x1F); // 0x1F = 00011111 = all five axes
-  bool axis_unhomed_error(uint8_t axis_bits=0x1F); // 0x1F = 00011111 = all five axes
-#elif NON_E_AXES == 6
-  uint8_t axes_need_homing(uint8_t axis_bits=0x3F); // 0x3F = 00111111 = all six axes
-  bool axis_unhomed_error(uint8_t axis_bits=0x3F); // 0x3F = 00111111 = all six axes
-#else  // 0x07 = 00000111 = all three axes
-  uint8_t axes_need_homing(uint8_t axis_bits=0x07);
-  bool axis_unhomed_error(uint8_t axis_bits=0x07);
-#endif
+uint8_t axes_need_homing(uint8_t axis_bits=_BV(LINEAR_AXES)-1);
+bool axis_unhomed_error(uint8_t axis_bits=_BV(LINEAR_AXES)-1);
 
 #if ENABLED(NO_MOTION_BEFORE_HOMING)
   #define MOTION_CONDITIONS (IsRunning() && !axis_unhomed_error())
@@ -372,18 +323,19 @@ void homeaxis(const AxisEnum axis);
 #define RAW_Y_POSITION(POS)     LOGICAL_TO_NATIVE(POS, Y_AXIS)
 #define RAW_Z_POSITION(POS)     LOGICAL_TO_NATIVE(POS, Z_AXIS)
 
-#if NON_E_AXES > 3
+#if LINEAR_AXES >= 4
   #define LOGICAL_I_POSITION(POS) NATIVE_TO_LOGICAL(POS, I_AXIS)
   #define RAW_I_POSITION(POS)     LOGICAL_TO_NATIVE(POS, I_AXIS)
-  #if NON_E_AXES > 4
-    #define LOGICAL_J_POSITION(POS) NATIVE_TO_LOGICAL(POS, J_AXIS)
-    #define RAW_J_POSITION(POS)     LOGICAL_TO_NATIVE(POS, J_AXIS)
-    #if NON_E_AXES > 5
-      #define LOGICAL_K_POSITION(POS) NATIVE_TO_LOGICAL(POS, K_AXIS)
-      #define RAW_K_POSITION(POS)     LOGICAL_TO_NATIVE(POS, K_AXIS)
-    #endif
-  #endif
 #endif
+#if LINEAR_AXES >= 5
+  #define LOGICAL_J_POSITION(POS) NATIVE_TO_LOGICAL(POS, J_AXIS)
+  #define RAW_J_POSITION(POS)     LOGICAL_TO_NATIVE(POS, J_AXIS)
+#endif
+#if LINEAR_AXES >= 6
+  #define LOGICAL_K_POSITION(POS) NATIVE_TO_LOGICAL(POS, K_AXIS)
+  #define RAW_K_POSITION(POS)     LOGICAL_TO_NATIVE(POS, K_AXIS)
+#endif
+
 /**
  * position_is_reachable family of functions
  */

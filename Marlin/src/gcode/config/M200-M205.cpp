@@ -147,24 +147,8 @@ void GcodeSuite::M204() {
  *    J = Junction Deviation (mm) (If not using CLASSIC_JERK)
  */
 void GcodeSuite::M205() {
-  #if HAS_JUNCTION_DEVIATION
-    #define J_PARAM  "J"
-  #else
-    #define J_PARAM
-  #endif
-  #if HAS_CLASSIC_JERK
-    #if NON_E_AXES == 6
-      #define XYZE_PARAM "XYZIJKE"
-    #elif NON_E_AXES == 5
-      #define XYZE_PARAM "XYZIJE"
-    #elif NON_E_AXES == 4
-      #define XYZE_PARAM "XYZIE"
-    #else
-      #define XYZE_PARAM "XYZE"
-    #endif
-  #else
-    #define XYZE_PARAM
-  #endif
+  #define J_PARAM TERN_(HAS_JUNCTION_DEVIATION, "J")
+  #define XYZE_PARAM TERN_(HAS_CLASSIC_JERK, "XYZ" AXIS4_STR AXIS5_STR AXIS6_STR "E")
   if (!parser.seen("BST" J_PARAM XYZE_PARAM)) return;
 
   //planner.synchronize();
@@ -192,14 +176,14 @@ void GcodeSuite::M205() {
           SERIAL_ECHOLNPGM("WARNING! Low Z Jerk may lead to unwanted pauses.");
       #endif
     }
-    #if NON_E_AXES > 3
+    #if LINEAR_AXES >= 4
       if (parser.seen('I')) planner.set_max_jerk(I_AXIS, parser.value_linear_units());
-      #if NON_E_AXES > 4
-        if (parser.seen('J')) planner.set_max_jerk(J_AXIS, parser.value_linear_units());
-        #if NON_E_AXES > 5
-          if (parser.seen('K')) planner.set_max_jerk(K_AXIS, parser.value_linear_units());
-        #endif
-      #endif
+    #endif
+    #if LINEAR_AXES >= 5
+      if (parser.seen('J')) planner.set_max_jerk(J_AXIS, parser.value_linear_units());
+    #endif
+    #if LINEAR_AXES >= 6
+      if (parser.seen('K')) planner.set_max_jerk(K_AXIS, parser.value_linear_units());
     #endif
     #if HAS_CLASSIC_E_JERK
       if (parser.seen('E')) planner.set_max_jerk(E_AXIS, parser.value_linear_units());

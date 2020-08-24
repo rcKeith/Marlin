@@ -65,35 +65,19 @@ void print_bin(uint16_t val) {
   }
 }
 
-extern const char SP_X_STR[], SP_Y_STR[], SP_Z_STR[];
-#if NON_E_AXES > 3
-  extern const char SP_I_STR[];
-  #if NON_E_AXES > 4
-  extern const char SP_J_STR[];
-    #if NON_E_AXES > 5
-      extern const char SP_K_STR[];
-    #endif
-  #endif
-#endif
+extern const char SP_X_STR[], SP_Y_STR[], SP_Z_STR[], SP_I_STR[], SP_J_STR[], SP_K_STR[];
 
-void print_xyz(const float &x, const float &y, const float &z
-  #if NON_E_AXES > 3
-    , const float &i
-    #if NON_E_AXES > 4
-      , const float &j
-      #if NON_E_AXES > 5
-        , const float &k
-      #endif
-    #endif
-  #endif
-, PGM_P const prefix/*=nullptr*/, PGM_P const suffix/*=nullptr*/) {
+void print_pos(
+  LIST_N(LINEAR_AXES, const float &x, const float &y, const float &z, const float &i, const float &j, const float &k),
+  PGM_P const prefix/*=nullptr*/, PGM_P const suffix/*=nullptr*/
+) {
   if (prefix) serialprintPGM(prefix);
   SERIAL_ECHOPAIR_P(SP_X_STR, x, SP_Y_STR, y, SP_Z_STR, z
-    #if NON_E_AXES > 3
+    #if LINEAR_AXES >= 4
       , SP_I_STR, i
-      #if NON_E_AXES > 4
+      #if LINEAR_AXES >= 5
         , SP_J_STR, j
-        #if NON_E_AXES > 5
+        #if LINEAR_AXES >= 6
           , SP_K_STR, k
         #endif
       #endif

@@ -76,31 +76,25 @@
 #if BOTH(CALIBRATION_MEASURE_FRONT, CALIBRATION_MEASURE_BACK)
   #define HAS_Y_CENTER 1
 #endif
-#if NON_E_AXES > 3
-  #if BOTH(CALIBRATION_MEASURE_IMIN, CALIBRATION_MEASURE_IMAX)
-    #define HAS_I_CENTER 1
-  #endif
-  #if NON_E_AXES > 4
-    #if BOTH(CALIBRATION_MEASURE_JMIN, CALIBRATION_MEASURE_JMAX)
-      #define HAS_J_CENTER 1
-    #endif
-    #if NON_E_AXES > 5
-      #if BOTH(CALIBRATION_MEASURE_KMIN, CALIBRATION_MEASURE_KMAX)
-        #define HAS_K_CENTER 1
-      #endif
-    #endif
-  #endif
+#if LINEAR_AXES >= 4 && BOTH(CALIBRATION_MEASURE_IMIN, CALIBRATION_MEASURE_IMAX)
+  #define HAS_I_CENTER 1
 #endif
-  
+#if LINEAR_AXES >= 5 && BOTH(CALIBRATION_MEASURE_JMIN, CALIBRATION_MEASURE_JMAX)
+  #define HAS_J_CENTER 1
+#endif
+#if LINEAR_AXES >= 6 && BOTH(CALIBRATION_MEASURE_KMIN, CALIBRATION_MEASURE_KMAX)
+  #define HAS_K_CENTER 1
+#endif
+
 enum side_t : uint8_t { TOP, RIGHT, FRONT, LEFT, BACK, NUM_SIDES
-  #if NON_E_AXES > 3
+  #if LINEAR_AXES >= 4
     , IMINIMUM, IMAXIMUM
-    #if NON_E_AXES > 4
-      , JMINIMUM, JMAXIMUM
-      #if NON_E_AXES > 5
-      , KMINIMUM, KMAXIMUM
-      #endif
-    #endif
+  #endif
+  #if LINEAR_AXES >= 5
+    , JMINIMUM, JMAXIMUM
+  #endif
+  #if LINEAR_AXES >= 6
+    , KMINIMUM, KMAXIMUM
   #endif
 };
 
@@ -258,24 +252,24 @@ inline void probe_side(measurements_t &m, const float uncertainty, const side_t 
       }
     #endif
     #if AXIS_CAN_CALIBRATE(X)
+      case RIGHT: dir = -1;
       case LEFT:  axis = X_AXIS; break;
-      case RIGHT: axis = X_AXIS; dir = -1; break;
     #endif
     #if AXIS_CAN_CALIBRATE(Y)
+      case BACK:  dir = -1;
       case FRONT: axis = Y_AXIS; break;
-      case BACK:  axis = Y_AXIS; dir = -1; break;
     #endif
-    #if NON_E_AXES > 3
-      case IMINIMUM: axis = I_AXIS; dir = -1; break;
-      case IMAXIMUM: axis = I_AXIS; dir =  1; break;
-      #if NON_E_AXES > 4
-        case JMINIMUM: axis = J_AXIS; dir = -1; break;
-        case JMAXIMUM: axis = J_AXIS; dir =  1; break;
-        #if NON_E_AXES > 5
-          case KMINIMUM: axis = K_AXIS; dir = -1; break;
-          case KMAXIMUM: axis = K_AXIS; dir =  1; break;
-        #endif
-      #endif
+    #if LINEAR_AXES >= 4
+      case IMINIMUM: dir = -1;
+      case IMAXIMUM: axis = I_AXIS; break;
+    #endif
+    #if LINEAR_AXES >= 5
+      case JMINIMUM: dir = -1;
+      case JMAXIMUM: axis = J_AXIS; break;
+    #endif
+    #if LINEAR_AXES >= 6
+      case KMINIMUM: dir = -1;
+      case KMAXIMUM: axis = K_AXIS; break;
     #endif
     default: return;
   }
@@ -347,39 +341,18 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
 
   // The difference between the known and the measured location
   // of the calibration object is the positional error
-  m.pos_error.x = (0
-    #if HAS_X_CENTER
-      + true_center.x - m.obj_center.x
-    #endif
-  );
-  m.pos_error.y = (0
-    #if HAS_Y_CENTER
-      + true_center.y - m.obj_center.y
-    #endif
-  );
+  m.pos_error.x = TERN0(HAS_X_CENTER, true_center.x - m.obj_center.x)
+  m.pos_error.y = TERN0(HAS_Y_CENTER, true_center.y - m.obj_center.y)
   m.pos_error.z = true_center.z - m.obj_center.z;
-  #if NON_E_AXES >3
-    m.pos_error.i = (0
-      #if HAS_I_CENTER
-        + true_center.i - m.obj_center.i
-      #endif
-    );
-    #if NON_E_AXES > 4
-      m.pos_error.j = (0
-        #if HAS_J_CENTER
-          + true_center.j - m.obj_center.j
-        #endif
-      );
-      #if NON_E_AXES > 5
-        m.pos_error.k = (0
-          #if HAS_K_CENTER
-            + true_center.k - m.obj_center.k
-          #endif
-        );
-      #endif
-    #endif
+  #if LINEAR_AXES >3
+    m.pos_error.i = TERN0(HAS_I_CENTER, true_center.i - m.obj_center.i)
   #endif
-
+  #if LINEAR_AXES >= 5
+    m.pos_error.j = TERN0(HAS_J_CENTER, true_center.j - m.obj_center.j)
+  #endif
+  #if LINEAR_AXES >= 6
+    m.pos_error.k = TERN0(HAS_K_CENTER, true_center.k - m.obj_center.k)
+  #endif
 }
 
 #if ENABLED(CALIBRATION_REPORTING)
@@ -400,30 +373,29 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
     #if ENABLED(CALIBRATION_MEASURE_BACK)
       SERIAL_ECHOLNPAIR("  Back: ", m.obj_side[BACK]);
     #endif
-        #if NON_E_AXES > 3
+    #if LINEAR_AXES >= 4
       #if ENABLED(CALIBRATION_MEASURE_IMIN)
         SERIAL_ECHOLNPAIR("  Imin: ", m.obj_side[IMINIMUM]);
       #endif
       #if ENABLED(CALIBRATION_MEASURE_IMAX)
         SERIAL_ECHOLNPAIR("  Imax: ", m.obj_side[IMAXIMUM]);
       #endif
-      #if NON_E_AXES > 4
-        #if ENABLED(CALIBRATION_MEASURE_JMIN)
-          SERIAL_ECHOLNPAIR("  Jmin: ", m.obj_side[JMINIMUM]);
-        #endif
-        #if ENABLED(CALIBRATION_MEASURE_JMAX)
-          SERIAL_ECHOLNPAIR("  Jmax: ", m.obj_side[JMAXIMUM]);
-        #endif
-        #if NON_E_AXES > 5
-          #if ENABLED(CALIBRATION_MEASURE_KMIN)
-            SERIAL_ECHOLNPAIR("  Kmin: ", m.obj_side[KMINIMUM]);
-          #endif
-          #if ENABLED(CALIBRATION_MEASURE_KMAX)
-            SERIAL_ECHOLNPAIR("  Kmax: ", m.obj_side[KMAXIMUM]);
-          #endif
-        #endif // NON_E_AXES > 5
-      #endif // NON_E_AXES > 4
-    #endif // NON_E_AXES > 3
+    #endif
+    #if LINEAR_AXES >= 5
+      #if ENABLED(CALIBRATION_MEASURE_JMIN)
+        SERIAL_ECHOLNPAIR("  Jmin: ", m.obj_side[JMINIMUM]);
+      #endif
+      #if ENABLED(CALIBRATION_MEASURE_JMAX)
+        SERIAL_ECHOLNPAIR("  Jmax: ", m.obj_side[JMAXIMUM]);
+      #endif
+    #endif
+    #if LINEAR_AXES >= 6
+      #if ENABLED(CALIBRATION_MEASURE_KMIN)
+        SERIAL_ECHOLNPAIR("  Kmin: ", m.obj_side[KMINIMUM]);
+      #endif
+      #if ENABLED(CALIBRATION_MEASURE_KMAX)
+        SERIAL_ECHOLNPAIR("  Kmax: ", m.obj_side[KMAXIMUM]);
+      #endif
     SERIAL_EOL();
   }
 
@@ -436,20 +408,14 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
       SERIAL_ECHOLNPAIR_P(SP_Y_STR, m.obj_center.y);
     #endif
     SERIAL_ECHOLNPAIR_P(SP_Z_STR, m.obj_center.z);
-    #if NON_E_AXES > 3
-      #if HAS_I_CENTER
-        SERIAL_ECHOLNPAIR_P(SP_I_STR, m.obj_center.i);
-      #endif
-      #if NON_E_AXES > 4
-        #if HAS_J_CENTER
-          SERIAL_ECHOLNPAIR_P(SP_J_STR, m.obj_center.j);
-        #endif
-        #if NON_E_AXES > 5
-          #if HAS_K_CENTER
-            SERIAL_ECHOLNPAIR_P(SP_K_STR, m.obj_center.k);
-          #endif
-        #endif
-      #endif
+    #if HAS_I_CENTER
+      SERIAL_ECHOLNPAIR_P(SP_I_STR, m.obj_center.i);
+    #endif
+    #if HAS_J_CENTER
+      SERIAL_ECHOLNPAIR_P(SP_J_STR, m.obj_center.j);
+    #endif
+    #if HAS_K_CENTER
+      SERIAL_ECHOLNPAIR_P(SP_K_STR, m.obj_center.k);
     #endif
     SERIAL_EOL();
   }
@@ -475,28 +441,28 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
     #if AXIS_CAN_CALIBRATE(Z)
       SERIAL_ECHOLNPAIR("  Top: ", m.backlash[TOP]);
     #endif
-    #if NON_E_AXES > 3
+    #if LINEAR_AXES >= 4
       #if ENABLED(CALIBRATION_MEASURE_IMIN)
         SERIAL_ECHOLNPAIR("  Imin: ", m.backlash[IMINIMUM]);
       #endif
       #if ENABLED(CALIBRATION_MEASURE_IMAX)
         SERIAL_ECHOLNPAIR("  Imax: ", m.backlash[IMAXIMUM]);
       #endif
-      #if NON_E_AXES > 4
-        #if ENABLED(CALIBRATION_MEASURE_JMIN)
-          SERIAL_ECHOLNPAIR("  Jmin: ", m.backlash[JMINIMUM]);
-        #endif
-        #if ENABLED(CALIBRATION_MEASURE_JMAX)
-          SERIAL_ECHOLNPAIR("  Jmax: ", m.backlash[JMAXIMUM]);
-        #endif
-        #if NON_E_AXES > 5
-          #if ENABLED(CALIBRATION_MEASURE_KMIN)
-            SERIAL_ECHOLNPAIR("  Kmin: ", m.backlash[KMINIMUM]);
-          #endif
-          #if ENABLED(CALIBRATION_MEASURE_KMAX)
-            SERIAL_ECHOLNPAIR("  Kmax: ", m.backlash[KMAXIMUM]);
-          #endif
-        #endif
+    #endif
+    #if LINEAR_AXES >= 5
+      #if ENABLED(CALIBRATION_MEASURE_JMIN)
+        SERIAL_ECHOLNPAIR("  Jmin: ", m.backlash[JMINIMUM]);
+      #endif
+      #if ENABLED(CALIBRATION_MEASURE_JMAX)
+        SERIAL_ECHOLNPAIR("  Jmax: ", m.backlash[JMAXIMUM]);
+      #endif
+    #endif
+    #if LINEAR_AXES >= 6
+      #if ENABLED(CALIBRATION_MEASURE_KMIN)
+        SERIAL_ECHOLNPAIR("  Kmin: ", m.backlash[KMINIMUM]);
+      #endif
+      #if ENABLED(CALIBRATION_MEASURE_KMAX)
+        SERIAL_ECHOLNPAIR("  Kmax: ", m.backlash[KMAXIMUM]);
       #endif
     #endif
     SERIAL_EOL();
@@ -579,35 +545,31 @@ inline void calibrate_backlash(measurements_t &m, const float uncertainty) {
 
       if (AXIS_CAN_CALIBRATE(Z)) backlash.distance_mm.z = m.backlash[TOP];
 
-      #if NON_E_AXES > 3
-        #if HAS_I_CENTER
-          backlash.distance_mm.i = (m.backlash[IMINIMUM] + m.backlash[IMAXIMUM]) / 2;
-        #elif ENABLED(CALIBRATION_MEASURE_IMIN)
-          backlash.distance_mm.i = m.backlash[IMINIMUM];
-        #elif ENABLED(CALIBRATION_MEASURE_IMAX)
-          backlash.distance_mm.i = m.backlash[IMAXIMUM];
-        #endif
-        #if NON_E_AXES > 4
-          #if HAS_J_CENTER
-            backlash.distance_mm.j = (m.backlash[JMINIMUM] + m.backlash[JMAXIMUM]) / 2;
-          #elif ENABLED(CALIBRATION_MEASURE_JMIN)
-            backlash.distance_mm.j = m.backlash[JMINIMUM];
-          #elif ENABLED(CALIBRATION_MEASURE_JMAX)
-            backlash.distance_mm.j = m.backlash[JMAXIMUM];
-          #endif
-          #if NON_E_AXES > 5
-            #if HAS_K_CENTER
-              backlash.distance_mm.k = (m.backlash[KMINIMUM] + m.backlash[KMAXIMUM]) / 2;
-            #elif ENABLED(CALIBRATION_MEASURE_KMIN)
-              backlash.distance_mm.k = m.backlash[KMINIMUM];
-            #elif ENABLED(CALIBRATION_MEASURE_KMAX)
-              backlash.distance_mm.k = m.backlash[KMAXIMUM];
-            #endif
-          #endif
-        #endif
+      #if HAS_I_CENTER
+        backlash.distance_mm.i = (m.backlash[IMINIMUM] + m.backlash[IMAXIMUM]) / 2;
+      #elif ENABLED(CALIBRATION_MEASURE_IMIN)
+        backlash.distance_mm.i = m.backlash[IMINIMUM];
+      #elif ENABLED(CALIBRATION_MEASURE_IMAX)
+        backlash.distance_mm.i = m.backlash[IMAXIMUM];
       #endif
 
-    #endif
+      #if HAS_J_CENTER
+        backlash.distance_mm.j = (m.backlash[JMINIMUM] + m.backlash[JMAXIMUM]) / 2;
+      #elif ENABLED(CALIBRATION_MEASURE_JMIN)
+        backlash.distance_mm.j = m.backlash[JMINIMUM];
+      #elif ENABLED(CALIBRATION_MEASURE_JMAX)
+        backlash.distance_mm.j = m.backlash[JMAXIMUM];
+      #endif
+
+      #if HAS_K_CENTER
+        backlash.distance_mm.k = (m.backlash[KMINIMUM] + m.backlash[KMAXIMUM]) / 2;
+      #elif ENABLED(CALIBRATION_MEASURE_KMIN)
+        backlash.distance_mm.k = m.backlash[KMINIMUM];
+      #elif ENABLED(CALIBRATION_MEASURE_KMAX)
+        backlash.distance_mm.k = m.backlash[KMAXIMUM];
+      #endif
+
+    #endif // BACKLASH_GCODE
   }
 
   #if ENABLED(BACKLASH_GCODE)
@@ -617,17 +579,10 @@ inline void calibrate_backlash(measurements_t &m, const float uncertainty) {
       // New scope for TEMPORARY_BACKLASH_CORRECTION
       TEMPORARY_BACKLASH_CORRECTION(all_on);
       TEMPORARY_BACKLASH_SMOOTHING(0.0f);
-      const xyz_float_t move = { AXIS_CAN_CALIBRATE(X) * 3, AXIS_CAN_CALIBRATE(Y) * 3, AXIS_CAN_CALIBRATE(Z) * 3 
-        #if NON_E_AXES > 3
-          , AXIS_CAN_CALIBRATE(I) * 3
-          #if NON_E_AXES > 4
-            , AXIS_CAN_CALIBRATE(J) * 3
-            #if NON_E_AXES > 5
-              , AXIS_CAN_CALIBRATE(K) * 3
-            #endif
-          #endif
-        #endif
-      };
+      const xyz_float_t move = ARRAY_N(LINEAR_AXES,
+        AXIS_CAN_CALIBRATE(X) * 3, AXIS_CAN_CALIBRATE(Y) * 3, AXIS_CAN_CALIBRATE(Z) * 3,
+        AXIS_CAN_CALIBRATE(I) * 3, AXIS_CAN_CALIBRATE(J) * 3, AXIS_CAN_CALIBRATE(K) * 3
+      );
       current_position += move; calibration_move();
       current_position -= move; calibration_move();
     }
@@ -677,21 +632,10 @@ inline void calibrate_toolhead(measurements_t &m, const float uncertainty, const
   if (ENABLED(HAS_X_CENTER) && AXIS_CAN_CALIBRATE(X)) update_measurements(m, X_AXIS);
   if (ENABLED(HAS_Y_CENTER) && AXIS_CAN_CALIBRATE(Y)) update_measurements(m, Y_AXIS);
                            if (AXIS_CAN_CALIBRATE(Z)) update_measurements(m, Z_AXIS);
-  #if NON_E_AXES > 3
-    #if HAS_I_CENTER
-      update_measurements(m, I_AXIS);
-    #endif
-    #if NON_E_AXES > 4
-      #if HAS_J_CENTER
-        update_measurements(m, J_AXIS);
-      #endif
-      #if NON_E_AXES > 5
-        #if HAS_K_CENTER
-          update_measurements(m, K_AXIS);
-        #endif
-      #endif
-    #endif
-  #endif
+
+  TERN_(HAS_I_CENTER, update_measurements(m, I_AXIS));
+  TERN_(HAS_J_CENTER, update_measurements(m, J_AXIS));
+  TERN_(HAS_K_CENTER, update_measurements(m, K_AXIS));
 
   sync_plan_position();
 }

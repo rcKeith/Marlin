@@ -1157,7 +1157,7 @@
   #define Z_STOP_PIN Z_MAX_PIN
 #endif
 
-#if NON_E_AXES > 3
+#if LINEAR_AXES >= 4
   #ifdef I_STOP_PIN
     #if I_HOME_DIR < 0
       #define I_MIN_PIN I_STOP_PIN
@@ -1167,36 +1167,38 @@
       #define I_MAX_PIN I_STOP_PIN
     #endif
   #endif
-  #if NON_E_AXES > 4
-    #ifdef J_STOP_PIN
-      #if J_HOME_DIR < 0
-        #define J_MIN_PIN J_STOP_PIN
-        #define J_MAX_PIN -1
-      #else
-        #define J_MIN_PIN -1
-        #define J_MAX_PIN J_STOP_PIN
-      #endif
-    #endif  
-    #if NON_E_AXES > 5
-      #ifdef K_STOP_PIN
-        #if K_HOME_DIR < 0
-          #define K_MIN_PIN K_STOP_PIN
-          #define K_MAX_PIN -1
-        #else
-          #define K_MIN_PIN -1
-          #define K_MAX_PIN K_STOP_PIN
-        #endif
-      #endif
-    #endif // NON_E_AXES > 5  
-  #endif // NON_E_AXES > 4       
-#else // !NON_E_AXES > 3
+#else
   #undef I_MIN_PIN
   #undef I_MAX_PIN
   #undef J_MIN_PIN
   #undef J_MAX_PIN
   #undef K_MIN_PIN
   #undef K_MAX_PIN
-#endif // NON_E_AXES > 3
+#endif
+
+#if LINEAR_AXES >= 5
+  #ifdef J_STOP_PIN
+    #if J_HOME_DIR < 0
+      #define J_MIN_PIN J_STOP_PIN
+      #define J_MAX_PIN -1
+    #else
+      #define J_MIN_PIN -1
+      #define J_MAX_PIN J_STOP_PIN
+    #endif
+  #endif
+#endif
+
+#if LINEAR_AXES >= 6
+  #ifdef K_STOP_PIN
+    #if K_HOME_DIR < 0
+      #define K_MIN_PIN K_STOP_PIN
+      #define K_MAX_PIN -1
+    #else
+      #define K_MIN_PIN -1
+      #define K_MAX_PIN K_STOP_PIN
+    #endif
+  #endif
+#endif
 
 //
 // Disable unused endstop / probe pins

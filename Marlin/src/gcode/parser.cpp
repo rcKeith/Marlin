@@ -222,16 +222,16 @@ void GCodeParser::parse(char *p) {
       case 'P': case 'Q':
         if (motion_mode_codenum != 5) return;
       case 'X': case 'Y': case 'Z': case 'E':
-        #if NON_E_AXES > 3
+        #if LINEAR_AXES >= 4
           case AXIS4_NAME:
-          #if NON_E_AXES > 4
-            case AXIS5_NAME:
-            #if NON_E_AXES > 5
-              case AXIS6_NAME:
-            #endif
-          #endif
         #endif
-        case 'F':
+        #if LINEAR_AXES >= 5
+          case AXIS5_NAME:
+        #endif
+        #if LINEAR_AXES >= 6
+          case AXIS6_NAME:
+        #endif
+      case 'F':
         if (motion_mode_codenum < 0) return;
         command_letter = 'G';
         codenum = motion_mode_codenum;
