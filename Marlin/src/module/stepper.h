@@ -547,7 +547,7 @@ class Stepper {
       const int32_t &e
     );
     FORCE_INLINE static void _set_position(const abce_long_t &spos) {
-      _set_position(LIST_N(spos.a, spos.b, spos.c, spos.i, spos.j, spos.k), spos.e);
+      _set_position(LIST_N(LINEAR_AXES, spos.a, spos.b, spos.c, spos.i, spos.j, spos.k), spos.e);
     }
 
     FORCE_INLINE static uint32_t calc_timer_interval(uint32_t step_rate, uint8_t* loops) {

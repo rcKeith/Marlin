@@ -86,16 +86,9 @@
   #define HAS_K_CENTER 1
 #endif
 
-enum side_t : uint8_t { TOP, RIGHT, FRONT, LEFT, BACK, NUM_SIDES
-  #if LINEAR_AXES >= 4
-    , IMINIMUM, IMAXIMUM
-  #endif
-  #if LINEAR_AXES >= 5
-    , JMINIMUM, JMAXIMUM
-  #endif
-  #if LINEAR_AXES >= 6
-    , KMINIMUM, KMAXIMUM
-  #endif
+enum side_t : uint8_t {
+  TOP, RIGHT, FRONT, LEFT, BACK, NUM_SIDES,
+  LIST_N(DOUBLE(SUB3(LINEAR_AXES)), IMINIMUM, IMAXIMUM, JMINIMUM, JMAXIMUM, KMINIMUM, KMAXIMUM)
 };
 
 static constexpr xyz_pos_t true_center CALIBRATION_OBJECT_CENTER;
@@ -344,7 +337,7 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
   m.pos_error.x = TERN0(HAS_X_CENTER, true_center.x - m.obj_center.x)
   m.pos_error.y = TERN0(HAS_Y_CENTER, true_center.y - m.obj_center.y)
   m.pos_error.z = true_center.z - m.obj_center.z;
-  #if LINEAR_AXES >3
+  #if LINEAR_AXES >= 4
     m.pos_error.i = TERN0(HAS_I_CENTER, true_center.i - m.obj_center.i)
   #endif
   #if LINEAR_AXES >= 5

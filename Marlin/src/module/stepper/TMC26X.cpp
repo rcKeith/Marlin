@@ -124,20 +124,14 @@ void tmc26x_init_to_defaults() {
   #if AXIS_DRIVER_TYPE_Z4(TMC26X)
     _TMC26X_INIT(Z4);
   #endif
-  #if LINEAR_AXES >= 4
-    #if AXIS_DRIVER_TYPE_I(TMC26X)
-       _TMC26X_INIT(I);
-    #endif
-    #if LINEAR_AXES >= 5
-      #if AXIS_DRIVER_TYPE_J(TMC26X)
-        _TMC26X_INIT(J);
-      #endif
-      #if LINEAR_AXES >= 6
-        #if AXIS_DRIVER_TYPE_K(TMC26X)
-          _TMC26X_INIT(K);
-        #endif
-      #endif
-    #endif
+  #if AXIS_DRIVER_TYPE_I(TMC26X)
+     _TMC26X_INIT(I);
+  #endif
+  #if AXIS_DRIVER_TYPE_J(TMC26X)
+    _TMC26X_INIT(J);
+  #endif
+  #if AXIS_DRIVER_TYPE_K(TMC26X)
+    _TMC26X_INIT(K);
   #endif
   #if AXIS_DRIVER_TYPE_E0(TMC26X)
     _TMC26X_INIT(E0);

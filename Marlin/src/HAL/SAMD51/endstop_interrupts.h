@@ -164,7 +164,7 @@
                                  && !MATCH_Z2_MAX_EILINE(P) && !MATCH_Z2_MIN_EILINE(P)  \
                                  && !MATCH_Z3_MAX_EILINE(P) && !MATCH_Z3_MIN_EILINE(P)  \
                                  && !MATCH_Z4_MAX_EILINE(P) && !MATCH_Z4_MIN_EILINE(P)  \
-                                 && !MATCH_Z_MIN_PROBE_EILINE(P))                       \
+                                 && !MATCH_Z_MIN_PROBE_EILINE(P))
 
 // One ISR for all EXT-Interrupts
 void endstop_ISR() { endstops.update(); }

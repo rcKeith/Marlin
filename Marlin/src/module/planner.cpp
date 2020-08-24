@@ -1811,7 +1811,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
   #endif // PREVENT_COLD_EXTRUSION || PREVENT_LENGTHY_EXTRUDE
 
   // Compute direction bit-mask for this block
-  uint8_t dm = 0;
+  axis_bits_t dm = 0;
   #if CORE_IS_XY
     if (da < 0) SBI(dm, X_HEAD);                // Save the real Extruder (head) direction in X Axis
     if (db < 0) SBI(dm, Y_HEAD);                // ...and Y
@@ -1927,12 +1927,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
     #endif
   #endif
 
-  #if EXTRUDERS
-    steps_dist_mm.e = esteps_float * steps_to_mm[E_AXIS_N(extruder)];
-  #else
-    steps_dist_mm.e = 0.0f;
-  #endif
-
+  steps_dist_mm.e = TERN0(HAS_EXTRUDERS, esteps_float * steps_to_mm[E_AXIS_N(extruder)]);
   TERN_(LCD_SHOW_E_TOTAL, e_move_accumulator += steps_dist_mm.e);
 
   if (GANG_N(LINEAR_AXES,

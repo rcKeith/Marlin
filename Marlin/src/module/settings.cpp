@@ -2492,23 +2492,11 @@ void MarlinSettings::postprocess() {
  */
 void MarlinSettings::reset() {
   LOOP_NUM_AXIS_N(i) {
-    #if LINEAR_AXES >= 4
-      // FIXME (DerAndere): Work around issue where actual internally-used steps_per_mm for I_AXIS are only 1/4 of STEPS_PER_UNIT
-      if (i == 3) {
-        planner.settings.max_acceleration_mm_per_s2[i] = pgm_read_dword(&_DMA[ALIM(i, _DMA)]);
-        planner.settings.axis_steps_per_mm[i]          = pgm_read_float(&_DASU[ALIM(i, _DASU)]) * 4.0;
-        planner.settings.max_feedrate_mm_s[i]          = pgm_read_float(&_DMF[ALIM(i, _DMF)]);
-      }
-      else {
-        planner.settings.max_acceleration_mm_per_s2[i] = pgm_read_dword(&_DMA[ALIM(i, _DMA)]);
-        planner.settings.axis_steps_per_mm[i]          = pgm_read_float(&_DASU[ALIM(i, _DASU)]);
-        planner.settings.max_feedrate_mm_s[i]          = pgm_read_float(&_DMF[ALIM(i, _DMF)]);
-      }
-    #else
-      planner.settings.max_acceleration_mm_per_s2[i] = pgm_read_dword(&_DMA[ALIM(i, _DMA)]);
-      planner.settings.axis_steps_per_mm[i]          = pgm_read_float(&_DASU[ALIM(i, _DASU)]);
-      planner.settings.max_feedrate_mm_s[i]          = pgm_read_float(&_DMF[ALIM(i, _DMF)]);
-    #endif
+    planner.settings.max_acceleration_mm_per_s2[i] = pgm_read_dword(&_DMA[ALIM(i, _DMA)]);
+    // FIXME (DerAndere): Work around issue where actual internally-used steps_per_mm for I_AXIS are only 1/4 of STEPS_PER_UNIT
+    planner.settings.axis_steps_per_mm[i] = pgm_read_float(&_DASU[ALIM(i, _DASU)]);
+    if (LINEAR_AXES >= 4 && i == 3) planner.settings.axis_steps_per_mm[i] *= 4.0f;
+    planner.settings.max_feedrate_mm_s[i] = pgm_read_float(&_DMF[ALIM(i, _DMF)]);
   }
 
   planner.settings.min_segment_time_us = DEFAULT_MINSEGMENTTIME;
@@ -3053,18 +3041,14 @@ void MarlinSettings::reset() {
     CONFIG_ECHO_HEADING("Maximum feedrates (units/s):");
     CONFIG_ECHO_START();
     SERIAL_ECHOLNPAIR_P(
-        PSTR("  M203 X"), LINEAR_UNIT(planner.settings.max_feedrate_mm_s[X_AXIS])
-      , SP_Y_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[Y_AXIS])
-      , SP_Z_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[Z_AXIS])
-      #if LINEAR_AXES >= 4
-        , SP_I_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[I_AXIS])
-      #endif
-      #if LINEAR_AXES >= 5
-        , SP_J_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[J_AXIS])
-      #endif
-      #if LINEAR_AXES >= 6
-        , SP_K_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[K_AXIS])
-      #endif
+      LIST_N(DOUBLE(LINEAR_AXES),
+        PSTR("  M203 X"), LINEAR_UNIT(planner.settings.max_feedrate_mm_s[X_AXIS]),
+        SP_Y_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[Y_AXIS]),
+        SP_Z_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[Z_AXIS]),
+        SP_I_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[I_AXIS]),
+        SP_J_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[J_AXIS]),
+        SP_K_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[K_AXIS])
+      )
       #if DISABLED(DISTINCT_E_FACTORS)
         , SP_E_STR, VOLUMETRIC_UNIT(planner.settings.max_feedrate_mm_s[E_AXIS])
       #endif
@@ -3082,18 +3066,14 @@ void MarlinSettings::reset() {
     CONFIG_ECHO_HEADING("Maximum Acceleration (units/s2):");
     CONFIG_ECHO_START();
     SERIAL_ECHOLNPAIR_P(
+      LIST_N(DOUBLE(LINEAR_AXES),
         PSTR("  M201 X"), LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[X_AXIS])
-      , SP_Y_STR, LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[Y_AXIS])
-      , SP_Z_STR, LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[Z_AXIS])
-      #if LINEAR_AXES >= 4
-        , SP_I_STR, LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[I_AXIS])
-      #endif
-      #if LINEAR_AXES >= 5
-        , SP_J_STR, LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[J_AXIS])
-      #endif
-      #if LINEAR_AXES >= 6
-        , SP_K_STR, LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[K_AXIS])
-      #endif
+        SP_Y_STR, LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[Y_AXIS]),
+        SP_Z_STR, LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[Z_AXIS]),
+        SP_I_STR, LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[I_AXIS]),
+        SP_J_STR, LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[J_AXIS]),
+        SP_K_STR, LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[K_AXIS])
+      )
       #if DISABLED(DISTINCT_E_FACTORS)
         , SP_E_STR, VOLUMETRIC_UNIT(planner.settings.max_acceleration_mm_per_s2[E_AXIS])
       #endif

@@ -263,7 +263,7 @@
 #define LIST_3( A,B,C,...) A,B,C
 #define LIST_2( A,B,...) A,B
 #define LIST_1( A,...) A
-#define LIST_0( A,...)
+#define LIST_0(...)
 
 #define _LIST_N(N,V...) LIST_##N(V)
 #define LIST_N(N,V...) _LIST_N(N,V)
@@ -395,6 +395,8 @@
 #define ADD8(N)  ADD4(ADD4(N))
 #define ADD9(N)  ADD4(ADD5(N))
 #define ADD10(N) ADD5(ADD5(N))
+#define DOUBLE_(n) ADD##n(n)
+#define DOUBLE(n) DOUBLE_(n)
 
 // Macros for subtracting
 #define DEC_0   0

@@ -221,12 +221,14 @@ void do_blocking_move_to(const xyz_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
 void do_blocking_move_to(const xyze_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
 #if LINEAR_AXES >= 4
   void do_blocking_move_to(const xyzeOnly_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
-//  #if LINEAR_AXES >= 5
-//    void do_blocking_move_to(const xyzieOnly_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
-//    #if LINEAR_AXES >= 6
-//      void do_blocking_move_to(const xyzieOnly_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
-//    #endif
-//  #endif
+  /*
+  #if LINEAR_AXES >= 5
+    void do_blocking_move_to(const xyzieOnly_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
+    #if LINEAR_AXES >= 6
+      void do_blocking_move_to(const xyzieOnly_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
+    #endif
+  #endif
+  */
 #endif
 void do_blocking_move_to_x(const float &rx, const feedRate_t &fr_mm_s=0.0f);
 void do_blocking_move_to_y(const float &ry, const feedRate_t &fr_mm_s=0.0f);

@@ -351,15 +351,10 @@ void enable_all_steppers() {
   ENABLE_AXIS_X();
   ENABLE_AXIS_Y();
   ENABLE_AXIS_Z();
-  #if LINEAR_AXES >= 4 // Marlin 6-axis support: 2019 - 2020 DerAndere (https://github.com/DerAndere1/Marlin/wiki)
-    ENABLE_AXIS_I();
-    #if LINEAR_AXES >= 5
-      ENABLE_AXIS_J();
-      #if LINEAR_AXES >= 6
-        ENABLE_AXIS_K();
-      #endif
-    #endif
-  #endif
+
+  ENABLE_AXIS_I(); // Marlin 6-axis support: 2019 - 2020 DerAndere (https://github.com/DerAndere1/Marlin/wiki)
+  ENABLE_AXIS_J();
+  ENABLE_AXIS_K();
 
   enable_e_steppers();
 }
@@ -380,15 +375,10 @@ void disable_all_steppers() {
   DISABLE_AXIS_X();
   DISABLE_AXIS_Y();
   DISABLE_AXIS_Z();
-  #if LINEAR_AXES >= 4
-    DISABLE_AXIS_I();
-    #if LINEAR_AXES >= 5
-      DISABLE_AXIS_J();
-      #if LINEAR_AXES >= 6
-        DISABLE_AXIS_K();
-      #endif
-    #endif
-  #endif
+
+  DISABLE_AXIS_I();
+  DISABLE_AXIS_J();
+  DISABLE_AXIS_K();
 
   disable_e_steppers();
 }
@@ -543,14 +533,14 @@ inline void manage_inactivity(const bool ignore_stepper_queue=false) {
         if (ENABLED(DISABLE_INACTIVE_Y)) DISABLE_AXIS_Y();
         if (ENABLED(DISABLE_INACTIVE_Z)) DISABLE_AXIS_Z();
 
-        #if LINEAR_AXES >= 4 && ENABLED(DISABLE_INACTIVE_I)
+        #if ENABLED(DISABLE_INACTIVE_I)
           DISABLE_AXIS_I();
-          #if LINEAR_AXES >= 5 && ENABLED(DISABLE_INACTIVE_J)
-            DISABLE_AXIS_J();
-            #if LINEAR_AXES >= 6 && ENABLED(DISABLE_INACTIVE_K)
-              DISABLE_AXIS_K();
-            #endif
-          #endif
+        #endif
+        #if ENABLED(DISABLE_INACTIVE_K)
+          DISABLE_AXIS_K();
+        #endif
+        #if ENABLED(DISABLE_INACTIVE_J)
+          DISABLE_AXIS_J();
         #endif
 
         if (ENABLED(DISABLE_INACTIVE_E)) disable_e_steppers();

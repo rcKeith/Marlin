@@ -72,16 +72,8 @@ void print_pos(
   PGM_P const prefix/*=nullptr*/, PGM_P const suffix/*=nullptr*/
 ) {
   if (prefix) serialprintPGM(prefix);
-  SERIAL_ECHOPAIR_P(SP_X_STR, x, SP_Y_STR, y, SP_Z_STR, z
-    #if LINEAR_AXES >= 4
-      , SP_I_STR, i
-      #if LINEAR_AXES >= 5
-        , SP_J_STR, j
-        #if LINEAR_AXES >= 6
-          , SP_K_STR, k
-        #endif
-      #endif
-    #endif
+  SERIAL_ECHOPAIR_P(
+    LIST_N(DOUBLE(LINEAR_AXES), SP_X_STR, x, SP_Y_STR, y, SP_Z_STR, z, SP_I_STR, i, SP_J_STR, j, SP_K_STR, k)
   );
   if (suffix) serialprintPGM(suffix); else SERIAL_EOL();
 }
