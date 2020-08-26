@@ -311,15 +311,20 @@ void GcodeSuite::G28() {
                  needK = _UNSAFE(K)
                ),
                // Home each axis if needed or flagged
-               LIST_N(LINEAR_AXES,
-                 homeX = needX || parser.seen('X'),
-                 homeY = needY || parser.seen('Y'),
+               homeX = needX || parser.seen('X'),
+               homeY = needY || parser.seen('Y'),
+               #if LINEAR_AXES >= 4
                  homeI = needI || parser.seen(AXIS4_NAME),
+               #endif
+               #if LINEAR_AXES >= 5
                  homeJ = needJ || parser.seen(AXIS5_NAME),
-                 homeK = needK || parser.seen(AXIS6_NAME)
-               ),
+              #endif
+              #if LINEAR_AXES >= 6
+                 homeK = needK || parser.seen(AXIS6_NAME),
+              #endif
                // Home-all if all or none are flagged
                home_all = true GANG_N(LINEAR_AXES,
+                 && homeX == homeX,
                  && homeX == homeY,
                  && homeX == homeZ,
                  && homeX == homeI,
@@ -348,9 +353,17 @@ void GcodeSuite::G28() {
         ? 0
         : (parser.seenval('R') ? parser.value_linear_units() : Z_HOMING_HEIGHT);
 
-    if (z_homing_height &&
-      (false || GANG_N(LINEAR_AXES, || doX, || doY, || TERN0(Z_SAFE_HOMING, doZ), || doI, || doJ, || doK))
-    ) {
+    if (z_homing_height && (doX || doY 
+      #if LINEAR_AXES >= 4
+        || doI
+      #endif
+      #if LINEAR_AXES >= 5
+        || doJ
+      #endif
+      #if LINEAR_AXES >= 6
+        ||  doK
+      #endif
+    || (ENABLED(Z_SAFE_HOMING) && doZ))) {
       // Raise Z before homing any other axes and z is not already high enough (never lower z)
       if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPAIR("Raise Z (before homing) by ", z_homing_height);
       do_z_clearance(z_homing_height, true, DISABLED(UNKNOWN_Z_NO_RAISE));

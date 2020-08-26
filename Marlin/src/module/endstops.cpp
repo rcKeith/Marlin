@@ -53,7 +53,12 @@ Endstops endstops;
 // private:
 
 bool Endstops::enabled, Endstops::enabled_globally; // Initialized by settings.load()
-volatile hitbits_t Endstops::hit_state;
+
+#if LINEAR_AXES >= 4
+  volatile uint16_t Endstops::hit_state; //TODO (DerAndere): volatile hitbits_t Endstops::hit_state;
+#else
+  volatile uint8_t Endstops::hit_state; //TODO (DerAndere): volatile hitbits_t Endstops::hit_state;
+#endif
 
 Endstops::esbits_t Endstops::live_state = 0;
 
@@ -407,8 +412,12 @@ void Endstops::resync() {
 #endif
 
 void Endstops::event_handler() {
-  static hitbits_t prev_hit_state; // = 0
-  if (hit_state == prev_hit_state) return;
+  #if LINEAR_AXES >= 4
+    static uint16_t prev_hit_state; // = 0
+  #else
+    static uint8_t prev_hit_state; // = 0
+  #endif
+    if (hit_state == prev_hit_state) return;
   prev_hit_state = hit_state;
   if (hit_state) {
     #if HAS_SPI_LCD

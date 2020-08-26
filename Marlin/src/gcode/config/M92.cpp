@@ -70,7 +70,7 @@ void GcodeSuite::M92() {
 
   // No arguments? Show M92 report.
   if (!parser.seen("E"
-    GANG_N(LINEAR_AXES, "X", "Y", "Z", AXIS4_STR AXIS5_STR AXIS6_STR)
+    GANG_N(LINEAR_AXES, "X", "Y", "Z", AXIS4_STR, AXIS5_STR, AXIS6_STR)
     TERN_(MAGIC_NUMBERS_GCODE, "HL")
   )) return report_M92(true, target_extruder);
 

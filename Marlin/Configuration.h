@@ -158,12 +158,14 @@
 /**
  * This defines the number of axes that are not used for extruders (axes that
  * benefit from endstops and homing). LINEAR_AXES >= 4 requires definition of
- * [[I, [J, [K]]]_STEP_PIN, [I, [J, [K]]]_ENABLE_PIN, [I, [J, [K]]]_DIR_PIN,
- * [I, [J, [K]]]_STOP_PIN, USE_[I, [J, [K]]][MIN || MAX]_PLUG and definition of the
- * respective values of DEFAULT_AXIS_STEPS_PER_UNIT, DEFAULT_MAX_FEEDRATE,
+ * [I, [J, [K]]]_STEP_PIN, [I, [J, [K]]]_ENABLE_PIN, [I, [J, [K]]]_DIR_PIN,
+ * [I, [J, [K]]]_STOP_PIN, USE_[I, [J, [K]]][MIN || MAX]_PLUG,
+ * [I, [J, [K]]]_[MIN || MAX]_POS, [I, [J, [K]]]_ENABLE_ON,
+ * INVERT_[I, [J, [K]]]_DIR and definition of the respective values of
+ * DEFAULT_AXIS_STEPS_PER_UNIT, DEFAULT_MAX_FEEDRATE,
  * DEFAULT_MAX_ACCELERATION, AXIS_RELATIVE_MODES, MICROSTEP_MODES and
  * MANUAL_FEEDRATE.
- *
+ * 
  * See https://github.com/DerAndere1/Marlin/wiki
  * :[3, 4, 5, 6]
  */

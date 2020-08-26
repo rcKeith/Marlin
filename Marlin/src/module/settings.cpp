@@ -37,7 +37,7 @@
  */
 
 // Change EEPROM version if the structure changes
-#define EEPROM_VERSION "V89"
+#define EEPROM_VERSION "V90"
 #define EEPROM_OFFSET 100
 
 // Check the integrity of data offsets.
@@ -2493,7 +2493,7 @@ void MarlinSettings::postprocess() {
 void MarlinSettings::reset() {
   LOOP_NUM_AXIS_N(i) {
     planner.settings.max_acceleration_mm_per_s2[i] = pgm_read_dword(&_DMA[ALIM(i, _DMA)]);
-    // FIXME (DerAndere): Work around issue where actual internally-used steps_per_mm for I_AXIS are only 1/4 of STEPS_PER_UNIT
+    // FIXME (DerAndere):!!! Work around issue where actual internally-used steps_per_mm for I_AXIS are only 1/4 of STEPS_PER_UNIT
     planner.settings.axis_steps_per_mm[i] = pgm_read_float(&_DASU[ALIM(i, _DASU)]);
     if (LINEAR_AXES >= 4 && i == 3) planner.settings.axis_steps_per_mm[i] *= 4.0f;
     planner.settings.max_feedrate_mm_s[i] = pgm_read_float(&_DMF[ALIM(i, _DMF)]);
@@ -3067,7 +3067,7 @@ void MarlinSettings::reset() {
     CONFIG_ECHO_START();
     SERIAL_ECHOLNPAIR_P(
       LIST_N(DOUBLE(LINEAR_AXES),
-        PSTR("  M201 X"), LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[X_AXIS])
+        PSTR("  M201 X"), LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[X_AXIS]),
         SP_Y_STR, LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[Y_AXIS]),
         SP_Z_STR, LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[Z_AXIS]),
         SP_I_STR, LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[I_AXIS]),

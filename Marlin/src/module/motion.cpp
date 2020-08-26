@@ -514,36 +514,39 @@ void do_blocking_move_to(
 }
 
 void do_blocking_move_to(const xy_pos_t &raw, const feedRate_t &fr_mm_s/*=0.0f*/) {
-  do_blocking_move_to(raw.x, raw.y, current_position.z, fr_mm_s);
+  do_blocking_move_to(LIST_N(LINEAR_AXES, raw.x, raw.y, current_position.z, current_position.i, current_position.j, current_position.k), fr_mm_s);
 }
 void do_blocking_move_to(const xyz_pos_t &raw, const feedRate_t &fr_mm_s/*=0.0f*/) {
   do_blocking_move_to(LIST_N(LINEAR_AXES, raw.x, raw.y, raw.z, raw.i, raw.j, raw.k), fr_mm_s);
 }
-void do_blocking_move_to(const xyze_pos_t &raw, const feedRate_t &fr_mm_s/*=0.0f*/) {
-  do_blocking_move_to(LIST_N(LINEAR_AXES, raw.x, raw.y, raw.z, raw.i, raw.j, raw.k), fr_mm_s);
-}
-
-#if LINEAR_AXES >= 4
-  void do_blocking_move_to(const xyzOnly_pos_t &raw, const feedRate_t &fr_mm_s/*=0.0f*/) {
-    do_blocking_move_to(raw.x, raw.y, raw.z, current_position.i, fr_mm_s);
-  }
-//  #if LINEAR_AXES >= 5
-//    void do_blocking_move_to(const xyziOnly_pos_t &raw, const feedRate_t &fr_mm_s/*=0.0f*/) {
-//      do_blocking_move_to(raw.x, raw.y, raw.z, raw.i, current_position.j, fr_mm_s);
-//    }
-//    #if LINEAR_AXES >= 6
-//      void do_blocking_move_to(const xyzijOnly_pos_t &raw, const feedRate_t &fr_mm_s/*=0.0f*/) {
-//        do_blocking_move_to(raw.x, raw.y, raw.z, raw.i, raw.j, current_position.k, fr_mm_s);
-//      }
-//    #endif
-//  #endif
-#endif
-
+//void do_blocking_move_to(const xyze_pos_t &raw, const feedRate_t &fr_mm_s/*=0.0f*/) {
+//  do_blocking_move_to(LIST_N(LINEAR_AXES, raw.x, raw.y, raw.z, raw.i, raw.j, raw.k), fr_mm_s);
+//}
+//#if LINEAR_AXES >= 4
+//  void do_blocking_move_to(const xyzOnly_pos_t &raw, const feedRate_t &fr_mm_s/*=0.0f*/) {
+//    do_blocking_move_to(raw.x, raw.y, raw.z, current_position.i, fr_mm_s);
+//  }
+//#endif
+//#if LINEAR_AXES >= 5
+//  void do_blocking_move_to(const xyziOnly_pos_t &raw, const feedRate_t &fr_mm_s/*=0.0f*/) {
+//    do_blocking_move_to(raw.x, raw.y, raw.z, raw.i, current_position.j, fr_mm_s);
+//  }
+//#endif
+//#if LINEAR_AXES >= 6
+//  void do_blocking_move_to(const xyzijOnly_pos_t &raw, const feedRate_t &fr_mm_s/*=0.0f*/) {
+//    do_blocking_move_to(raw.x, raw.y, raw.z, raw.i, raw.j, current_position.k, fr_mm_s);
+//  }
+//#endif
+//
 void do_blocking_move_to_x(const float &rx, const feedRate_t &fr_mm_s/*=0.0*/) {
-  do_blocking_move_to(rx, current_position.y, current_position.z, fr_mm_s);
+  do_blocking_move_to(
+    LIST_N(LINEAR_AXES, rx, current_position.y, current_position.z, current_position.i, current_position.j, current_position.k),
+  fr_mm_s);
 }
 void do_blocking_move_to_y(const float &ry, const feedRate_t &fr_mm_s/*=0.0*/) {
-  do_blocking_move_to(current_position.x, ry, current_position.z, fr_mm_s);
+  do_blocking_move_to(
+    LIST_N(LINEAR_AXES, current_position.x, ry, current_position.z, current_position.i, current_position.j, current_position.k),
+    fr_mm_s);
 }
 void do_blocking_move_to_z(const float &rz, const feedRate_t &fr_mm_s/*=0.0*/) {
   do_blocking_move_to_xy_z(current_position, rz, fr_mm_s);
@@ -560,7 +563,7 @@ void do_blocking_move_to_z(const float &rz, const feedRate_t &fr_mm_s/*=0.0*/) {
 
 #if LINEAR_AXES >= 5
   void do_blocking_move_to_j(const float &rj, const feedRate_t &fr_mm_s/*=0.0*/) {
-    do_blocking_move_to_xyzi_j(current_position, ri, fr_mm_s);
+    do_blocking_move_to_xyzi_j(current_position, rj, fr_mm_s);
   }
   void do_blocking_move_to_xyzi_j(const xyze_pos_t &raw, const float &j, const feedRate_t &fr_mm_s/*=0.0f*/) {
     do_blocking_move_to(raw.x, raw.y, raw.z, raw.i, j, fr_mm_s);
@@ -587,7 +590,10 @@ void do_blocking_move_to_xy(const xy_pos_t &raw, const feedRate_t &fr_mm_s/*=0.0
 }
 
 void do_blocking_move_to_xy_z(const xy_pos_t &raw, const float &z, const feedRate_t &fr_mm_s/*=0.0f*/) {
-  do_blocking_move_to(raw.x, raw.y, z, fr_mm_s);
+  do_blocking_move_to(
+    LIST_N(LINEAR_AXES, raw.x, raw.y, z, current_position.i, current_position.j, current_position.k),
+    fr_mm_s
+  );
 }
 
 void do_z_clearance(const float &zclear, const bool z_known/*=true*/, const bool raise_on_unknown/*=true*/, const bool lower_allowed/*=false*/) {

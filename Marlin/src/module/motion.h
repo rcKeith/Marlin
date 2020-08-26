@@ -218,36 +218,21 @@ void do_blocking_move_to(
 );
 void do_blocking_move_to(const xy_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
 void do_blocking_move_to(const xyz_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
-void do_blocking_move_to(const xyze_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
-#if LINEAR_AXES >= 4
-  void do_blocking_move_to(const xyzeOnly_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
-  /*
-  #if LINEAR_AXES >= 5
-    void do_blocking_move_to(const xyzieOnly_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
-    #if LINEAR_AXES >= 6
-      void do_blocking_move_to(const xyzieOnly_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
-    #endif
-  #endif
-  */
-#endif
+
 void do_blocking_move_to_x(const float &rx, const feedRate_t &fr_mm_s=0.0f);
 void do_blocking_move_to_y(const float &ry, const feedRate_t &fr_mm_s=0.0f);
 void do_blocking_move_to_z(const float &rz, const feedRate_t &fr_mm_s=0.0f);
 #if LINEAR_AXES >= 4
   void do_blocking_move_to_i(const float &ri, const feedRate_t &fr_mm_s=0.0f);
   void do_blocking_move_to_xyz_i(const xyze_pos_t &raw, const float &i, const feedRate_t &fr_mm_s=0.0f);
-  /*
-  FORCE_INLINE void do_blocking_move_to_xyz_i(const xyz_pos_t &raw, const float &i, const feedRate_t &fr_mm_s=0.0f)  { do_blocking_move_to_xyz_i(xyzOnly_pos_t(raw), i, fr_mm_s); }
-  FORCE_INLINE void do_blocking_move_to_xyz_i(const xyze_pos_t &raw, const float &i, const feedRate_t &fr_mm_s=0.0f) { do_blocking_move_to_xyz_i(xyzOnly_pos_t(raw), i, fr_mm_s); }
-  */
 #endif
 #if LINEAR_AXES >= 5
   void do_blocking_move_to_j(const float &rj, const feedRate_t &fr_mm_s=0.0f);
-  void do_blocking_move_to_xyz_j(const xyze_pos_t &raw, const float &j, const feedRate_t &fr_mm_s=0.0f);
+  void do_blocking_move_to_xyzi_j(const xyze_pos_t &raw, const float &j, const feedRate_t &fr_mm_s=0.0f);
 #endif
 #if LINEAR_AXES >= 6
   void do_blocking_move_to_k(const float &rk, const feedRate_t &fr_mm_s=0.0f);
-  void do_blocking_move_to_xyz_k(const xyze_pos_t &raw, const float &k, const feedRate_t &fr_mm_s=0.0f);
+  void do_blocking_move_to_xyzij_k(const xyze_pos_t &raw, const float &k, const feedRate_t &fr_mm_s=0.0f);
 #endif
 void do_blocking_move_to_xy(const float &rx, const float &ry, const feedRate_t &fr_mm_s=0.0f);
 void do_blocking_move_to_xy(const xy_pos_t &raw, const feedRate_t &fr_mm_s=0.0f);
