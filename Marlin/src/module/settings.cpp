@@ -294,9 +294,9 @@ typedef struct SettingsDataStruct {
   //
   // Material Presets
   //
-  int16_t ui_preheat_hotend_temp[2],                    // M145 S0 H
-          ui_preheat_bed_temp[2];                       // M145 S0 B
-  uint8_t ui_preheat_fan_speed[2];                      // M145 S0 F
+  #if PREHEAT_COUNT
+    preheat_t ui_material_preset[PREHEAT_COUNT];        // M145 S0 H B F
+  #endif
 
   //
   // PIDTEMP
