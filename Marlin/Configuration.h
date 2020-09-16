@@ -833,18 +833,18 @@
  * Override with M92
  *                                      X, Y, Z, [I ,[J ,[K ,]]] E0 [, E1[, E2...]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 4000, 500 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT     {LIST_N(LINEAR_AXES, 80, 80, 4000, 80, 80, 80), 500}
 
 /**
  * Default Max Feed Rate (mm/s)
  * Override with M203
  *                                      X, Y, Z, [I ,[J ,[K ,]]] E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }
+#define DEFAULT_MAX_FEEDRATE          {LIST_N(LINEAR_AXES, 300, 300, 5, 300, 300, 300), 25 }
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
-  #define MAX_FEEDRATE_EDIT_VALUES    { 600, 600, 10, 50 } // ...or, set your own edit limits
+  #define MAX_FEEDRATE_EDIT_VALUES    {LIST_N(LINEAR_AXES, 600, 600, 10, 600, 600, 600), 50 } // ...or, set your own edit limits
 #endif
 
 /**
@@ -853,11 +853,11 @@
  * Override with M201
  *                                      X, Y, Z, [I ,[J ,[K ,]]] E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_ACCELERATION      { 3000, 3000, 100, 10000 }
+#define DEFAULT_MAX_ACCELERATION      {LIST_N(LINEAR_AXES, 3000, 3000, 100, 3000, 3000, 3000), 10000 }
 
 //#define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
-  #define MAX_ACCEL_EDIT_VALUES       { 6000, 6000, 200, 20000 } // ...or, set your own edit limits
+  #define MAX_ACCEL_EDIT_VALUES       {LIST_N(LINEAR_AXES, 6000, 6000, 200, 6000, 6000, 6000), 20000 } // ...or, set your own edit limits
 #endif
 
 /**
@@ -885,15 +885,15 @@
   #define DEFAULT_XJERK 10.0
   #define DEFAULT_YJERK 10.0
   #define DEFAULT_ZJERK  0.3
-  //#define DEFAULT_IJERK  0.3
-  //#define DEFAULT_JJERK  0.3
-  //#define DEFAULT_KJERK  0.3
+  #define DEFAULT_IJERK 10.0
+  #define DEFAULT_JJERK 10.0
+  #define DEFAULT_KJERK 10.0
 
   //#define TRAVEL_EXTRA_XYJERK 0.0     // Additional jerk allowance for all travel moves
 
   //#define LIMITED_JERK_EDITING        // Limit edit via M205 or LCD to DEFAULT_aJERK * 2
   #if ENABLED(LIMITED_JERK_EDITING)
-    #define MAX_JERK_EDIT_VALUES { 20, 20, 0.6, 10 } // ...or, set your own edit limits
+    #define MAX_JERK_EDIT_VALUES {LIST_N(LINEAR_AXES, 20, 20, 0.6, 20, 20, 20), 10 } // ...or, set your own edit limits
   #endif
 #endif
 

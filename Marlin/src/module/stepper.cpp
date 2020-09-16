@@ -2823,17 +2823,18 @@ void Stepper::report_a_position(const xyz_long_t &pos) {
   #if CORE_IS_XZ || CORE_IS_YZ || ENABLED(DELTA)
     SERIAL_ECHOLNPAIR(" C:", pos.z);
   #else
-    SERIAL_ECHOLNPAIR_P(SP_Z_LBL, pos.z);
+    SERIAL_ECHOPAIR_P(SP_Z_LBL, pos.z);
   #endif
   #if LINEAR_AXES >= 4
-    SERIAL_ECHOLNPAIR_P(SP_I_LBL, pos.i);
+    SERIAL_ECHOPAIR_P(SP_I_LBL, pos.i);
   #endif
   #if LINEAR_AXES >= 5
-    SERIAL_ECHOLNPAIR_P(SP_J_LBL, pos.j);
+    SERIAL_ECHOPAIR_P(SP_J_LBL, pos.j);
   #endif
   #if LINEAR_AXES >= 6
-    SERIAL_ECHOLNPAIR_P(SP_K_LBL, pos.k);
+    SERIAL_ECHOPAIR_P(SP_K_LBL, pos.k);
   #endif
+  SERIAL_EOL();
 }
 
 void Stepper::report_positions() {

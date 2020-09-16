@@ -208,26 +208,26 @@
 
 #if LINEAR_AXES >= 6
   #if AXIS6_NAME == 'A'
-    #define STR_J_MIN                       "a_min"
-    #define STR_J_MAX                       "a_max"
+    #define STR_K_MIN                       "a_min"
+    #define STR_K_MAX                       "a_max"
   #elif AXIS6_NAME == 'B'
-    #define STR_J_MIN                       "b_min"
-    #define STR_J_MAX                       "b_max"
+    #define STR_K_MIN                       "b_min"
+    #define STR_K_MAX                       "b_max"
   #elif AXIS6_NAME == 'C'
-    #define STR_J_MIN                       "c_min"
-    #define STR_J_MAX                       "c_max"
+    #define STR_K_MIN                       "c_min"
+    #define STR_K_MAX                       "c_max"
   #elif AXIS6_NAME == 'U'
-    #define STR_J_MIN                       "u_min"
-    #define STR_J_MAX                       "u_max"
+    #define STR_K_MIN                       "u_min"
+    #define STR_K_MAX                       "u_max"
   #elif AXIS6_NAME == 'V'
-    #define STR_J_MIN                       "v_min"
-    #define STR_J_MAX                       "v_max"
+    #define STR_K_MIN                       "v_min"
+    #define STR_K_MAX                       "v_max"
   #elif AXIS6_NAME == 'W'
-    #define STR_J_MIN                       "w_min"
-    #define STR_J_MAX                       "w_max"
+    #define STR_K_MIN                       "w_min"
+    #define STR_K_MAX                       "w_max"
   #else
-    #define STR_J_MIN                       "j_min"
-    #define STR_J_MAX                       "j_max"
+    #define STR_K_MIN                       "k_min"
+    #define STR_K_MAX                       "k_max"
   #endif
 #endif
 
@@ -411,7 +411,7 @@
   #elif AXIS6_NAME == 'W'
     #define AXIS6_STR "W"
   #else
-    #define AXIS6_STR "J"
+    #define AXIS6_STR "K"
   #endif
 #else
   #define AXIS6_STR ""

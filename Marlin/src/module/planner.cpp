@@ -3201,18 +3201,8 @@ void Planner::set_max_feedrate(const uint8_t axis, float targetValue) {
     #endif
     limit_and_warn(targetValue, axis, PSTR("Feedrate"), max_fr_edit_scaled);
   #endif
-  #if LINEAR_AXES >= 4
-  // FIXME (DerAndere):!!! Work-around for issue with internal feedrate for I_AXIS
-
-    if (axis == 3) {
-      settings.max_feedrate_mm_s[axis] = targetValue * 4.0; 
-    }
-    else {
-      settings.max_feedrate_mm_s[axis] = targetValue;
-    }
-  #else
-    settings.max_feedrate_mm_s[axis] = targetValue;
-  #endif
+  
+  settings.max_feedrate_mm_s[axis] = targetValue;
 }
 
 void Planner::set_max_jerk(const AxisEnum axis, float targetValue) {

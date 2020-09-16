@@ -419,7 +419,7 @@ void _internal_move_to_destination(const feedRate_t &fr_mm_s/*=0.0f*/
 }
 
 /**
- * Plan a move to (X, Y, Z) and set the current_position
+ * Plan a move to (X, Y, Z, [I, [J, [K]]]) and set the current_position
  */
 void do_blocking_move_to(
   LIST_N(LINEAR_AXES, const float rx, const float ry, const float rz, const float ri, const float rj, const float rk),
@@ -552,7 +552,7 @@ void do_blocking_move_to_z(const float &rz, const feedRate_t &fr_mm_s/*=0.0*/) {
   do_blocking_move_to_xy_z(current_position, rz, fr_mm_s);
 }
 
-#if LINEAR_AXES >= 4
+#if LINEAR_AXES == 4
   void do_blocking_move_to_i(const float &ri, const feedRate_t &fr_mm_s/*=0.0*/) {
     do_blocking_move_to_xyz_i(current_position, ri, fr_mm_s);
   }
@@ -562,6 +562,12 @@ void do_blocking_move_to_z(const float &rz, const feedRate_t &fr_mm_s/*=0.0*/) {
 #endif
 
 #if LINEAR_AXES >= 5
+  void do_blocking_move_to_i(const float &ri, const feedRate_t &fr_mm_s/*=0.0*/) {
+    do_blocking_move_to_xyz_i(current_position, ri, fr_mm_s);
+  }
+  void do_blocking_move_to_xyz_i(const xyze_pos_t &raw, const float &i, const feedRate_t &fr_mm_s/*=0.0f*/) {
+	  do_blocking_move_to(raw.x, raw.y, raw.z, i, raw.j, fr_mm_s);
+  }
   void do_blocking_move_to_j(const float &rj, const feedRate_t &fr_mm_s/*=0.0*/) {
     do_blocking_move_to_xyzi_j(current_position, rj, fr_mm_s);
   }

@@ -2493,9 +2493,7 @@ void MarlinSettings::postprocess() {
 void MarlinSettings::reset() {
   LOOP_NUM_AXIS_N(i) {
     planner.settings.max_acceleration_mm_per_s2[i] = pgm_read_dword(&_DMA[ALIM(i, _DMA)]);
-    // FIXME (DerAndere):!!! Work around issue where actual internally-used steps_per_mm for I_AXIS are only 1/4 of STEPS_PER_UNIT
     planner.settings.axis_steps_per_mm[i] = pgm_read_float(&_DASU[ALIM(i, _DASU)]);
-    if (LINEAR_AXES >= 4 && i == 3) planner.settings.axis_steps_per_mm[i] *= 4.0f;
     planner.settings.max_feedrate_mm_s[i] = pgm_read_float(&_DMF[ALIM(i, _DMF)]);
   }
 
