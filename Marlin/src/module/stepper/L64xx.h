@@ -207,7 +207,7 @@
 #endif
 
 // I Stepper
-#if LINEAR_AXES >= 4
+#if NON_E_AXES >= 4
   #if AXIS_IS_L64XX(I)
     extern L64XX_CLASS(I)         stepperI;
     #define I_ENABLE_INIT()       NOOP
@@ -229,7 +229,7 @@
 #endif
 
 // J Stepper
-#if LINEAR_AXES >= 5
+#if NON_E_AXES >= 5
   #if AXIS_IS_L64XX(J)
     extern L64XX_CLASS(J)         stepperJ;
     #define J_ENABLE_INIT()       NOOP
@@ -251,7 +251,7 @@
 #endif
 
 // K Stepper
-#if LINEAR_AXES >= 6
+#if NON_E_AXES >= 6
   #if AXIS_IS_L64XX(K)
     extern L64XX_CLASS(K)         stepperK;
     #define K_ENABLE_INIT()       NOOP

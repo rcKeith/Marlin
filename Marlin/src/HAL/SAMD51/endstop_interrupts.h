@@ -113,21 +113,21 @@
 #else
   #define MATCH_Z_MIN_PROBE_EILINE(P) false
 #endif
-#if LINEAR_AXES >= 4
+#if NON_E_AXES >= 4
   #if HAS_I_MAX
     #define MATCH_I_MAX_EILINE(P) MATCH_EILINE(P, I_MAX_PIN)
   #elif HAS_I_MIN
     #define MATCH_I_MIN_EILINE(P) MATCH_EILINE(P, I_MIN_PIN)
   #endif
 #endif
-#if LINEAR_AXES >= 5
+#if NON_E_AXES >= 5
   #if HAS_J_MAX
     #define MATCH_J_MAX_EILINE(P) MATCH_EILINE(P, J_MAX_PIN)
   #elif HAS_J_MIN
     #define MATCH_J_MIN_EILINE(P) MATCH_EILINE(P, J_MIN_PIN)
   #endif
 #endif
-#if LINEAR_AXES >= 6
+#if NON_E_AXES >= 6
   #if HAS_K_MAX
     #define MATCH_K_MAX_EILINE(P) MATCH_EILINE(P, K_MAX_PIN)
   #elif HAS_K_MIN

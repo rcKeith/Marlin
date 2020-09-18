@@ -124,7 +124,7 @@
 
 #define _Z_PINS Z_STEP_PIN, Z_DIR_PIN, Z_ENABLE_PIN, _Z_MIN _Z_MAX _Z_MS1 _Z_MS2 _Z_MS3 _Z_CS
 
-#if LINEAR_AXES >= 4
+#if NON_E_AXES >= 4
 
   #if PIN_EXISTS(I_MIN)
     #define _I_MIN I_MIN_PIN,
@@ -165,7 +165,7 @@
 
 #endif
 
-#if LINEAR_AXES >= 5
+#if NON_E_AXES >= 5
 
   #if PIN_EXISTS(J_MIN)
     #define _J_MIN J_MIN_PIN,
@@ -206,7 +206,7 @@
 
 #endif
 
-#if LINEAR_AXES >= 6
+#if NON_E_AXES >= 6
 
   #if PIN_EXISTS(K_MIN)
     #define _K_MIN K_MIN_PIN,

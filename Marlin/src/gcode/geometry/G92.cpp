@@ -47,10 +47,10 @@ void GcodeSuite::G92() {
       case 1: {
         // Zero the G92 values and restore current position
         #if !IS_SCARA
-          LOOP_LINEAR(i) if (position_shift[i]) {
+          LOOP_NON_E(i) if (position_shift[i]) {
             position_shift[i] = 0;
             update_workspace_offset((AxisEnum)i);
-          } // TODO: Add support for LINEAR_AXES >= 4
+          } // TODO: Add support for NON_E_AXES >= 4
         #endif // Not SCARA
       } return;
     #endif

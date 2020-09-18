@@ -59,17 +59,17 @@
 #undef TEST3
 #undef TEST4
 
-#if LINEAR_AXES == 3
-  #if EXTRUDERS == 1 && NUM_AXIS != LINEAR_AXES + EXTRUDERS
-    #error "LINEAR_AXES 3 plus EXTRUDERS 1 does not yield NUM_AXIS 4."
-  #elif EXTRUDERS == 0 && NUM_AXIS != LINEAR_AXES + EXTRUDERS
-    #error "LINEAR_AXES 3 plus EXTRUDERS 0 does not yield NUM_AXIS 3."
+#if NON_E_AXES == 3
+  #if EXTRUDERS == 1 && NUM_AXIS != NON_E_AXES + EXTRUDERS
+    #error "NON_E_AXES 3 plus EXTRUDERS 1 does not yield NUM_AXIS 4."
+  #elif EXTRUDERS == 0 && NUM_AXIS != NON_E_AXES + EXTRUDERS
+    #error "NON_E_AXES 3 plus EXTRUDERS 0 does not yield NUM_AXIS 3."
   #endif
-#elif LINEAR_AXES == 4
-  #if EXTRUDERS == 1 && NUM_AXIS != LINEAR_AXES + EXTRUDERS
-    #error "LINEAR_AXES 4 plus EXTRUDERS 1 does not yield NUM_AXIS 5."
-  #elif EXTRUDERS == 0 && NUM_AXIS != LINEAR_AXES + EXTRUDERS
-    #error "LINEAR_AXES 4 plus EXTRUDERS 0 does not yield NUM_AXIS 4."
+#elif NON_E_AXES == 4
+  #if EXTRUDERS == 1 && NUM_AXIS != NON_E_AXES + EXTRUDERS
+    #error "NON_E_AXES 4 plus EXTRUDERS 1 does not yield NUM_AXIS 5."
+  #elif EXTRUDERS == 0 && NUM_AXIS != NON_E_AXES + EXTRUDERS
+    #error "NON_E_AXES 4 plus EXTRUDERS 0 does not yield NUM_AXIS 4."
   #endif
 #endif
 
@@ -1186,10 +1186,6 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
   #error "Please enable only one of DELTA, MORGAN_SCARA, COREXY, COREYX, COREXZ, COREZX, COREYZ, COREZY, ASYNC_SECONDARY_AXES or FOAMCUTTER_XYUV."
 #endif
 
-#if LINEAR_AXES >= 5
-  #error "LINEAR AXES >= 5 not yet supported, it causes unsafe movements. Developers should have a kill switch installed to stop movement before removing this check."
-#endif
-  
 /**
  * Delta requirements
  */
@@ -1214,8 +1210,8 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
 /**
  * Delta requirements
  */
-#if ENABLED(FOAMCUTTER_XYUV) && LINEAR_AXES < 5
-  #error "FOAMCUTTER_XYUV requires LINEAR_AXES >= 5."
+#if ENABLED(FOAMCUTTER_XYUV) && NON_E_AXES < 5
+  #error "FOAMCUTTER_XYUV requires NON_E_AXES >= 5."
 #endif
 /**
  * Junction deviation is incompatible with kinematic systems.
@@ -1514,17 +1510,17 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
  * Homing
  */
 constexpr float hbm[] = HOMING_BUMP_MM;
-static_assert(COUNT(hbm) == LINEAR_AXES, "HOMING_BUMP_MM requires one element per linear axis.");
+static_assert(COUNT(hbm) == NON_E_AXES, "HOMING_BUMP_MM requires one element per linear axis.");
 static_assert(hbm[X_AXIS] >= 0, "HOMING_BUMP_MM.X must be greater than or equal to 0.");
 static_assert(hbm[Y_AXIS] >= 0, "HOMING_BUMP_MM.Y must be greater than or equal to 0.");
 static_assert(hbm[Z_AXIS] >= 0, "HOMING_BUMP_MM.Z must be greater than or equal to 0.");
-#if LINEAR_AXES >= 4
+#if NON_E_AXES >= 4
   static_assert(hbm[I_AXIS] >= 0, "HOMING_BUMP_MM.I must be greater than or equal to 0.");
 #endif
-#if LINEAR_AXES >= 5
+#if NON_E_AXES >= 5
   static_assert(hbm[J_AXIS] >= 0, "HOMING_BUMP_MM.J must be greater than or equal to 0.");
 #endif
-#if LINEAR_AXES >= 6
+#if NON_E_AXES >= 6
   static_assert(hbm[K_AXIS] >= 0, "HOMING_BUMP_MM.K must be greater than or equal to 0.");
 #endif
 #if ENABLED(CODEPENDENT_XY_HOMING)
@@ -1966,11 +1962,11 @@ static_assert(hbm[Z_AXIS] >= 0, "HOMING_BUMP_MM.Z must be greater than or equal 
 #define _PLUG_UNUSED_TEST(A,P) (DISABLED(USE_##P##MIN_PLUG, USE_##P##MAX_PLUG) \
   && !(ENABLED(A##_DUAL_ENDSTOPS) && WITHIN(A##2_USE_ENDSTOP, _##P##MAX_, _##P##MIN_)) \
   && !(ENABLED(A##_MULTI_ENDSTOPS) && WITHIN(A##2_USE_ENDSTOP, _##P##MAX_, _##P##MIN_)) )
-#if LINEAR_AXES == 6
+#if NON_E_AXES == 6
   #define _AXIS_PLUG_UNUSED_TEST(A) (_PLUG_UNUSED_TEST(A,X) && _PLUG_UNUSED_TEST(A,Y) && _PLUG_UNUSED_TEST(A,Z) && _PLUG_UNUSED_TEST(A,I) && _PLUG_UNUSED_TEST(A,J) && _PLUG_UNUSED_TEST(A,K))
-#elif LINEAR_AXES == 5
+#elif NON_E_AXES == 5
   #define _AXIS_PLUG_UNUSED_TEST(A) (_PLUG_UNUSED_TEST(A,X) && _PLUG_UNUSED_TEST(A,Y) && _PLUG_UNUSED_TEST(A,Z) && _PLUG_UNUSED_TEST(A,I) && _PLUG_UNUSED_TEST(A,J))
-#elif LINEAR_AXES == 4
+#elif NON_E_AXES == 4
   #define _AXIS_PLUG_UNUSED_TEST(A) (_PLUG_UNUSED_TEST(A,X) && _PLUG_UNUSED_TEST(A,Y) && _PLUG_UNUSED_TEST(A,Z) && _PLUG_UNUSED_TEST(A,I))
 #else
   #define _AXIS_PLUG_UNUSED_TEST(A) (_PLUG_UNUSED_TEST(A,X) && _PLUG_UNUSED_TEST(A,Y) && _PLUG_UNUSED_TEST(A,Z))
@@ -1986,17 +1982,17 @@ static_assert(hbm[Z_AXIS] >= 0, "HOMING_BUMP_MM.Z must be greater than or equal 
 #if _AXIS_PLUG_UNUSED_TEST(Z)
   #error "You must enable USE_ZMIN_PLUG or USE_ZMAX_PLUG."
 #endif
-#if LINEAR_AXES >= 4
+#if NON_E_AXES >= 4
   #if _AXIS_PLUG_UNUSED_TEST(I)
     #error "You must enable USE_IMIN_PLUG or USE_IMAX_PLUG."
   #endif
 #endif
-#if LINEAR_AXES >= 5
+#if NON_E_AXES >= 5
   #if _AXIS_PLUG_UNUSED_TEST(J)
     #error "You must enable USE_JMIN_PLUG or USE_JMAX_PLUG."
   #endif
 #endif
-#if LINEAR_AXES >= 6
+#if NON_E_AXES >= 6
   #if _AXIS_PLUG_UNUSED_TEST(K)
     #error "You must enable USE_KMIN_PLUG or USE_KMAX_PLUG."
   #endif
@@ -2013,19 +2009,19 @@ static_assert(hbm[Z_AXIS] >= 0, "HOMING_BUMP_MM.Z must be greater than or equal 
   #elif Y_HOME_DIR > 0 && DISABLED(USE_YMAX_PLUG)
     #error "Enable USE_YMAX_PLUG when homing Y to MAX."
   #endif
-  #if LINEAR_AXES >= 4 && I_HOME_DIR < 0 && DISABLED(USE_IMIN_PLUG)
+  #if NON_E_AXES >= 4 && I_HOME_DIR < 0 && DISABLED(USE_IMIN_PLUG)
     #error "Enable USE_IMIN_PLUG when homing I to MIN."
-  #elif LINEAR_AXES >= 4 && I_HOME_DIR > 0 && DISABLED(USE_IMAX_PLUG)
+  #elif NON_E_AXES >= 4 && I_HOME_DIR > 0 && DISABLED(USE_IMAX_PLUG)
     #error "Enable USE_IMAX_PLUG when homing I to MAX."
   #endif
-  #if LINEAR_AXES >= 5 && J_HOME_DIR < 0 && DISABLED(USE_JMIN_PLUG)
+  #if NON_E_AXES >= 5 && J_HOME_DIR < 0 && DISABLED(USE_JMIN_PLUG)
     #error "Enable USE_JMIN_PLUG when homing J to MIN."
-  #elif LINEAR_AXES >= 5 && J_HOME_DIR > 0 && DISABLED(USE_JMAX_PLUG)
+  #elif NON_E_AXES >= 5 && J_HOME_DIR > 0 && DISABLED(USE_JMAX_PLUG)
     #error "Enable USE_JMAX_PLUG when homing J to MAX."
   #endif
-  #if LINEAR_AXES >= 6 && K_HOME_DIR < 0 && DISABLED(USE_KMIN_PLUG)
+  #if NON_E_AXES >= 6 && K_HOME_DIR < 0 && DISABLED(USE_KMIN_PLUG)
     #error "Enable USE_KMIN_PLUG when homing K to MIN."
-  #elif LINEAR_AXES >= 6 && K_HOME_DIR > 0 && DISABLED(USE_KMAX_PLUG)
+  #elif NON_E_AXES >= 6 && K_HOME_DIR > 0 && DISABLED(USE_KMAX_PLUG)
     #error "Enable USE_KMAX_PLUG when homing K to MAX."
   #endif
 #endif // !IS_SCARA

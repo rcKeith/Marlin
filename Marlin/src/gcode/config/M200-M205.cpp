@@ -176,13 +176,13 @@ void GcodeSuite::M205() {
           SERIAL_ECHOLNPGM("WARNING! Low Z Jerk may lead to unwanted pauses.");
       #endif
     }
-    #if LINEAR_AXES >= 4
+    #if NON_E_AXES >= 4
       if (parser.seen('I')) planner.set_max_jerk(I_AXIS, parser.value_linear_units());
     #endif
-    #if LINEAR_AXES >= 5
+    #if NON_E_AXES >= 5
       if (parser.seen('J')) planner.set_max_jerk(J_AXIS, parser.value_linear_units());
     #endif
-    #if LINEAR_AXES >= 6
+    #if NON_E_AXES >= 6
       if (parser.seen('K')) planner.set_max_jerk(K_AXIS, parser.value_linear_units());
     #endif
     #if HAS_CLASSIC_E_JERK

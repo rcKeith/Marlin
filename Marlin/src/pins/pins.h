@@ -331,6 +331,8 @@
   #include "sanguino/pins_ANET_10.h"            // ATmega1284P                            env:sanguino1284p
 #elif MB(SETHI)
   #include "sanguino/pins_SETHI.h"              // ATmega644P, ATmega644, ATmega1284P     env:sanguino644p env:sanguino1284p
+#elif MB(DERANDERE_PB_1)
+  #include "sanguino/pins_DERANDERE_PB_1.h"     // ATmega1284P                            env:sanguino1284p
 
 //
 // Teensyduino - AT90USB1286, AT90USB1286P
@@ -1157,7 +1159,7 @@
   #define Z_STOP_PIN Z_MAX_PIN
 #endif
 
-#if LINEAR_AXES >= 4
+#if NON_E_AXES >= 4
   #ifdef I_STOP_PIN
     #if I_HOME_DIR < 0
       #define I_MIN_PIN I_STOP_PIN
@@ -1176,7 +1178,7 @@
   #undef K_MAX_PIN
 #endif
 
-#if LINEAR_AXES >= 5
+#if NON_E_AXES >= 5
   #ifdef J_STOP_PIN
     #if J_HOME_DIR < 0
       #define J_MIN_PIN J_STOP_PIN
@@ -1188,7 +1190,7 @@
   #endif
 #endif
 
-#if LINEAR_AXES >= 6
+#if NON_E_AXES >= 6
   #ifdef K_STOP_PIN
     #if K_HOME_DIR < 0
       #define K_MIN_PIN K_STOP_PIN

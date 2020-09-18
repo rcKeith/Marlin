@@ -54,7 +54,7 @@ Endstops endstops;
 
 bool Endstops::enabled, Endstops::enabled_globally; // Initialized by settings.load()
 
-#if LINEAR_AXES >= 4
+#if NON_E_AXES >= 4
   volatile uint16_t Endstops::hit_state; //TODO (DerAndere): volatile hitbits_t Endstops::hit_state;
 #else
   volatile uint8_t Endstops::hit_state; //TODO (DerAndere): volatile hitbits_t Endstops::hit_state;
@@ -412,7 +412,7 @@ void Endstops::resync() {
 #endif
 
 void Endstops::event_handler() {
-  #if LINEAR_AXES >= 4
+  #if NON_E_AXES >= 4
     static uint16_t prev_hit_state; // = 0
   #else
     static uint8_t prev_hit_state; // = 0
@@ -421,7 +421,7 @@ void Endstops::event_handler() {
   prev_hit_state = hit_state;
   if (hit_state) {
     #if HAS_SPI_LCD
-      char LIST_N(LINEAR_AXES, chrX = ' ', chrY = ' ', chrZ = ' ', chrI = ' ', chrJ = ' ', chrK = ' '),
+      char LIST_N(NON_E_AXES, chrX = ' ', chrY = ' ', chrZ = ' ', chrI = ' ', chrJ = ' ', chrK = ' '),
            chrP = ' ';
       #define _SET_STOP_CHAR(A,C) (chr## A = C)
     #else
@@ -446,13 +446,13 @@ void Endstops::event_handler() {
     ENDSTOP_HIT_TEST_Y();
     ENDSTOP_HIT_TEST_Z();
 
-    #if LINEAR_AXES >= 4
+    #if NON_E_AXES >= 4
       _ENDSTOP_HIT_TEST(I,'I');
     #endif
-    #if LINEAR_AXES >= 5
+    #if NON_E_AXES >= 5
       _ENDSTOP_HIT_TEST(J,'J');
     #endif
-    #if LINEAR_AXES >= 6
+    #if NON_E_AXES >= 6
       _ENDSTOP_HIT_TEST(K,'K');
     #endif
 
@@ -464,9 +464,9 @@ void Endstops::event_handler() {
 
     TERN_(HAS_SPI_LCD,
       ui.status_printf_P(0,
-        PSTR(S_FMT GANG_N(LINEAR_AXES, " %c", " %c", " %c", " %c", " %c", " %c") " %c"),
+        PSTR(S_FMT GANG_N(NON_E_AXES, " %c", " %c", " %c", " %c", " %c", " %c") " %c"),
         GET_TEXT(MSG_LCD_ENDSTOPS),
-        LIST_N(LINEAR_AXES, chrX, chrY, chrZ, chrI, chrJ, chrK), chrP
+        LIST_N(NON_E_AXES, chrX, chrY, chrZ, chrI, chrJ, chrK), chrP
       )
     );
 
@@ -1044,7 +1044,7 @@ void Endstops::update() {
     }
   }
 
-  #if LINEAR_AXES >= 4
+  #if NON_E_AXES >= 4
     if (stepper.axis_is_moving(I_AXIS)) {
       if (stepper.motor_direction(I_AXIS_HEAD)) { // -direction
         #if HAS_I_MIN || (I_SPI_SENSORLESS && I_HOME_DIR < 0)
@@ -1059,7 +1059,7 @@ void Endstops::update() {
     }
   #endif
 
-  #if LINEAR_AXES >= 5
+  #if NON_E_AXES >= 5
     if (stepper.axis_is_moving(J_AXIS)) {
       if (stepper.motor_direction(J_AXIS_HEAD)) { // -direction
         #if HAS_J_MIN || (J_SPI_SENSORLESS && J_HOME_DIR < 0)
@@ -1074,7 +1074,7 @@ void Endstops::update() {
     }
   #endif
 
-  #if LINEAR_AXES >= 6
+  #if NON_E_AXES >= 6
     if (stepper.axis_is_moving(K_AXIS)) {
       if (stepper.motor_direction(K_AXIS_HEAD)) { // -direction
         #if HAS_K_MIN || (K_SPI_SENSORLESS && K_HOME_DIR < 0)

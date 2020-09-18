@@ -152,10 +152,10 @@
 #endif
 
 #pragma pack(push, 1) // No padding between variables
-typedef struct { uint16_t LIST_N(LINEAR_AXES, X, Y, Z, I, J, K), X2, Y2, Z2, Z3, Z4, E0, E1, E2, E3, E4, E5, E6, E7; } tmc_stepper_current_t;
-typedef struct { uint32_t LIST_N(LINEAR_AXES, X, Y, Z, I, J, K), X2, Y2, Z2, Z3, Z4, E0, E1, E2, E3, E4, E5, E6, E7; } tmc_hybrid_threshold_t;
-typedef struct {  int16_t X, Y, Z, X2;                                     } tmc_sgt_t; // TODO: Add support for LINEAR_AXES >= 4
-typedef struct {     bool LIST_N(LINEAR_AXES, X, Y, Z, I, J, K), X2, Y2, Z2, Z3, Z4, E0, E1, E2, E3, E4, E5, E6, E7; } tmc_stealth_enabled_t;
+typedef struct { uint16_t LIST_N(NON_E_AXES, X, Y, Z, I, J, K), X2, Y2, Z2, Z3, Z4, E0, E1, E2, E3, E4, E5, E6, E7; } tmc_stepper_current_t;
+typedef struct { uint32_t LIST_N(NON_E_AXES, X, Y, Z, I, J, K), X2, Y2, Z2, Z3, Z4, E0, E1, E2, E3, E4, E5, E6, E7; } tmc_hybrid_threshold_t;
+typedef struct {  int16_t X, Y, Z, X2;                                     } tmc_sgt_t; // TODO: Add support for NON_E_AXES >= 4
+typedef struct {     bool LIST_N(NON_E_AXES, X, Y, Z, I, J, K), X2, Y2, Z2, Z3, Z4, E0, E1, E2, E3, E4, E5, E6, E7; } tmc_stealth_enabled_t;
 
 // Limit an index to an array size
 #define ALIM(I,ARR) _MIN(I, (signed)COUNT(ARR) - 1)
@@ -464,7 +464,7 @@ void MarlinSettings::postprocess() {
   #endif
 
   // Software endstops depend on home_offset
-  LOOP_LINEAR(i) {
+  LOOP_NON_E(i) {
     update_workspace_offset((AxisEnum)i);
     update_software_endstops((AxisEnum)i);
   }
@@ -588,7 +588,7 @@ void MarlinSettings::postprocess() {
 
     working_crc = 0; // clear before first "real data"
 
-    const uint8_t esteppers = NUM_AXIS_N - LINEAR_AXES;
+    const uint8_t esteppers = NUM_AXIS_N - NON_E_AXES;
     _FIELD_TEST(esteppers);
     EEPROM_WRITE(esteppers);
 
@@ -605,7 +605,7 @@ void MarlinSettings::postprocess() {
           EEPROM_WRITE(dummyf);
         #endif
       #else
-        const xyze_pos_t planner_max_jerk = { LIST_N(LINEAR_AXES, 10, 10, 0.4, 0.4, 0.4, 0.4), float(DEFAULT_EJERK) };
+        const xyze_pos_t planner_max_jerk = { LIST_N(NON_E_AXES, 10, 10, 0.4, 0.4, 0.4, 0.4), float(DEFAULT_EJERK) };
         EEPROM_WRITE(planner_max_jerk);
       #endif
 
@@ -752,7 +752,7 @@ void MarlinSettings::postprocess() {
     // Unified Bed Leveling
     //
     {
-      _FIELD_TEST(planner_leveling_active);
+      _FIELD_TEST(planner_leveling_active); // FIXME (DerAndere): Too much data written to EEPROM since last _FIELD_TEST() causes Error: Field planner_leveling_active mismatch
       const bool ubl_active = TERN(AUTO_BED_LEVELING_UBL, planner.leveling_active, false);
       const int8_t storage_slot = TERN(AUTO_BED_LEVELING_UBL, ubl.storage_slot, -1);
       EEPROM_WRITE(ubl_active);
@@ -1170,7 +1170,7 @@ void MarlinSettings::postprocess() {
         #endif // MAX_EXTRUDERS
       #else
         const tmc_hybrid_threshold_t tmc_hybrid_threshold = {
-          LIST_N(LINEAR_AXES, .X = 100, .Y = 100, .Z = 3, .I = 3, .J = 3, .K = 3),
+          LIST_N(NON_E_AXES, .X = 100, .Y = 100, .Z = 3, .I = 3, .J = 3, .K = 3),
           .X2 = 100, .Y2 = 100, .Z2 =   3, .Z3 =   3, .Z4 = 3,
           .E0 =  30, .E1 =  30, .E2 =  30,
           .E3 =  30, .E4 =  30, .E5 =  30
@@ -1485,16 +1485,16 @@ void MarlinSettings::postprocess() {
       {
         // Get only the number of E stepper parameters previously stored
         // Any steppers added later are set to their defaults
-        uint32_t tmp1[LINEAR_AXES + esteppers];
-        float tmp2[LINEAR_AXES + esteppers];
-        feedRate_t tmp3[LINEAR_AXES + esteppers];
+        uint32_t tmp1[NON_E_AXES + esteppers];
+        float tmp2[NON_E_AXES + esteppers];
+        feedRate_t tmp3[NON_E_AXES + esteppers];
         EEPROM_READ(tmp1);                         // max_acceleration_mm_per_s2
         EEPROM_READ(planner.settings.min_segment_time_us);
         EEPROM_READ(tmp2);                         // axis_steps_per_mm
         EEPROM_READ(tmp3);                         // max_feedrate_mm_s
 
         if (!validating) LOOP_NUM_AXIS_N(i) {
-          const bool in = (i < LINEAR_AXES + esteppers);
+          const bool in = (i < NON_E_AXES + esteppers);
             planner.settings.max_acceleration_mm_per_s2[i] = in ? tmp1[i] : pgm_read_dword(&_DMA[ALIM(i, _DMA)]);
             planner.settings.axis_steps_per_mm[i]          = in ? tmp2[i] : pgm_read_float(&_DASU[ALIM(i, _DASU)]);
             planner.settings.max_feedrate_mm_s[i]          = in ? tmp3[i] : pgm_read_float(&_DMF[ALIM(i, _DMF)]);
@@ -1648,7 +1648,7 @@ void MarlinSettings::postprocess() {
       // Unified Bed Leveling active state
       //
       {
-        _FIELD_TEST(planner_leveling_active);
+        _FIELD_TEST(planner_leveling_active); // FIXME (DerAndere): Too much data written to EEPROM since last _FIELD_TEST() causes Error: Field planner_leveling_active mismatch
         #if ENABLED(AUTO_BED_LEVELING_UBL)
           const bool &planner_leveling_active = planner.leveling_active;
           const int8_t &ubl_storage_slot = ubl.storage_slot;
@@ -2514,17 +2514,17 @@ void MarlinSettings::reset() {
     #ifndef DEFAULT_ZJERK
       #define DEFAULT_ZJERK 0
     #endif
-    #if LINEAR_AXES >= 4 && !defined(DEFAULT_IJERK)
+    #if NON_E_AXES >= 4 && !defined(DEFAULT_IJERK)
       #define DEFAULT_IJERK 0
     #endif
-    #if LINEAR_AXES >= 5 && !defined(DEFAULT_JJERK)
+    #if NON_E_AXES >= 5 && !defined(DEFAULT_JJERK)
       #define DEFAULT_JJERK 0
     #endif
-    #if LINEAR_AXES >= 6 && !defined(DEFAULT_KJERK)
+    #if NON_E_AXES >= 6 && !defined(DEFAULT_KJERK)
       #define DEFAULT_KJERK 0
     #endif
     planner.max_jerk.set(
-      LIST_N(LINEAR_AXES, DEFAULT_XJERK, DEFAULT_YJERK, DEFAULT_ZJERK, DEFAULT_IJERK, DEFAULT_JJERK, DEFAULT_KJERK)
+      LIST_N(NON_E_AXES, DEFAULT_XJERK, DEFAULT_YJERK, DEFAULT_ZJERK, DEFAULT_IJERK, DEFAULT_JJERK, DEFAULT_KJERK)
     );
     TERN_(HAS_CLASSIC_E_JERK, planner.max_jerk.e = DEFAULT_EJERK;);
   #endif
@@ -3039,7 +3039,7 @@ void MarlinSettings::reset() {
     CONFIG_ECHO_HEADING("Maximum feedrates (units/s):");
     CONFIG_ECHO_START();
     SERIAL_ECHOLNPAIR_P(
-      LIST_N(DOUBLE(LINEAR_AXES),
+      LIST_N(DOUBLE(NON_E_AXES),
         PSTR("  M203 X"), LINEAR_UNIT(planner.settings.max_feedrate_mm_s[X_AXIS]),
         SP_Y_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[Y_AXIS]),
         SP_Z_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[Z_AXIS]),
@@ -3064,7 +3064,7 @@ void MarlinSettings::reset() {
     CONFIG_ECHO_HEADING("Maximum Acceleration (units/s2):");
     CONFIG_ECHO_START();
     SERIAL_ECHOLNPAIR_P(
-      LIST_N(DOUBLE(LINEAR_AXES),
+      LIST_N(DOUBLE(NON_E_AXES),
         PSTR("  M201 X"), LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[X_AXIS]),
         SP_Y_STR, LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[Y_AXIS]),
         SP_Z_STR, LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[Z_AXIS]),
@@ -3116,13 +3116,13 @@ void MarlinSettings::reset() {
         , SP_X_STR, LINEAR_UNIT(planner.max_jerk.x)
         , SP_Y_STR, LINEAR_UNIT(planner.max_jerk.y)
         , SP_Z_STR, LINEAR_UNIT(planner.max_jerk.z)
-        #if LINEAR_AXES >= 4
+        #if NON_E_AXES >= 4
           , SP_I_STR, LINEAR_UNIT(planner.max_jerk.i)
         #endif
-        #if LINEAR_AXES >= 5
+        #if NON_E_AXES >= 5
           , SP_J_STR, LINEAR_UNIT(planner.max_jerk.j)
         #endif
-        #if LINEAR_AXES >= 6
+        #if NON_E_AXES >= 6
           , SP_K_STR, LINEAR_UNIT(planner.max_jerk.k)
         #endif
         #if HAS_CLASSIC_E_JERK
@@ -3143,13 +3143,13 @@ void MarlinSettings::reset() {
           PSTR("  M206 Z")
         #endif
         , LINEAR_UNIT(home_offset.z)
-        #if LINEAR_AXES >= 4
+        #if NON_E_AXES >= 4
           , SP_I_STR, LINEAR_UNIT(home_offset.i)
         #endif
-        #if LINEAR_AXES >= 5
+        #if NON_E_AXES >= 5
           , SP_J_STR, LINEAR_UNIT(home_offset.j)
         #endif
-        #if LINEAR_AXES >= 6
+        #if NON_E_AXES >= 6
           , SP_K_STR, LINEAR_UNIT(home_offset.k)
         #endif
       );
@@ -3897,11 +3897,11 @@ void MarlinSettings::reset() {
         , SP_X_STR, LINEAR_UNIT(backlash.distance_mm.x)
         , SP_Y_STR, LINEAR_UNIT(backlash.distance_mm.y)
         , SP_Z_STR, LINEAR_UNIT(backlash.distance_mm.z)
-        #if LINEAR_AXES >= 4
+        #if NON_E_AXES >= 4
           , SP_I_STR, LINEAR_UNIT(backlash.distance_mm.i)
-          #if LINEAR_AXES >= 5
+          #if NON_E_AXES >= 5
             , SP_J_STR, LINEAR_UNIT(backlash.distance_mm.j)
-            #if LINEAR_AXES >= 6
+            #if NON_E_AXES >= 6
               , SP_K_STR, LINEAR_UNIT(backlash.distance_mm.k)
             #endif
           #endif

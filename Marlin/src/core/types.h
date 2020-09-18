@@ -50,13 +50,13 @@ enum AxisEnum : uint8_t {
   X_AXIS   = 0, A_AXIS = 0,
   Y_AXIS   = 1, B_AXIS = 1,
   Z_AXIS   = 2, C_AXIS = 2,
-  #if LINEAR_AXES >= 4
+  #if NON_E_AXES >= 4
     I_AXIS,
   #endif
-  #if LINEAR_AXES >= 5
+  #if NON_E_AXES >= 5
     J_AXIS,
   #endif
-  #if LINEAR_AXES >= 6
+  #if NON_E_AXES >= 6
     K_AXIS,
   #endif
   E_AXIS,
@@ -81,7 +81,7 @@ typedef IF<(NUM_AXIS_ENUMS > 8), uint16_t, uint8_t>::type axis_bits_t;
 #define LOOP_TOOLMOVE_AXIS(VAR) LOOP_S_L_N(VAR, A_AXIS, MOV_AXIS)
 #define LOOP_NUM_AXIS(VAR) LOOP_S_L_N(VAR, A_AXIS, NUM_AXIS)
 #define LOOP_NUM_AXIS_N(VAR) LOOP_S_L_N(VAR, A_AXIS, NUM_AXIS_N)
-#define LOOP_LINEAR(VAR) LOOP_S_L_N(VAR, A_AXIS, LINEAR_AXES)
+#define LOOP_NON_E(VAR) LOOP_S_L_N(VAR, A_AXIS, NON_E_AXES)
 
 //
 // feedRate_t is just a humble float
@@ -298,7 +298,7 @@ struct XYval {
   FI const XYval<T> operator-()                   const { XYval<T> o = *this; o.x = -x; o.y = -y; return o; }
 };
 
-#if LINEAR_AXES == 6
+#if NON_E_AXES == 6
 
 //
 // XYZ coordinates, counters, etc.
@@ -322,9 +322,9 @@ struct XYZval {
   FI void set(const XYval<T> pxy, const T pz, const T pi, const T pj, const T pk)          { x = pxy.x; y = pxy.y; z = pz; i = pi; j = pj; k = pk; }
   FI void reset()                                      { x = y = z = i = j = k = 0; }
   #if ENABLED(ASYNC_SECONDARY_AXES)
-    FI T magnitude()                               const { return (T)sqrtf(x*x + y*y + z*z); } // TODO: Test for LINEAR_AXES >= 4
+    FI T magnitude()                               const { return (T)sqrtf(x*x + y*y + z*z); } // TODO: Test for NON_E_AXES >= 4
   #else
-    FI T magnitude()                               const { return (T)sqrtf(x*x + y*y + z*z + i*i + j*j + k*k); } // TODO: Test for LINEAR_AXES >= 4
+    FI T magnitude()                               const { return (T)sqrtf(x*x + y*y + z*z + i*i + j*j + k*k); } // TODO: Test for NON_E_AXES >= 4
   #endif
   FI operator T* ()                                    { return pos; }
   FI operator bool()                                   { return z || x || y || i || j || k; }
@@ -419,9 +419,9 @@ struct XYZEval {
   };
   FI void reset()                                             { x = y = z = i = j = k = e = 0; }
   #if ENABLED(ASYNC_SECONDARY_AXES)
-    FI T magnitude()                                      const { return (T)sqrtf(x*x + y*y + z*z + e*e); } // TODO: Test for LINEAR_AXES >= 4
+    FI T magnitude()                                      const { return (T)sqrtf(x*x + y*y + z*z + e*e); } // TODO: Test for NON_E_AXES >= 4
   #else
-    FI T magnitude()                                      const { return (T)sqrtf(x*x + y*y + z*z + i*i + j*j + k*k + e*e); } // TODO: Test for LINEAR_AXES >= 4
+    FI T magnitude()                                      const { return (T)sqrtf(x*x + y*y + z*z + i*i + j*j + k*k + e*e); } // TODO: Test for NON_E_AXES >= 4
   #endif
   FI operator T* ()                                           { return pos; }
   FI operator bool()                                          { return e || z || x || y || i || j || k; }
@@ -520,7 +520,7 @@ struct XYZEval {
   FI const XYZEval<T> operator-()                       const { return { -x, -y, -z, -i, -j, -k, -e }; }
 };
 
-#elif LINEAR_AXES == 5
+#elif NON_E_AXES == 5
 
 //
 // XYZ coordinates, counters, etc.
@@ -542,9 +542,9 @@ struct XYZval {
   FI void set(const XYval<T> pxy, const T pz, const T pi, const T pj)          { x = pxy.x; y = pxy.y; z = pz; i = pi; j = pj; }
   FI void reset()                                      { x = y = z = i = j = 0; }
   #if ENABLED(ASYNC_SECONDARY_AXES)
-    FI T magnitude()                               const { return (T)sqrtf(x*x + y*y + z*z ); } // TODO: Test for LINEAR_AXES >= 4
+    FI T magnitude()                               const { return (T)sqrtf(x*x + y*y + z*z ); } // TODO: Test for NON_E_AXES >= 4
   #else
-    FI T magnitude()                               const { return (T)sqrtf(x*x + y*y + z*z + i*i + j*j); } // TODO: Test for LINEAR_AXES >= 4
+    FI T magnitude()                               const { return (T)sqrtf(x*x + y*y + z*z + i*i + j*j); } // TODO: Test for NON_E_AXES >= 4
   #endif
   FI operator T* ()                                    { return pos; }
   FI operator bool()                                   { return z || x || y || i || j; }
@@ -566,7 +566,7 @@ struct XYZval {
   FI const T&   operator[](const int i)          const { return pos[i]; }
   FI XYZval<T>& operator= (const T v)                  { set(v,    v,    v,    v,    v); return *this; }
   FI XYZval<T>& operator= (const XYval<T>   &rs)       { set(rs.x, rs.y      ); return *this; }
-  FI XYZval<T>& operator= (const XYZEval<T> &rs)       { set(rs.x, rs.y, rs.z); return *this; } // TODO: Test for LINEAR_AXES >= 4
+  FI XYZval<T>& operator= (const XYZEval<T> &rs)       { set(rs.x, rs.y, rs.z); return *this; } // TODO: Test for NON_E_AXES >= 4
   FI XYZval<T>  operator+ (const XYval<T>   &rs) const { XYZval<T> ls = *this; ls.x += rs.x; ls.y += rs.y;               return ls; }
   FI XYZval<T>  operator+ (const XYval<T>   &rs)       { XYZval<T> ls = *this; ls.x += rs.x; ls.y += rs.y;               return ls; }
   FI XYZval<T>  operator- (const XYval<T>   &rs) const { XYZval<T> ls = *this; ls.x -= rs.x; ls.y -= rs.y;               return ls; }
@@ -639,9 +639,9 @@ struct XYZEval {
   };
   FI void reset()                                             { x = y = z = i = j = e = 0; }
   #if ENABLED(ASYNC_SECONDARY_AXES)
-    FI T magnitude()                                      const { return (T)sqrtf(x*x + y*y + z*z + e*e); } // TODO: Test for LINEAR_AXES >= 4
+    FI T magnitude()                                      const { return (T)sqrtf(x*x + y*y + z*z + e*e); } // TODO: Test for NON_E_AXES >= 4
   #else
-    FI T magnitude()                                      const { return (T)sqrtf(x*x + y*y + z*z + i*i +j*j + e*e); } // TODO: Test for LINEAR_AXES >= 4
+    FI T magnitude()                                      const { return (T)sqrtf(x*x + y*y + z*z + i*i +j*j + e*e); } // TODO: Test for NON_E_AXES >= 4
   #endif
   FI operator T* ()                                           { return pos; }
   FI operator bool()                                          { return e || z || x || y || i || j; }
@@ -738,7 +738,7 @@ struct XYZEval {
   FI const XYZEval<T> operator-()                       const { return { -x, -y, -z, -i, -j, -e }; }
 };
 
-#elif LINEAR_AXES == 4
+#elif NON_E_AXES == 4
 //
 // XYZ coordinates, counters, etc.
 //
@@ -757,9 +757,9 @@ struct XYZval {
   FI void set(const XYval<T> pxy, const T pz, const T pi)          { x = pxy.x; y = pxy.y; z = pz; i = pi; }
   FI void reset()                                      { x = y = z = i = 0; }
   #if ENABLED(ASYNC_SECONDARY_AXES)
-    FI T magnitude()                               const { return (T)sqrtf(x*x + y*y + z*z); } // TODO: Test for LINEAR_AXES >= 4
+    FI T magnitude()                               const { return (T)sqrtf(x*x + y*y + z*z); } // TODO: Test for NON_E_AXES >= 4
   #else
-    FI T magnitude()                               const { return (T)sqrtf(x*x + y*y + z*z + i*i); } // TODO: Test for LINEAR_AXES >= 4
+    FI T magnitude()                               const { return (T)sqrtf(x*x + y*y + z*z + i*i); } // TODO: Test for NON_E_AXES >= 4
   #endif
   FI operator T* ()                                    { return pos; }
   FI operator bool()                                   { return z || x || y || i; }
@@ -781,7 +781,7 @@ struct XYZval {
   FI const T&   operator[](const int i)          const { return pos[i]; }
   FI XYZval<T>& operator= (const T v)                  { set(v,    v,    v,    v); return *this; }
   FI XYZval<T>& operator= (const XYval<T>   &rs)       { set(rs.x, rs.y      ); return *this; }
-  FI XYZval<T>& operator= (const XYZEval<T> &rs)       { set(rs.x, rs.y, rs.z); return *this; } // TODO: Test for LINEAR_AXES >= 4
+  FI XYZval<T>& operator= (const XYZEval<T> &rs)       { set(rs.x, rs.y, rs.z); return *this; } // TODO: Test for NON_E_AXES >= 4
   FI XYZval<T>  operator+ (const XYval<T>   &rs) const { XYZval<T> ls = *this; ls.x += rs.x; ls.y += rs.y;               return ls; }
   FI XYZval<T>  operator+ (const XYval<T>   &rs)       { XYZval<T> ls = *this; ls.x += rs.x; ls.y += rs.y;               return ls; }
   FI XYZval<T>  operator- (const XYval<T>   &rs) const { XYZval<T> ls = *this; ls.x -= rs.x; ls.y -= rs.y;               return ls; }
@@ -854,9 +854,9 @@ struct XYZEval {
   };
   FI void reset()                                             { x = y = z = i = e = 0; }
   #if ENABLED(ASYNC_SECONDARY_AXES)
-    FI T magnitude()                                      const { return (T)sqrtf(x*x + y*y + z*z + e*e); } // TODO: Test for LINEAR_AXES >= 4
+    FI T magnitude()                                      const { return (T)sqrtf(x*x + y*y + z*z + e*e); } // TODO: Test for NON_E_AXES >= 4
   #else
-    FI T magnitude()                                      const { return (T)sqrtf(x*x + y*y + z*z + i*i + e*e); } // TODO: Test for LINEAR_AXES >= 4
+    FI T magnitude()                                      const { return (T)sqrtf(x*x + y*y + z*z + i*i + e*e); } // TODO: Test for NON_E_AXES >= 4
   #endif
   FI operator T* ()                                           { return pos; }
   FI operator bool()                                          { return e || z || x || y || i; }
@@ -950,7 +950,7 @@ struct XYZEval {
   FI const XYZEval<T> operator-()                       const { return { -x, -y, -z, -i, -e }; }
 };
 
-#else // LINEAR_AXES <= 3
+#else // NON_E_AXES <= 3
 
 //
 // XYZ coordinates, counters, etc.
@@ -1168,7 +1168,7 @@ struct XYZEval {
   FI const XYZEval<T> operator-()                       const { return { -x, -y, -z, -e }; }
 };
 
-#endif // LINEAR_AXES <= 3
+#endif // NON_E_AXES <= 3
 
 #undef _RECIP
 #undef _ABS
@@ -1176,6 +1176,6 @@ struct XYZEval {
 #undef _RS
 #undef FI
 
-const xyze_char_t axis_codes { LIST_N(LINEAR_AXES, 'X', 'Y', 'Z', AXIS4_NAME, AXIS5_NAME, AXIS6_NAME), 'E' };
+const xyze_char_t axis_codes { LIST_N(NON_E_AXES, 'X', 'Y', 'Z', AXIS4_NAME, AXIS5_NAME, AXIS6_NAME), 'E' };
 
 #define XYZ_CHAR(A) ((char)('X' + A))

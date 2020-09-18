@@ -44,7 +44,7 @@ enum EndstopEnum : char {
 
 class Endstops {
   public:
-    #if LINEAR_AXES >=4 || ENABLED(HAS_EXTRA_ENDSTOPS)
+    #if NON_E_AXES >=4 || ENABLED(HAS_EXTRA_ENDSTOPS)
       typedef uint16_t esbits_t;
     #else
       typedef uint8_t esbits_t;
@@ -65,7 +65,7 @@ class Endstops {
   private:
     static bool enabled, enabled_globally;
     static esbits_t live_state;
-    #if LINEAR_AXES >= 4
+    #if NON_E_AXES >= 4
       static volatile uint16_t hit_state;      // Use X_MIN, Y_MIN, Z_MIN and Z_MIN_PROBE as BIT index
     #else
       static volatile uint8_t hit_state;      // Use X_MIN, Y_MIN, Z_MIN and Z_MIN_PROBE as BIT index
@@ -108,7 +108,7 @@ class Endstops {
     /**
      * Get Endstop hit state.
      */
-    #if LINEAR_AXES > 3
+    #if NON_E_AXES > 3
       FORCE_INLINE static uint16_t trigger_state() { return hit_state; }
     #else
       FORCE_INLINE static uint8_t trigger_state() { return hit_state; }

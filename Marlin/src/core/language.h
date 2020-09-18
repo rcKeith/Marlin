@@ -156,7 +156,7 @@
 #define STR_Z4_MIN                          "z4_min"
 #define STR_Z4_MAX                          "z4_max"
 
-#if LINEAR_AXES >= 4
+#if NON_E_AXES >= 4
   #if AXIS4_NAME == 'A'
     #define STR_I_MIN                       "a_min"
     #define STR_I_MAX                       "a_max"
@@ -181,7 +181,7 @@
   #endif
 #endif
 
-#if LINEAR_AXES >= 5
+#if NON_E_AXES >= 5
   #if AXIS5_NAME == 'A'
     #define STR_J_MIN                       "a_min"
     #define STR_J_MAX                       "a_max"
@@ -206,7 +206,7 @@
   #endif
 #endif
 
-#if LINEAR_AXES >= 6
+#if NON_E_AXES >= 6
   #if AXIS6_NAME == 'A'
     #define STR_K_MIN                       "a_min"
     #define STR_K_MAX                       "a_max"
@@ -357,7 +357,7 @@
 #define LANGUAGE_INCL_(M) STRINGIFY_(../lcd/language/language_##M.h)
 #define LANGUAGE_INCL(M) LANGUAGE_INCL_(M)
 
-#if LINEAR_AXES >= 4
+#if NON_E_AXES >= 4
   #if AXIS4_NAME == 'A'
     #define AXIS4_STR "A"
   #elif AXIS4_NAME == 'B'
@@ -377,7 +377,7 @@
   #define AXIS4_STR ""
 #endif
 
-#if LINEAR_AXES >= 5
+#if NON_E_AXES >= 5
   #if AXIS5_NAME == 'A'
     #define AXIS5_STR "A"
   #elif AXIS5_NAME == 'B'
@@ -397,7 +397,7 @@
   #define AXIS5_STR ""
 #endif
 
-#if LINEAR_AXES >= 6
+#if NON_E_AXES >= 6
   #if AXIS6_NAME == 'A'
     #define AXIS6_STR "A"
   #elif AXIS6_NAME == 'B'

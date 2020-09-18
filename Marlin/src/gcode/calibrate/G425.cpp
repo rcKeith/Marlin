@@ -76,19 +76,19 @@
 #if BOTH(CALIBRATION_MEASURE_FRONT, CALIBRATION_MEASURE_BACK)
   #define HAS_Y_CENTER 1
 #endif
-#if LINEAR_AXES >= 4 && BOTH(CALIBRATION_MEASURE_IMIN, CALIBRATION_MEASURE_IMAX)
+#if NON_E_AXES >= 4 && BOTH(CALIBRATION_MEASURE_IMIN, CALIBRATION_MEASURE_IMAX)
   #define HAS_I_CENTER 1
 #endif
-#if LINEAR_AXES >= 5 && BOTH(CALIBRATION_MEASURE_JMIN, CALIBRATION_MEASURE_JMAX)
+#if NON_E_AXES >= 5 && BOTH(CALIBRATION_MEASURE_JMIN, CALIBRATION_MEASURE_JMAX)
   #define HAS_J_CENTER 1
 #endif
-#if LINEAR_AXES >= 6 && BOTH(CALIBRATION_MEASURE_KMIN, CALIBRATION_MEASURE_KMAX)
+#if NON_E_AXES >= 6 && BOTH(CALIBRATION_MEASURE_KMIN, CALIBRATION_MEASURE_KMAX)
   #define HAS_K_CENTER 1
 #endif
 
 enum side_t : uint8_t {
   TOP, RIGHT, FRONT, LEFT, BACK, NUM_SIDES,
-  LIST_N(DOUBLE(SUB3(LINEAR_AXES)), IMINIMUM, IMAXIMUM, JMINIMUM, JMAXIMUM, KMINIMUM, KMAXIMUM)
+  LIST_N(DOUBLE(SUB3(NON_E_AXES)), IMINIMUM, IMAXIMUM, JMINIMUM, JMAXIMUM, KMINIMUM, KMAXIMUM)
 };
 
 static constexpr xyz_pos_t true_center CALIBRATION_OBJECT_CENTER;
@@ -252,15 +252,15 @@ inline void probe_side(measurements_t &m, const float uncertainty, const side_t 
       case BACK:  dir = -1;
       case FRONT: axis = Y_AXIS; break;
     #endif
-    #if LINEAR_AXES >= 4
+    #if NON_E_AXES >= 4
       case IMINIMUM: dir = -1;
       case IMAXIMUM: axis = I_AXIS; break;
     #endif
-    #if LINEAR_AXES >= 5
+    #if NON_E_AXES >= 5
       case JMINIMUM: dir = -1;
       case JMAXIMUM: axis = J_AXIS; break;
     #endif
-    #if LINEAR_AXES >= 6
+    #if NON_E_AXES >= 6
       case KMINIMUM: dir = -1;
       case KMAXIMUM: axis = K_AXIS; break;
     #endif
@@ -337,13 +337,13 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
   m.pos_error.x = TERN0(HAS_X_CENTER, true_center.x - m.obj_center.x)
   m.pos_error.y = TERN0(HAS_Y_CENTER, true_center.y - m.obj_center.y)
   m.pos_error.z = true_center.z - m.obj_center.z;
-  #if LINEAR_AXES >= 4
+  #if NON_E_AXES >= 4
     m.pos_error.i = TERN0(HAS_I_CENTER, true_center.i - m.obj_center.i)
   #endif
-  #if LINEAR_AXES >= 5
+  #if NON_E_AXES >= 5
     m.pos_error.j = TERN0(HAS_J_CENTER, true_center.j - m.obj_center.j)
   #endif
-  #if LINEAR_AXES >= 6
+  #if NON_E_AXES >= 6
     m.pos_error.k = TERN0(HAS_K_CENTER, true_center.k - m.obj_center.k)
   #endif
 }
@@ -366,7 +366,7 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
     #if ENABLED(CALIBRATION_MEASURE_BACK)
       SERIAL_ECHOLNPAIR("  Back: ", m.obj_side[BACK]);
     #endif
-    #if LINEAR_AXES >= 4
+    #if NON_E_AXES >= 4
       #if ENABLED(CALIBRATION_MEASURE_IMIN)
         SERIAL_ECHOLNPAIR("  Imin: ", m.obj_side[IMINIMUM]);
       #endif
@@ -374,7 +374,7 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
         SERIAL_ECHOLNPAIR("  Imax: ", m.obj_side[IMAXIMUM]);
       #endif
     #endif
-    #if LINEAR_AXES >= 5
+    #if NON_E_AXES >= 5
       #if ENABLED(CALIBRATION_MEASURE_JMIN)
         SERIAL_ECHOLNPAIR("  Jmin: ", m.obj_side[JMINIMUM]);
       #endif
@@ -382,7 +382,7 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
         SERIAL_ECHOLNPAIR("  Jmax: ", m.obj_side[JMAXIMUM]);
       #endif
     #endif
-    #if LINEAR_AXES >= 6
+    #if NON_E_AXES >= 6
       #if ENABLED(CALIBRATION_MEASURE_KMIN)
         SERIAL_ECHOLNPAIR("  Kmin: ", m.obj_side[KMINIMUM]);
       #endif
@@ -434,7 +434,7 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
     #if AXIS_CAN_CALIBRATE(Z)
       SERIAL_ECHOLNPAIR("  Top: ", m.backlash[TOP]);
     #endif
-    #if LINEAR_AXES >= 4
+    #if NON_E_AXES >= 4
       #if ENABLED(CALIBRATION_MEASURE_IMIN)
         SERIAL_ECHOLNPAIR("  Imin: ", m.backlash[IMINIMUM]);
       #endif
@@ -442,7 +442,7 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
         SERIAL_ECHOLNPAIR("  Imax: ", m.backlash[IMAXIMUM]);
       #endif
     #endif
-    #if LINEAR_AXES >= 5
+    #if NON_E_AXES >= 5
       #if ENABLED(CALIBRATION_MEASURE_JMIN)
         SERIAL_ECHOLNPAIR("  Jmin: ", m.backlash[JMINIMUM]);
       #endif
@@ -450,7 +450,7 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
         SERIAL_ECHOLNPAIR("  Jmax: ", m.backlash[JMAXIMUM]);
       #endif
     #endif
-    #if LINEAR_AXES >= 6
+    #if NON_E_AXES >= 6
       #if ENABLED(CALIBRATION_MEASURE_KMIN)
         SERIAL_ECHOLNPAIR("  Kmin: ", m.backlash[KMINIMUM]);
       #endif
@@ -572,7 +572,7 @@ inline void calibrate_backlash(measurements_t &m, const float uncertainty) {
       // New scope for TEMPORARY_BACKLASH_CORRECTION
       TEMPORARY_BACKLASH_CORRECTION(all_on);
       TEMPORARY_BACKLASH_SMOOTHING(0.0f);
-      const xyz_float_t move = ARRAY_N(LINEAR_AXES,
+      const xyz_float_t move = ARRAY_N(NON_E_AXES,
         AXIS_CAN_CALIBRATE(X) * 3, AXIS_CAN_CALIBRATE(Y) * 3, AXIS_CAN_CALIBRATE(Z) * 3,
         AXIS_CAN_CALIBRATE(I) * 3, AXIS_CAN_CALIBRATE(J) * 3, AXIS_CAN_CALIBRATE(K) * 3
       );

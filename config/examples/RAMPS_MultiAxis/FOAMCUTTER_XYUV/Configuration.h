@@ -83,12 +83,12 @@
 // For a hot wire cutter with parallel horizontal axes X, I where the hights
 // of the two wire ends are controlled by parallel axes Y, J.
 //
-//#define FOAMCUTTER_XYUV
+#define FOAMCUTTER_XYUV
 
 // @section info
 
 // Author info of this build printed to the host during boot and M115
-#define STRING_CONFIG_H_AUTHOR "(none, default config)" // Who made the changes.
+#define STRING_CONFIG_H_AUTHOR "DerAndere" // Who made the changes.
 //#define CUSTOM_VERSION_FILE Version.h // Path from the root directory (no quotes)
 
 /**
@@ -163,11 +163,11 @@
  * respective values of DEFAULT_AXIS_STEPS_PER_UNIT, DEFAULT_MAX_FEEDRATE,
  * DEFAULT_MAX_ACCELERATION, AXIS_RELATIVE_MODES, MICROSTEP_MODES and
  * MANUAL_FEEDRATE.
- * 
+ *
  * See https://github.com/DerAndere1/Marlin/wiki
  * :[3, 4, 5, 6]
  */
-#define NON_E_AXES 3
+#define NON_E_AXES 5
 
 /**
    * Axis codes for additional axes:
@@ -687,7 +687,7 @@
 #define USE_YMIN_PLUG
 #define USE_ZMIN_PLUG
 #define USE_IMIN_PLUG
-//#define USE_JMIN_PLUG
+#define USE_JMIN_PLUG
 //#define USE_KMIN_PLUG
 //#define USE_XMAX_PLUG
 //#define USE_YMAX_PLUG

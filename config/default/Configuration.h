@@ -163,7 +163,7 @@
  * respective values of DEFAULT_AXIS_STEPS_PER_UNIT, DEFAULT_MAX_FEEDRATE,
  * DEFAULT_MAX_ACCELERATION, AXIS_RELATIVE_MODES, MICROSTEP_MODES and
  * MANUAL_FEEDRATE.
- * 
+ *
  * See https://github.com/DerAndere1/Marlin/wiki
  * :[3, 4, 5, 6]
  */

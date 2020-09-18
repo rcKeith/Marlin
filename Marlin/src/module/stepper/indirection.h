@@ -202,7 +202,7 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
 #endif
 
 // I Stepper
-#if LINEAR_AXES >= 4
+#if NON_E_AXES >= 4
   #ifndef I_ENABLE_INIT
     #define I_ENABLE_INIT() SET_OUTPUT(I_ENABLE_PIN)
     #define I_ENABLE_WRITE(STATE) WRITE(I_ENABLE_PIN,STATE)
@@ -221,7 +221,7 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
 #endif
 
 // J Stepper
-#if LINEAR_AXES >= 5
+#if NON_E_AXES >= 5
   #ifndef J_ENABLE_INIT
     #define J_ENABLE_INIT() SET_OUTPUT(J_ENABLE_PIN)
     #define J_ENABLE_WRITE(STATE) WRITE(J_ENABLE_PIN,STATE)
@@ -240,7 +240,7 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
 #endif
 
 // K Stepper
-#if LINEAR_AXES >= 6
+#if NON_E_AXES >= 6
   #ifndef K_ENABLE_INIT
     #define K_ENABLE_INIT() SET_OUTPUT(K_ENABLE_PIN)
     #define K_ENABLE_WRITE(STATE) WRITE(K_ENABLE_PIN,STATE)
@@ -958,21 +958,21 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
 #endif
 #define DISABLE_AXIS_Z() do{ DISABLE_STEPPER_Z(); DISABLE_STEPPER_Z2(); DISABLE_STEPPER_Z3(); DISABLE_STEPPER_Z4(); CBI(axis_known_position, Z_AXIS); Z_RESET(); }while(0)
 
-#if LINEAR_AXES >= 4
+#if NON_E_AXES >= 4
   #define  ENABLE_AXIS_I() do{ ENABLE_STEPPER_I(); }while(0)
   #define DISABLE_AXIS_I() do{ DISABLE_STEPPER_I(); CBI(axis_known_position, I_AXIS); }while(0)
 #else
   #define  ENABLE_AXIS_I() NOOP
   #define DISABLE_AXIS_I() NOOP
 #endif
-#if LINEAR_AXES >= 5
+#if NON_E_AXES >= 5
   #define  ENABLE_AXIS_J() do{ ENABLE_STEPPER_J(); }while(0)
   #define DISABLE_AXIS_J() do{ DISABLE_STEPPER_J(); CBI(axis_known_position, J_AXIS); }while(0)
 #else
   #define  ENABLE_AXIS_J() NOOP
   #define DISABLE_AXIS_J() NOOP
 #endif
-#if LINEAR_AXES >= 6
+#if NON_E_AXES >= 6
   #define  ENABLE_AXIS_K() do{ ENABLE_STEPPER_K(); }while(0)
   #define DISABLE_AXIS_K() do{ DISABLE_STEPPER_K(); CBI(axis_known_position, K_AXIS); }while(0)
 #else

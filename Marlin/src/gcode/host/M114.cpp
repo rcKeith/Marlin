@@ -47,7 +47,7 @@
 
   void report_xyz(const xyz_pos_t &pos, const uint8_t precision=3) {
     char str[12];
-    LOOP_LINEAR(a) {
+    LOOP_NON_E(a) {
       SERIAL_CHAR(' ', axis_codes[a], ':');
       SERIAL_ECHO(dtostrf(pos[a], 1, precision, str));
     }
@@ -185,7 +185,7 @@
     SERIAL_ECHOPGM("FromStp:");
     get_cartesian_from_steppers();  // writes 'cartes' (with forward kinematics)
     xyze_pos_t from_steppers = {
-      LIST_N(LINEAR_AXES, cartes.x, cartes.y, cartes.z, planner.get_axis_position_mm.i, planner.get_axis_position_mm.j, planner.get_axis_position_mm.k),
+      LIST_N(NON_E_AXES, cartes.x, cartes.y, cartes.z, planner.get_axis_position_mm.i, planner.get_axis_position_mm.j, planner.get_axis_position_mm.k),
       planner.get_axis_position_mm(E_AXIS)
     };
     report_xyze(from_steppers);

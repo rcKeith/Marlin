@@ -78,8 +78,8 @@
 /**
  * Axis lengths and center
  */
-#ifndef LINEAR_AXES
-  #define LINEAR_AXES 3
+#ifndef NON_E_AXES
+  #define NON_E_AXES 3
 #endif
 #ifndef AXIS4_NAME
   #define AXIS4_NAME 'I'
@@ -94,13 +94,13 @@
 #define X_MAX_LENGTH (X_MAX_POS - (X_MIN_POS))
 #define Y_MAX_LENGTH (Y_MAX_POS - (Y_MIN_POS))
 #define Z_MAX_LENGTH (Z_MAX_POS - (Z_MIN_POS))
-#if LINEAR_AXES >= 4
+#if NON_E_AXES >= 4
   #define I_MAX_LENGTH (I_MAX_POS - (I_MIN_POS))
 #endif
-#if LINEAR_AXES >= 5
+#if NON_E_AXES >= 5
   #define J_MAX_LENGTH (J_MAX_POS - (J_MIN_POS))
 #endif
-#if LINEAR_AXES >= 6
+#if NON_E_AXES >= 6
   #define K_MAX_LENGTH (K_MAX_POS - (K_MIN_POS))
 #endif
 
@@ -111,13 +111,13 @@
 #ifndef Y_BED_SIZE
   #define Y_BED_SIZE Y_MAX_LENGTH
 #endif
-#if LINEAR_AXES >= 4 && !defined(I_BED_SIZE)
+#if NON_E_AXES >= 4 && !defined(I_BED_SIZE)
   #define I_BED_SIZE I_MAX_LENGTH
 #endif
-#if LINEAR_AXES >= 5 && !defined(J_BED_SIZE)
+#if NON_E_AXES >= 5 && !defined(J_BED_SIZE)
   #define J_BED_SIZE J_MAX_LENGTH
 #endif
-#if LINEAR_AXES >= 6 && !defined(K_BED_SIZE)
+#if NON_E_AXES >= 6 && !defined(K_BED_SIZE)
   #define K_BED_SIZE K_MAX_LENGTH
 #endif
 
@@ -129,25 +129,25 @@
 // Define center values for future use
 #define _X_HALF_BED ((X_BED_SIZE) / 2)
 #define _Y_HALF_BED ((Y_BED_SIZE) / 2)
-#if LINEAR_AXES >= 4
+#if NON_E_AXES >= 4
   #define _I_HALF_IMAX ((I_BED_SIZE) / 2)
 #endif
-#if LINEAR_AXES >= 5
+#if NON_E_AXES >= 5
   #define _J_HALF_JMAX ((J_BED_SIZE) / 2)
 #endif
-#if LINEAR_AXES >= 6
+#if NON_E_AXES >= 6
   #define _K_HALF_KMAX ((K_BED_SIZE) / 2)
 #endif
 
 #define X_CENTER TERN(BED_CENTER_AT_0_0, 0, _X_HALF_BED)
 #define Y_CENTER TERN(BED_CENTER_AT_0_0, 0, _Y_HALF_BED)
-#if LINEAR_AXES >= 4
+#if NON_E_AXES >= 4
   #define I_CENTER TERN(BED_CENTER_AT_0_0, 0, _I_HALF_BED)
 #endif
-#if LINEAR_AXES >= 5
+#if NON_E_AXES >= 5
   #define J_CENTER TERN(BED_CENTER_AT_0_0, 0, _J_HALF_BED)
 #endif
-#if LINEAR_AXES >= 6
+#if NON_E_AXES >= 6
   #define K_CENTER TERN(BED_CENTER_AT_0_0, 0, _K_HALF_BED)
 #endif
 
@@ -156,15 +156,15 @@
 #define X_MAX_BED (X_MIN_BED + X_BED_SIZE)
 #define Y_MIN_BED (Y_CENTER - _Y_HALF_BED)
 #define Y_MAX_BED (Y_MIN_BED + Y_BED_SIZE)
-#if LINEAR_AXES >= 4
+#if NON_E_AXES >= 4
   #define I_MINIM (I_CENTER - _I_HALF_BED_SIZE)
   #define I_MAXIM (I_MINIM + I_BED_SIZE)
 #endif
-#if LINEAR_AXES >= 5
+#if NON_E_AXES >= 5
   #define J_MINIM (J_CENTER - _J_HALF_BED_SIZE)
   #define J_MAXIM (J_MINIM + J_BED_SIZE)
 #endif
-#if LINEAR_AXES >= 6
+#if NON_E_AXES >= 6
   #define K_MINIM (K_CENTER - _K_HALF_BED_SIZE)
   #define K_MAXIM (K_MINIM + K_BED_SIZE)
 #endif
@@ -274,21 +274,21 @@
   #define Z_HOME_POS (Z_HOME_DIR < 0 ? Z_MIN_POS : Z_MAX_POS)
 #endif
 
-#if LINEAR_AXES >= 4
+#if NON_E_AXES >= 4
   #ifdef MANUAL_I_HOME_POS
     #define I_HOME_POS MANUAL_I_HOME_POS
   #else
     #define I_HOME_POS (I_HOME_DIR < 0 ? I_MIN_POS : I_MAX_POS)
   #endif
 #endif
-#if LINEAR_AXES >= 5
+#if NON_E_AXES >= 5
   #ifdef MANUAL_J_HOME_POS
     #define J_HOME_POS MANUAL_J_HOME_POS
   #else
     #define J_HOME_POS (J_HOME_DIR < 0 ? J_MIN_POS : J_MAX_POS)
   #endif
 #endif
-#if LINEAR_AXES >= 6
+#if NON_E_AXES >= 6
   #ifdef MANUAL_K_HOME_POS
     #define K_HOME_POS MANUAL_K_HOME_POS
   #else
@@ -480,13 +480,13 @@
 #ifndef DISABLE_INACTIVE_E
   #define DISABLE_INACTIVE_E DISABLE_E
 #endif
-#if LINEAR_AXES >= 4 && !defined(DISABLE_INACTIVE_I)
+#if NON_E_AXES >= 4 && !defined(DISABLE_INACTIVE_I)
   #define DISABLE_INACTIVE_I DISABLE_I
 #endif
-#if LINEAR_AXES >= 5 && !defined(DISABLE_INACTIVE_J)
+#if NON_E_AXES >= 5 && !defined(DISABLE_INACTIVE_J)
   #define DISABLE_INACTIVE_J DISABLE_J
 #endif
-#if LINEAR_AXES >= 6 && !defined(DISABLE_INACTIVE_K)
+#if NON_E_AXES >= 6 && !defined(DISABLE_INACTIVE_K)
   #define DISABLE_INACTIVE_K DISABLE_K
 #endif
 
@@ -1537,7 +1537,7 @@
   #define HAS_Z4_MS_PINS 1
 #endif
 
-#if LINEAR_AXES >= 4
+#if NON_E_AXES >= 4
   #if PIN_EXISTS(I_ENABLE) || (ENABLED(SOFTWARE_DRIVER_ENABLE) && AXIS_IS_TMC(I))
     #define HAS_I_ENABLE 1
   #endif
@@ -1552,7 +1552,7 @@
   #endif
 #endif
 
-#if LINEAR_AXES >= 5
+#if NON_E_AXES >= 5
   #if PIN_EXISTS(J_ENABLE) || (ENABLED(SOFTWARE_DRIVER_ENABLE) && AXIS_IS_TMC(J))
     #define HAS_J_ENABLE 1
   #endif
@@ -1567,7 +1567,7 @@
   #endif
 #endif
 
-#if LINEAR_AXES >= 6
+#if NON_E_AXES >= 6
   #if PIN_EXISTS(K_ENABLE) || (ENABLED(SOFTWARE_DRIVER_ENABLE) && AXIS_IS_TMC(K))
     #define HAS_K_ENABLE 1
   #endif

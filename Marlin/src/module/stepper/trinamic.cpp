@@ -35,7 +35,18 @@
 #include <HardwareSerial.h>
 #include <SPI.h>
 
-enum StealthIndex : uint8_t ARRAY_N(LINEAR_AXES, STEALTH_AXIS_XY, STEALTH_AXIS_Z, STEALTH_AXIS_I, STEALTH_AXIS_J, STEALTH_AXIS_K, STEALTH_AXIS_E);
+enum StealthIndex : uint8_t { STEALTH_AXIS_XY, STEALTH_AXIS_Z,
+  #if NON_E_AXES >= 4
+    STEALTH_AXIS_I,
+  #endif
+  #if NON_E_AXES >= 5
+    STEALTH_AXIS_J,
+  #endif
+  #if NON_E_AXES >= 6
+    STEALTH_AXIS_K,
+  #endif
+  STEALTH_AXIS_E
+};
 #define TMC_INIT(ST, STEALTH_INDEX) tmc_init(stepper##ST, ST##_CURRENT, ST##_MICROSTEPS, ST##_HYBRID_THRESHOLD, stealthchop_by_axis[STEALTH_INDEX])
 
 //   IC = TMC model number
@@ -350,7 +361,7 @@ enum StealthIndex : uint8_t ARRAY_N(LINEAR_AXES, STEALTH_AXIS_XY, STEALTH_AXIS_Z
     #endif
   #endif
 
-  enum TMCAxis : uint8_t { LIST_N(LINEAR_AXES, X, Y, Z, I, J, K), X2, Y2, Z2, Z3, Z4, E0, E1, E2, E3, E4, E5, E6, E7, TOTAL };
+  enum TMCAxis : uint8_t { LIST_N(NON_E_AXES, X, Y, Z, I, J, K), X2, Y2, Z2, Z3, Z4, E0, E1, E2, E3, E4, E5, E6, E7, TOTAL };
 
   void tmc_serial_begin() {
     #if HAS_TMC_HW_SERIAL

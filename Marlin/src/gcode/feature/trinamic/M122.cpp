@@ -32,7 +32,7 @@
  * M122: Debug TMC drivers
  */
 void GcodeSuite::M122() {
-  xyze_bool_t print_axis = LIST_N(NUM_AXIS, false, false, false, false, false, false, false);
+	 xyze_bool_t print_axis = {LIST_N(NON_E_AXES, false, false, false, false, false, false), false};
 
   bool print_all = true;
   LOOP_NUM_AXIS(i) if (parser.seen(axis_codes[i])) { print_axis[i] = true; print_all = false; }
@@ -51,20 +51,20 @@ void GcodeSuite::M122() {
 
     if (parser.seen('V')) {
       tmc_get_registers(
-        LIST_N(LINEAR_AXES, print_axis.x, print_axis.y, print_axis.z, print_axis.i, print_axis.j, print_axis.k),
+        LIST_N(NON_E_AXES, print_axis.x, print_axis.y, print_axis.z, print_axis.i, print_axis.j, print_axis.k),
         print_axis.e
       );
     }
     else {
       tmc_report_all(
-        LIST_N(LINEAR_AXES, print_axis.x, print_axis.y, print_axis.z, print_axis.i, print_axis.j, print_axis.k),
+        LIST_N(NON_E_AXES, print_axis.x, print_axis.y, print_axis.z, print_axis.i, print_axis.j, print_axis.k),
         print_axis.e
       );
     }
   #endif
 
   test_tmc_connection(
-    LIST_N(LINEAR_AXES, print_axis.x, print_axis.y, print_axis.z, print_axis.i, print_axis.j, print_axis.k),
+    LIST_N(NON_E_AXES, print_axis.x, print_axis.y, print_axis.z, print_axis.i, print_axis.j, print_axis.k),
     print_axis.e
   );
 }

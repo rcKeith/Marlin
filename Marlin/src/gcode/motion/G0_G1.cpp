@@ -53,7 +53,7 @@ void GcodeSuite::G0_G1(
   if (IsRunning()
     #if ENABLED(NO_MOTION_BEFORE_HOMING)
       && !axis_unhomed_error(
-        GANG_N(LINEAR_AXES,
+        GANG_N(NON_E_AXES,
             (parser.seen('X') ? _BV(X_AXIS) : 0),
           | (parser.seen('Y') ? _BV(Y_AXIS) : 0),
           | (parser.seen('Z') ? _BV(Z_AXIS) : 0),
@@ -92,7 +92,7 @@ void GcodeSuite::G0_G1(
       if (MIN_AUTORETRACT <= MAX_AUTORETRACT) {
         // When M209 Autoretract is enabled, convert E-only moves to firmware retract/recover moves
         if (fwretract.autoretract_enabled && parser.seen('E')
-          && !(GANG_N(LINEAR_AXES,
+          && !(GANG_N(NON_E_AXES,
                    parser.seen('X'),
                 || parser.seen('Y'),
                 || parser.seen('Z'),

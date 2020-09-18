@@ -39,13 +39,13 @@
   #define M91x_SOME_Y (M91x_USE(Y) || M91x_USE(Y2))
   #define M91x_SOME_Z (M91x_USE(Z) || M91x_USE(Z2) || M91x_USE(Z3) || M91x_USE(Z4))
 
-  #if LINEAR_AXES >= 4
+  #if NON_E_AXES >= 4
     #define M91x_USE_I (M91x_USE(I))
   #endif
-  #if LINEAR_AXES >= 5
+  #if NON_E_AXES >= 5
     #define M91x_USE_J (M91x_USE(J))
   #endif
-  #if LINEAR_AXES >= 6
+  #if NON_E_AXES >= 6
     #define M91x_USE_K (M91x_USE(K))
   #endif
 
@@ -172,7 +172,7 @@
       constexpr bool hasE = false;
     #endif
 
-    const bool hasNone = !hasE GANG_N(LINEAR_AXES, && !hasX, && !hasY, && !hasZ, && !hasI, && !hasJ, && !hasK);
+    const bool hasNone = !hasE GANG_N(NON_E_AXES, && !hasX, && !hasY, && !hasZ, && !hasI, && !hasJ, && !hasK);
 
     #if M91x_SOME_X
       const int8_t xval = int8_t(parser.byteval(axis_codes.x, 0xFF));
@@ -419,7 +419,7 @@
 
     bool report = true;
     const uint8_t index = parser.byteval('I');
-    LOOP_LINEAR(i) if (parser.seen(XYZ_CHAR(i))) {
+    LOOP_NON_E(i) if (parser.seen(XYZ_CHAR(i))) {
       const int16_t value = parser.value_int();
       report = false;
       switch (i) {

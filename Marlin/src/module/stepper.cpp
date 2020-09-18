@@ -412,15 +412,15 @@ xyze_int8_t Stepper::count_direction{0};
   #define Z_APPLY_STEP(v,Q) Z_STEP_WRITE(v)
 #endif
 
-#if LINEAR_AXES >= 4
+#if NON_E_AXES >= 4
   #define I_APPLY_DIR(v,Q) I_DIR_WRITE(v)
   #define I_APPLY_STEP(v,Q) I_STEP_WRITE(v)
 #endif
-#if LINEAR_AXES >= 5
+#if NON_E_AXES >= 5
   #define J_APPLY_DIR(v,Q) J_DIR_WRITE(v)
   #define J_APPLY_STEP(v,Q) J_STEP_WRITE(v)
 #endif
-#if LINEAR_AXES >= 6
+#if NON_E_AXES >= 6
   #define K_APPLY_DIR(v,Q) K_DIR_WRITE(v)
   #define K_APPLY_STEP(v,Q) K_STEP_WRITE(v)
 #endif
@@ -1599,7 +1599,7 @@ void Stepper::pulse_phase_isr() {
     const bool is_page = IS_PAGE(current_block);
 
     #if ENABLED(DIRECT_STEPPING)
-      // TODO (DerAndere): Add support for LINEAR_AXES >= 4
+      // TODO (DerAndere): Add support for NON_E_AXES >= 4
       if (is_page) {
 
         #if STEPPER_PAGE_FORMAT == SP_4x4D_128
@@ -1843,7 +1843,7 @@ uint32_t Stepper::block_phase_isr() {
     // If current block is finished, reset pointer and finalize state
     if (step_events_completed >= step_event_count) {
       #if ENABLED(DIRECT_STEPPING)
-        // TODO (DerAndere): Add support for LINEAR_AXES >= 4
+        // TODO (DerAndere): Add support for NON_E_AXES >= 4
         #if STEPPER_PAGE_FORMAT == SP_4x4D_128
           #define PAGE_SEGMENT_UPDATE_POS(AXIS) \
             count_position[_AXIS(AXIS)] += page_step_state.bd[_AXIS(AXIS)] - 128 * 7;
@@ -2141,13 +2141,13 @@ uint32_t Stepper::block_phase_isr() {
       if (X_MOVE_TEST) SBI(axis_bits, A_AXIS);
       if (Y_MOVE_TEST) SBI(axis_bits, B_AXIS);
       if (Z_MOVE_TEST) SBI(axis_bits, C_AXIS);
-      #if LINEAR_AXES >= 4
+      #if NON_E_AXES >= 4
         if (current_block->steps.i) SBI(axis_bits, I_AXIS);
       #endif
-      #if LINEAR_AXES >= 5
+      #if NON_E_AXES >= 5
         if (current_block->steps.j) SBI(axis_bits, J_AXIS);
       #endif
-      #if LINEAR_AXES >= 6
+      #if NON_E_AXES >= 6
         if (current_block->steps.k) SBI(axis_bits, K_AXIS);
       #endif
       //if (!!current_block->steps.e) SBI(axis_bits, E_AXIS);
@@ -2676,7 +2676,7 @@ void Stepper::init() {
 
   // Init direction bits for first moves
   last_direction_bits = 0
-    GANG_N(LINEAR_AXES,
+    GANG_N(NON_E_AXES,
       | TERN0(INVERT_X_DIR, _BV(X_AXIS)),
       | TERN0(INVERT_Y_DIR, _BV(Y_AXIS)),
       | TERN0(INVERT_Z_DIR, _BV(Z_AXIS)),
@@ -2703,7 +2703,7 @@ void Stepper::init() {
  * derive the current XYZ position later on.
  */
 void Stepper::_set_position(
-  LIST_N(LINEAR_AXES, const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &i, const int32_t &j, const int32_t &k),
+  LIST_N(NON_E_AXES, const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &i, const int32_t &j, const int32_t &k),
   const int32_t &e
 ) {
   #if CORE_IS_XY
@@ -2718,7 +2718,7 @@ void Stepper::_set_position(
     count_position.set(a, b + c, CORESIGN(b - c));
   #else
     // default non-h-bot planning
-    count_position.set(LIST_N(LINEAR_AXES, a, b, c, i, j, k));
+    count_position.set(LIST_N(NON_E_AXES, a, b, c, i, j, k));
   #endif
   count_position.e = e;
 }
@@ -2743,14 +2743,14 @@ int32_t Stepper::position(const AxisEnum axis) {
 }
 
 // Set the current position in steps
-//TODO: Test for LINEAR_AXES >= 4
+//TODO: Test for NON_E_AXES >= 4
 void Stepper::set_position(
-  LIST_N(LINEAR_AXES, const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &i, const int32_t &j, const int32_t &k),
+  LIST_N(NON_E_AXES, const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &i, const int32_t &j, const int32_t &k),
   const int32_t &e
 ) {
   planner.synchronize();
   const bool was_enabled = suspend();
-  _set_position(LIST_N(LINEAR_AXES, a, b, c, i, j, k), e);
+  _set_position(LIST_N(NON_E_AXES, a, b, c, i, j, k), e);
   if (was_enabled) wake_up();
 }
 
@@ -2825,13 +2825,13 @@ void Stepper::report_a_position(const xyz_long_t &pos) {
   #else
     SERIAL_ECHOPAIR_P(SP_Z_LBL, pos.z);
   #endif
-  #if LINEAR_AXES >= 4
+  #if NON_E_AXES >= 4
     SERIAL_ECHOPAIR_P(SP_I_LBL, pos.i);
   #endif
-  #if LINEAR_AXES >= 5
+  #if NON_E_AXES >= 5
     SERIAL_ECHOPAIR_P(SP_J_LBL, pos.j);
   #endif
-  #if LINEAR_AXES >= 6
+  #if NON_E_AXES >= 6
     SERIAL_ECHOPAIR_P(SP_K_LBL, pos.k);
   #endif
   SERIAL_EOL();
@@ -2995,7 +2995,7 @@ void Stepper::report_positions() {
 
           DIR_WAIT_BEFORE();
 
-          const xyz_byte_t old_dir = ARRAY_N(LINEAR_AXES, X_DIR_READ(), Y_DIR_READ(), Z_DIR_READ(), I_DIR_READ(), J_DIR_READ(), K_DIR_READ());
+          const xyz_byte_t old_dir = ARRAY_N(NON_E_AXES, X_DIR_READ(), Y_DIR_READ(), Z_DIR_READ(), I_DIR_READ(), J_DIR_READ(), K_DIR_READ());
 
           X_DIR_WRITE(INVERT_X_DIR ^ z_direction);
           Y_DIR_WRITE(INVERT_Y_DIR ^ z_direction);
@@ -3068,13 +3068,13 @@ void Stepper::report_positions() {
 
       } break;
 
-      #if LINEAR_AXES >= 4
+      #if NON_E_AXES >= 4
         case I_AXIS: BABYSTEP_AXIS(I, 0, direction); break;
       #endif
-      #if LINEAR_AXES >= 5
+      #if NON_E_AXES >= 5
         case J_AXIS: BABYSTEP_AXIS(J, 0, direction); break;
       #endif
-      #if LINEAR_AXES >= 6
+      #if NON_E_AXES >= 6
         case K_AXIS: BABYSTEP_AXIS(K, 0, direction); break;
       #endif
 

@@ -209,7 +209,7 @@ void GcodeSuite::G28() {
 
   #if ENABLED(MARLIN_DEV_MODE)
     if (parser.seen('S')) {
-      LOOP_LINEAR(a) set_axis_is_at_home((AxisEnum)a);
+      LOOP_NON_E(a) set_axis_is_at_home((AxisEnum)a);
       sync_plan_position();
       SERIAL_ECHOLNPGM("Simulated Homing");
       report_current_position();
@@ -302,7 +302,7 @@ void GcodeSuite::G28() {
 
     const bool homeZ = parser.seen('Z'),
                // Other axes should be homed before Z safe-homing
-               LIST_N(LINEAR_AXES,
+               LIST_N(NON_E_AXES,
                  needX = _UNSAFE(X),
                  needY = _UNSAFE(Y),
                  needZ = false, // UNUSED
@@ -313,17 +313,17 @@ void GcodeSuite::G28() {
                // Home each axis if needed or flagged
                homeX = needX || parser.seen('X'),
                homeY = needY || parser.seen('Y'),
-               #if LINEAR_AXES >= 4
+               #if NON_E_AXES >= 4
                  homeI = needI || parser.seen(AXIS4_NAME),
                #endif
-               #if LINEAR_AXES >= 5
+               #if NON_E_AXES >= 5
                  homeJ = needJ || parser.seen(AXIS5_NAME),
               #endif
-              #if LINEAR_AXES >= 6
+              #if NON_E_AXES >= 6
                  homeK = needK || parser.seen(AXIS6_NAME),
               #endif
                // Home-all if all or none are flagged
-               home_all = true GANG_N(LINEAR_AXES,
+               home_all = true GANG_N(NON_E_AXES,
                  && homeX == homeX,
                  && homeX == homeY,
                  && homeX == homeZ,
@@ -331,7 +331,7 @@ void GcodeSuite::G28() {
                  && homeX == homeJ,
                  && homeX == homeK
                ),
-               LIST_N(LINEAR_AXES,
+               LIST_N(NON_E_AXES,
                  doX = home_all || homeX,
                  doY = home_all || homeY,
                  doZ = home_all || homeZ,
@@ -354,13 +354,13 @@ void GcodeSuite::G28() {
         : (parser.seenval('R') ? parser.value_linear_units() : Z_HOMING_HEIGHT);
 
     if (z_homing_height && (doX || doY 
-      #if LINEAR_AXES >= 4
+      #if NON_E_AXES >= 4
         || doI
       #endif
-      #if LINEAR_AXES >= 5
+      #if NON_E_AXES >= 5
         || doJ
       #endif
-      #if LINEAR_AXES >= 6
+      #if NON_E_AXES >= 6
         ||  doK
       #endif
     || (ENABLED(Z_SAFE_HOMING) && doZ))) {
@@ -427,13 +427,13 @@ void GcodeSuite::G28() {
 
     #endif // Z_HOME_DIR < 0
 
-    #if LINEAR_AXES >= 4
+    #if NON_E_AXES >= 4
       if (doI) homeaxis(I_AXIS);
     #endif
-    #if LINEAR_AXES >= 5
+    #if NON_E_AXES >= 5
       if (doJ) homeaxis(J_AXIS);
     #endif
-    #if LINEAR_AXES >= 6
+    #if NON_E_AXES >= 6
       if (doK) homeaxis(K_AXIS);
     #endif
 
@@ -538,7 +538,7 @@ void GcodeSuite::G28() {
       X_AXIS, Y_AXIS, Z_AXIS,
       X_AXIS, Y_AXIS, Z_AXIS, Z_AXIS,
       E_AXIS, E_AXIS, E_AXIS, E_AXIS, E_AXIS, E_AXIS
-    }; // TODO: Add support for LINEAR_AXES >= 4
+    }; // TODO: Add support for NON_E_AXES >= 4
     for (uint8_t j = 1; j <= L64XX::chain[0]; j++) {
       const uint8_t cv = L64XX::chain[j];
       L64xxManager.set_param((L64XX_axis_t)cv, L6470_ABS_POS, stepper.position(L64XX_axis_xref[cv]));

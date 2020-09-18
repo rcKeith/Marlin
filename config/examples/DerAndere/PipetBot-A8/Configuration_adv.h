@@ -50,7 +50,7 @@
  *
  * Set this value to 0 to fail on the first error to occur.
  */
-#define THERMOCOUPLE_MAX_ERRORS 15
+//#define THERMOCOUPLE_MAX_ERRORS 15
 
 //
 // Custom Thermistor 1000 parameters
@@ -287,7 +287,7 @@
  * Enable Autotemp Mode with M104/M109 F<factor> S<mintemp> B<maxtemp>.
  * Disable by sending M104/M109 with no F parameter (or F0 with AUTOTEMP_PROPORTIONAL).
  */
-#define AUTOTEMP
+//#define AUTOTEMP
 #if ENABLED(AUTOTEMP)
   #define AUTOTEMP_OLDWEIGHT    0.98
   // Turn on AUTOTEMP on M104/M109 by default using proportions set here
@@ -339,7 +339,7 @@
 #if ENABLED(EXTRUDER_RUNOUT_PREVENT)
   #define EXTRUDER_RUNOUT_MINTEMP 190
   #define EXTRUDER_RUNOUT_SECONDS 30
-  #define EXTRUDER_RUNOUT_SPEED 1500  // (mm/min)
+  #define EXTRUDER_RUNOUT_SPEED 1500  // (mm/m)
   #define EXTRUDER_RUNOUT_EXTRUDE 5   // (mm)
 #endif
 
@@ -832,12 +832,12 @@
 #define INVERT_Z_STEP_PIN false
 #if NON_E_AXES >= 4
   #define INVERT_I_STEP_PIN false
-#endif
   #if NON_E_AXES >= 5
-  #define INVERT_J_STEP_PIN false
-#endif
-#if NON_E_AXES >= 6
-  #define INVERT_K_STEP_PIN false
+    #define INVERT_J_STEP_PIN false
+    #if NON_E_AXES >= 6
+      #define INVERT_K_STEP_PIN false
+    #endif
+  #endif
 #endif
 #define INVERT_E_STEP_PIN false
 
@@ -852,12 +852,12 @@
 #define DISABLE_INACTIVE_Z true  // Set 'false' if the nozzle could fall onto your printed part!
 #if NON_E_AXES >= 4
   #define DISABLE_INACTIVE_I true
-#endif
-#if NON_E_AXES >= 5
-  #define DISABLE_INACTIVE_J true
-#endif
-#if NON_E_AXES >= 6
-  #define DISABLE_INACTIVE_K true
+  #if NON_E_AXES >= 5
+    #define DISABLE_INACTIVE_J true
+    #if NON_E_AXES >= 6
+      #define DISABLE_INACTIVE_K true
+    #endif
+  #endif
 #endif
 #define DISABLE_INACTIVE_E true
 
@@ -866,12 +866,12 @@
 
 //#define HOME_AFTER_DEACTIVATE  // Require rehoming after steppers are deactivated
 
+// Minimum time that a segment needs to take as the buffer gets emptied
+#define DEFAULT_MINSEGMENTTIME        20000   // (µs) Set with M205 B.
+
 // Default Minimum Feedrates for printing and travel moves
 #define DEFAULT_MINIMUMFEEDRATE       0.0     // (mm/s) Minimum feedrate. Set with M205 S.
 #define DEFAULT_MINTRAVELFEEDRATE     0.0     // (mm/s) Minimum travel feedrate. Set with M205 T.
-
-// Minimum time that a segment needs to take as the buffer gets emptied
-#define DEFAULT_MINSEGMENTTIME        20000   // (µs) Set with M205 B.
 
 // Slow down the machine if the lookahead buffer is (by default) half full.
 // Increase the slowdown divisor for larger buffer sizes.
@@ -932,7 +932,7 @@
       // increments while checking for the contact to be broken.
       #define BACKLASH_MEASUREMENT_LIMIT       0.5   // (mm)
       #define BACKLASH_MEASUREMENT_RESOLUTION  0.005 // (mm)
-      #define BACKLASH_MEASUREMENT_FEEDRATE    Z_PROBE_SPEED_SLOW // (mm/min)
+      #define BACKLASH_MEASUREMENT_FEEDRATE    Z_PROBE_SPEED_SLOW // (mm/m)
     #endif
   #endif
 #endif
@@ -982,14 +982,14 @@
   #if NON_E_AXES >= 4
     #define CALIBRATION_MEASURE_IMIN
     #define CALIBRATION_MEASURE_IMAX
-  #endif
-  #if NON_E_AXES >= 5
-    #define CALIBRATION_MEASURE_JMIN
-    #define CALIBRATION_MEASURE_JMAX
-  #endif
-  #if NON_E_AXES >= 6
-    #define CALIBRATION_MEASURE_KMIN
-    #define CALIBRATION_MEASURE_KMAX
+    #if NON_E_AXES >= 5
+      #define CALIBRATION_MEASURE_JMIN
+      #define CALIBRATION_MEASURE_JMAX
+      #if NON_E_AXES >= 6
+        #define CALIBRATION_MEASURE_KMIN
+        #define CALIBRATION_MEASURE_KMAX
+      #endif
+    #endif
   #endif
 
   // Probing at the exact top center only works if the center is flat. If
@@ -1109,13 +1109,13 @@
 
 #if EITHER(ULTIPANEL, EXTENSIBLE_UI)
   #if NON_E_AXES == 6
-    #define MANUAL_FEEDRATE { 50*60, 50*60, 4*60, 4*60, 4*60, 4*60, 2*60 } // (mm/min) Feedrates for manual moves along X, Y, Z, I, J, K, E from panel
+    #define MANUAL_FEEDRATE { 50*60, 50*60, 4*60, 4*60, 4*60, 4*60, 2*60 } // (mm/m) Feedrates for manual moves along X, Y, Z, I, J, K, E from panel
   #elif NON_E_AXES == 5
-    #define MANUAL_FEEDRATE { 50*60, 50*60, 4*60, 4*60, 4*60, 2*60 } // (mm/min) Feedrates for manual moves along X, Y, Z, I, J, E from panel
+    #define MANUAL_FEEDRATE { 50*60, 50*60, 4*60, 4*60, 4*60, 2*60 } // (mm/m) Feedrates for manual moves along X, Y, Z, I, J, E from panel
   #elif NON_E_AXES == 4
-    #define MANUAL_FEEDRATE { 50*60, 50*60, 4*60, 4*60, 2*60 } // (mm/min) Feedrates for manual moves along X, Y, Z, I, E from panel
+    #define MANUAL_FEEDRATE { 50*60, 50*60, 4*60, 4*60, 2*60 } // (mm/m) Feedrates for manual moves along X, Y, Z, I, E from panel
   #else
-    #define MANUAL_FEEDRATE { 50*60, 50*60, 4*60, 2*60 } // (mm/min) Feedrates for manual moves along X, Y, Z, E from panel
+    #define MANUAL_FEEDRATE { 50*60, 50*60, 4*60, 2*60 } // (mm/m) Feedrates for manual moves along X, Y, Z, E from panel
   #endif
   #define SHORT_MANUAL_Z_MOVE 0.025 // (mm) Smallest manual Z move (< 0.1mm)
   #if ENABLED(ULTIPANEL)
@@ -1218,7 +1218,15 @@
   #define SD_PROCEDURE_DEPTH 1              // Increase if you need more nested M32 calls
 
   #define SD_FINISHED_STEPPERRELEASE true   // Disable steppers when SD Print is finished
-  #define SD_FINISHED_RELEASECOMMAND "M84"  // Use "M84XYE" to keep Z enabled so your bed stays in place
+  #if NON_E_AXES == 6
+    #define SD_FINISHED_RELEASECOMMAND "M84 X Y Z I J K E" // Use "M84XYIJKE" to keep Z enabled so your bed stays in place
+  #elif NON_E_AXES == 5
+    #define SD_FINISHED_RELEASECOMMAND "M84 X Y Z I J E" // Use "M84XYIJE" to keep Z enabled so your bed stays in place
+  #elif NON_E_AXES == 4
+    #define SD_FINISHED_RELEASECOMMAND "M84 X Y Z I E" // Use "M84XYIE" to keep Z enabled so your bed stays in place
+  #else
+    #define SD_FINISHED_RELEASECOMMAND "M84 X Y Z E" // Use "M84XYE" to keep Z enabled so your bed stays in place
+  #endif
 
   // Reverse SD sort to show "more recent" files first, according to the card's FAT.
   // Since the FAT gets out of order with usage, SDCARD_SORT_ALPHA is recommended.
@@ -2076,13 +2084,13 @@
     // Load / Unload
     #define TOOLCHANGE_FS_LENGTH              12  // (mm) Load / Unload length
     #define TOOLCHANGE_FS_EXTRA_RESUME_LENGTH  0  // (mm) Extra length for better restart, fine tune by LCD/Gcode)
-    #define TOOLCHANGE_FS_RETRACT_SPEED   (50*60) // (mm/min) (Unloading)
-    #define TOOLCHANGE_FS_UNRETRACT_SPEED (25*60) // (mm/min) (On SINGLENOZZLE or Bowden loading must be slowed down)
+    #define TOOLCHANGE_FS_RETRACT_SPEED   (50*60) // (mm/m) (Unloading)
+    #define TOOLCHANGE_FS_UNRETRACT_SPEED (25*60) // (mm/m) (On SINGLENOZZLE or Bowden loading must be slowed down)
 
     // Longer prime to clean out a SINGLENOZZLE
     #define TOOLCHANGE_FS_EXTRA_PRIME          0  // (mm) Extra priming length
-    #define TOOLCHANGE_FS_PRIME_SPEED    (4.6*60) // (mm/min) Extra priming feedrate
-    #define TOOLCHANGE_FS_WIPE_RETRACT         0  // (mm/min) Retract before cooling for less stringing, better wipe, etc.
+    #define TOOLCHANGE_FS_PRIME_SPEED    (4.6*60) // (mm/m) Extra priming feedrate
+    #define TOOLCHANGE_FS_WIPE_RETRACT         0  // (mm/m) Retract before cooling for less stringing, better wipe, etc.
 
     // Cool after prime to reduce stringing
     #define TOOLCHANGE_FS_FAN                 -1  // Fan index or -1 to skip
@@ -2118,7 +2126,7 @@
   //#define TOOLCHANGE_PARK
   #if ENABLED(TOOLCHANGE_PARK)
     #define TOOLCHANGE_PARK_XY    { X_MIN_POS + 10, Y_MIN_POS + 10 }
-    #define TOOLCHANGE_PARK_XY_FEEDRATE 6000  // (mm/min)
+    #define TOOLCHANGE_PARK_XY_FEEDRATE 6000  // (mm/m)
     //#define TOOLCHANGE_PARK_X_ONLY          // X axis only move
     //#define TOOLCHANGE_PARK_Y_ONLY          // Y axis only move
   #endif
@@ -2243,23 +2251,23 @@
     #define I_SENSE_RESISTOR   91
     #define I_MICROSTEPS       16
   #endif
-#endif
 
-#if NON_E_AXES >= 5
-  #if AXIS_DRIVER_TYPE_J(TMC26X)
-    #define J_MAX_CURRENT    1000
-    #define J_SENSE_RESISTOR   91
-    #define J_MICROSTEPS       16
-  #endif
-#endif
+  #if NON_E_AXES >= 5
+    #if AXIS_DRIVER_TYPE_J(TMC26X)
+      #define J_MAX_CURRENT    1000
+      #define J_SENSE_RESISTOR   91
+      #define J_MICROSTEPS       16
+    #endif
 
-#if NON_E_AXES >= 6
-  #if AXIS_DRIVER_TYPE_K(TMC26X)
-    #define K_MAX_CURRENT    1000
-    #define K_SENSE_RESISTOR   91
-    #define K_MICROSTEPS       16
-  #endif
-#endif
+    #if NON_E_AXES >= 6
+      #if AXIS_DRIVER_TYPE_K(TMC26X)
+        #define K_MAX_CURRENT    1000
+        #define K_SENSE_RESISTOR   91
+        #define K_MICROSTEPS       16
+      #endif
+    #endif // NON_E_AXES >= 6
+  #endif // NON_E_AXES >= 5
+#endif // NON_E_AXES >= 4
 
   #if AXIS_DRIVER_TYPE_E0(TMC26X)
     #define E0_MAX_CURRENT    1000
@@ -2406,27 +2414,27 @@
       #define I_RSENSE         0.11
       #define I_CHAIN_POS     -1
     #endif
-  #endif
 
-  #if NON_E_AXES >= 5
-    #if AXIS_IS_TMC(J)
-      #define J_CURRENT      800
-      #define J_CURRENT_HOME J_CURRENT
-      #define J_MICROSTEPS    16
-      #define J_RSENSE         0.11
-      #define J_CHAIN_POS     -1
-    #endif
-  #endif
+    #if NON_E_AXES >= 5
+      #if AXIS_IS_TMC(J)
+        #define J_CURRENT      800
+        #define J_CURRENT_HOME J_CURRENT
+        #define J_MICROSTEPS    16
+        #define J_RSENSE         0.11
+        #define J_CHAIN_POS     -1
+      #endif
 
-  #if NON_E_AXES >= 6
-    #if AXIS_IS_TMC(K)
-      #define K_CURRENT      800
-      #define K_CURRENT_HOME K_CURRENT
-      #define K_MICROSTEPS    16
-      #define K_RSENSE         0.11
-      #define K_CHAIN_POS     -1
-    #endif
-  #endif
+      #if NON_E_AXES >= 6
+        #if AXIS_IS_TMC(K)
+          #define K_CURRENT      800
+          #define K_CURRENT_HOME K_CURRENT
+          #define K_MICROSTEPS    16
+          #define K_RSENSE         0.11
+          #define K_CHAIN_POS     -1
+        #endif
+      #endif // NON_E_AXES >= 6
+    #endif // NON_E_AXES >= 5
+  #endif // NON_E_AXES >= 4
 
   #if AXIS_IS_TMC(E0)
     #define E0_CURRENT      800
@@ -2539,12 +2547,12 @@
   #define Z4_SLAVE_ADDRESS 0
   #if NON_E_AXES >= 4
     #define I_SLAVE_ADDRESS 0
-  #endif
-  #if NON_E_AXES >= 5
-    #define J_SLAVE_ADDRESS 0
-  #endif
-  #if NON_E_AXES >= 6
-    #define K_SLAVE_ADDRESS 0
+    #if NON_E_AXES >= 5
+      #define J_SLAVE_ADDRESS 0
+      #if NON_E_AXES >= 6
+        #define K_SLAVE_ADDRESS 0
+      #endif
+    #endif
   #endif
   #define E0_SLAVE_ADDRESS 0
   #define E1_SLAVE_ADDRESS 0
@@ -2572,12 +2580,12 @@
   #define STEALTHCHOP_Z
   #if NON_E_AXES >= 4
     #define STEALTHCHOP_I
-  #endif
-  #if NON_E_AXES >= 5
-    #define STEALTHCHOP_J
-  #endif
-  #if NON_E_AXES >= 6
-    #define STEALTHCHOP_K
+    #if NON_E_AXES >= 5
+      #define STEALTHCHOP_J
+      #if NON_E_AXES >= 6
+        #define STEALTHCHOP_K
+      #endif
+    #endif
   #endif
   #define STEALTHCHOP_E
 
@@ -2636,12 +2644,12 @@
   #define Z4_HYBRID_THRESHOLD      3
   #if NON_E_AXES >= 4
     #define I_HYBRID_THRESHOLD     3
-  #endif
-  #if NON_E_AXES >= 5
-    #define J_HYBRID_THRESHOLD     3
-  #endif
-  #if NON_E_AXES >= 6
-    #define K_HYBRID_THRESHOLD     3
+    #if NON_E_AXES >= 5
+      #define J_HYBRID_THRESHOLD   3
+      #if NON_E_AXES >= 6
+        #define K_HYBRID_THRESHOLD 3
+      #endif
+    #endif
   #endif
   #define E0_HYBRID_THRESHOLD     30
   #define E1_HYBRID_THRESHOLD     30
@@ -3056,9 +3064,9 @@
 //#define SPINDLE_FEATURE
 //#define LASER_FEATURE
 #if EITHER(SPINDLE_FEATURE, LASER_FEATURE)
-  #define SPINDLE_LASER_ACTIVE_STATE    LOW    // Set to "HIGH" if the on/off function is active HIGH
+  #define SPINDLE_LASER_ACTIVE_HIGH     false  // Set to "true" if the on/off function is active HIGH
   #define SPINDLE_LASER_PWM             true   // Set to "true" if your controller supports setting the speed/power
-  #define SPINDLE_LASER_PWM_INVERT      false  // Set to "true" if the speed/power goes up when you want it to go slower
+  #define SPINDLE_LASER_PWM_INVERT      true   // Set to "true" if the speed/power goes up when you want it to go slower
 
   #define SPINDLE_LASER_FREQUENCY       2500   // (Hz) Spindle/laser frequency (only on supported HALs: AVR and LPC)
 
@@ -3078,7 +3086,7 @@
    * instead of normal range (0 to SPEED_POWER_MAX).
    * Best used with (e.g.) SuperPID router controller: S0 = 5,000 RPM and S255 = 30,000 RPM
    */
-  //#define CUTTER_POWER_RELATIVE              // Set speed proportional to [SPEED_POWER_MIN...SPEED_POWER_MAX]
+  //#define CUTTER_POWER_RELATIVE              // Set speed proportional to [SPEED_POWER_MIN...SPEED_POWER_MAX] instead of directly
 
   #if ENABLED(SPINDLE_FEATURE)
     //#define SPINDLE_CHANGE_DIR               // Enable if your spindle controller can change spindle direction
@@ -3356,7 +3364,7 @@
 //#define GCODE_MOTION_MODES  // Remember the motion mode (G0 G1 G2 G3 G5 G38.X) and apply for X Y Z E F, etc.
 
 // Enable and set a (default) feedrate for all G0 moves
-//#define G0_FEEDRATE 3000 // (mm/min)
+//#define G0_FEEDRATE 3000 // (mm/m)
 #ifdef G0_FEEDRATE
   //#define VARIABLE_G0_FEEDRATE // The G0 feedrate is set by F in G0 motion mode
 #endif
@@ -3673,7 +3681,7 @@
   #if ENABLED(PRUSA_MMU2_S_MODE)
     #define MMU2_C0_RETRY   5             // Number of retries (total time = timeout*retries)
 
-    #define MMU2_CAN_LOAD_FEEDRATE 800    // (mm/min)
+    #define MMU2_CAN_LOAD_FEEDRATE 800    // (mm/m)
     #define MMU2_CAN_LOAD_SEQUENCE \
       {  0.1, MMU2_CAN_LOAD_FEEDRATE }, \
       {  60.0, MMU2_CAN_LOAD_FEEDRATE }, \
