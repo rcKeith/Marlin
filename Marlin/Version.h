@@ -1,4 +1,7 @@
 /**
+ * Marlin2ForPipetBot [https://github.com/DerAndere1/Marlin]
+ * Copyright 2019 - 2021 Christian Bartz ("DerAndere") and other Marlin2ForPipetBot authors [https://github.com/DerAndere1/Marlin]
+ *
  * Marlin 3D Printer Firmware
  * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
@@ -54,7 +57,7 @@
  * has a distinct Github fork— the Source Code URL should just be the main
  * Marlin repository.
  */
-//#define SOURCE_CODE_URL "https://github.com/MarlinFirmware/Marlin"
+//#define SOURCE_CODE_URL "https://github.com/DerAndere1/Marlin"
 
 /**
  * Default generic printer UUID.
@@ -65,7 +68,7 @@
  * The WEBSITE_URL is the location where users can get more information such as
  * documentation about a specific Marlin release.
  */
-//#define WEBSITE_URL "https://marlinfw.org"
+//#define WEBSITE_URL "https://derandere.gitlab.io/pipetbot-a8"
 
 /**
  * Set the vendor info the serial USB interface, if changable

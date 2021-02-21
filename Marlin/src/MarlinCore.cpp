@@ -1,4 +1,8 @@
 /**
+ * Marlin2ForPipetBot [https://github.com/DerAndere1/Marlin]
+ * Copyright 2019 - 2021 Christian Bartz ("DerAndere") and other Marlin2ForPipetBot authors [https://github.com/DerAndere1/Marlin]
+ *
+ * Based on:
  * Marlin 3D Printer Firmware
  * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
@@ -352,7 +356,7 @@ void enable_all_steppers() {
   ENABLE_AXIS_Y();
   ENABLE_AXIS_Z();
 
-  ENABLE_AXIS_I(); // Marlin 6-axis support: 2019 - 2020 DerAndere (https://github.com/DerAndere1/Marlin/wiki)
+  ENABLE_AXIS_I(); // Marlin 6-axis support: Contributed 2019 - 2020 DerAndere (https://github.com/DerAndere1/Marlin/wiki)
   ENABLE_AXIS_J();
   ENABLE_AXIS_K();
 
