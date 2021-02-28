@@ -69,7 +69,7 @@ millis_t GcodeSuite::previous_move_ms = 0,
          GcodeSuite::stepper_inactive_time = SEC_TO_MS(DEFAULT_STEPPER_DEACTIVE_TIME);
 
 // Relative motion mode for each logical axis
-static constexpr xyze_bool_t ar_init[NUM_AXIS] = AXIS_RELATIVE_MODES;
+static constexpr xyze_bool_t ar_init = AXIS_RELATIVE_MODES;
 uint8_t GcodeSuite::axis_relative = (
     (ar_init.x ? _BV(REL_X) : 0)
   | (ar_init.y ? _BV(REL_Y) : 0)
@@ -145,17 +145,7 @@ int8_t GcodeSuite::get_target_e_stepper_from_command() {
  *  - Set the feedrate, if included
  */
 void GcodeSuite::get_destination_from_command() {
-  xyze_bool_t seen = { false, false, false, false
-    #if LINEAR_AXES >= 4
-      , false
-    #endif
-    #if LINEAR_AXES >= 5
-      , false
-    #endif
-    #if LINEAR_AXES >= 6
-      , false
-    #endif
-  };
+  xyze_bool_t seen = ARRAY_N_1(NUM_AXIS, false);
 
   #if ENABLED(CANCEL_OBJECTS)
     const bool &skip_move = cancelable.skipping;
@@ -192,6 +182,7 @@ void GcodeSuite::get_destination_from_command() {
 
   if (parser.linearval('F') > 0)
     feedrate_mm_s = parser.value_feedrate();
+
   #if ENABLED(PRINTCOUNTER)
     if (!DEBUGGING(DRYRUN) && !skip_move)
       print_job_timer.incFilamentUsed(destination.e - current_position.e);
@@ -404,7 +395,6 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
       #if ENABLED(GCODE_MOTION_MODES)
         case 80: G80(); break;                                    // G80: Reset the current motion mode
       #endif
-
 
       #if ENABLED(DRILLING_CANNED_CYCLES)
         case 81: G81(); break;                                    // G81: Peck Drill Canned Cycle
