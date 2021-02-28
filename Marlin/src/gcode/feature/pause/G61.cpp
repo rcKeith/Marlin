@@ -51,10 +51,10 @@ void GcodeSuite::G61(void) {
 
   SERIAL_ECHOPAIR(STR_RESTORING_POS " S", slot);
   LOOP_LINEAR(i) {
-    destination[i] = parser.seen(XYZ_CHAR(i))
+    destination[i] = parser.seen(AXIS_CHAR(i))
       ? stored_position[slot][i] + parser.value_axis_units((AxisEnum)i)
       : current_position[i];
-    SERIAL_CHAR(' ', XYZ_CHAR(i));
+    SERIAL_CHAR(' ', AXIS_CHAR(i));
     SERIAL_ECHO_F(destination[i]);
   }
   SERIAL_EOL();

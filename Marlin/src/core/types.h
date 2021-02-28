@@ -559,4 +559,4 @@ struct XYZEval {
 
 const xyze_char_t axis_codes { LIST_N(LINEAR_AXES, 'X', 'Y', 'Z', AXIS4_NAME, AXIS5_NAME, AXIS6_NAME), 'E' };
 
-#define XYZ_CHAR(A) ((char)('X' + A))
+#define AXIS_CHAR(A) ((char)('X' + A))

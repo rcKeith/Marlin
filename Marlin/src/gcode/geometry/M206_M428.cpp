@@ -43,7 +43,7 @@ void m206_report() {
  */
 void GcodeSuite::M206() {
   LOOP_LINEAR(i)
-    if (parser.seen(XYZ_CHAR(i)))
+    if (parser.seen(AXIS_CHAR(i)))
       set_home_offset((AxisEnum)i, parser.value_linear_units());
 
   #if ENABLED(MORGAN_SCARA)

@@ -419,7 +419,7 @@
 
     bool report = true;
     const uint8_t index = parser.byteval('I');
-    LOOP_LINEAR(i) if (parser.seen(XYZ_CHAR(i))) {
+    LOOP_LINEAR(i) if (parser.seen(AXIS_CHAR(i))) {
       const int16_t value = parser.value_int();
       report = false;
       switch (i) {
