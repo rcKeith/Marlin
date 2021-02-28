@@ -69,7 +69,7 @@ millis_t GcodeSuite::previous_move_ms = 0,
          GcodeSuite::stepper_inactive_time = SEC_TO_MS(DEFAULT_STEPPER_DEACTIVE_TIME);
 
 // Relative motion mode for each logical axis
-static constexpr xyze_bool_t ar_init = ARRAY_N(NUM_AXIS, AXIS_RELATIVE_MODES);
+static constexpr xyze_bool_t ar_init[NUM_AXIS] = AXIS_RELATIVE_MODES;
 uint8_t GcodeSuite::axis_relative = (
     (ar_init.x ? _BV(REL_X) : 0)
   | (ar_init.y ? _BV(REL_Y) : 0)
