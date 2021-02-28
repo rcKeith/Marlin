@@ -43,7 +43,7 @@ void scara_set_axis_is_at_home(const AxisEnum axis) {
      * SCARA homes XY at the same time
      */
     xyz_pos_t homeposition;
-    LOOP_XYZ(i) homeposition[i] = base_home_pos((AxisEnum)i);
+    LOOP_LINEAR(i) homeposition[i] = base_home_pos((AxisEnum)i);
 
     #if ENABLED(MORGAN_SCARA)
       // MORGAN_SCARA uses arm angles for AB home position

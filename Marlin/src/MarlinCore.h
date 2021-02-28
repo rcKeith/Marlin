@@ -108,9 +108,4 @@ bool pin_is_protected(const pin_t pin);
   inline bool kill_state() { return READ(KILL_PIN) == KILL_PIN_STATE; }
 #endif
 
-#if ENABLED(G29_RETRY_AND_RECOVER)
-  void event_probe_recover();
-  void event_probe_failure();
-#endif
-
 extern const char M112_KILL_STR[];

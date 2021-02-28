@@ -504,7 +504,7 @@ void PrintJobRecovery::resume() {
   TERN_(HAS_HOME_OFFSET, home_offset = info.home_offset);
   TERN_(HAS_POSITION_SHIFT, position_shift = info.position_shift);
   #if HAS_HOME_OFFSET || HAS_POSITION_SHIFT
-    LOOP_XYZ(i) update_workspace_offset((AxisEnum)i);
+    LOOP_LINEAR(i) update_workspace_offset((AxisEnum)i);
   #endif
 
   // Relative axis modes
@@ -546,7 +546,7 @@ void PrintJobRecovery::resume() {
 
         #if HAS_HOME_OFFSET
           DEBUG_ECHOPGM("home_offset: ");
-          LOOP_XYZ(i) {
+          LOOP_LINEAR(i) {
             if (i) DEBUG_CHAR(',');
             DEBUG_DECIMAL(info.home_offset[i]);
           }
@@ -555,7 +555,7 @@ void PrintJobRecovery::resume() {
 
         #if HAS_POSITION_SHIFT
           DEBUG_ECHOPGM("position_shift: ");
-          LOOP_XYZ(i) {
+          LOOP_LINEAR(i) {
             if (i) DEBUG_CHAR(',');
             DEBUG_DECIMAL(info.position_shift[i]);
           }

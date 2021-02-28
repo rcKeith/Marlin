@@ -122,8 +122,8 @@ void safe_delay(millis_t ms) {
             SERIAL_ECHOLNPAIR("Z Fade: ", planner.z_fade_height);
         #endif
         #if ABL_PLANAR
-          SERIAL_ECHOPGM("ABL Adjustment X");
-          LOOP_XYZ(a) {
+          SERIAL_ECHOPGM("ABL Adjustment");
+          LOOP_LINEAR(a) {
             const float v = planner.get_axis_position_mm(AxisEnum(a)) - current_position[a];
             SERIAL_CHAR(' ', XYZ_CHAR(a));
             if (v > 0) SERIAL_CHAR('+');

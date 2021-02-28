@@ -92,7 +92,7 @@ void GcodeSuite::M425() {
     SERIAL_ECHOLNPGM("active:");
     SERIAL_ECHOLNPAIR("  Correction Amount/Fade-out:     F", backlash.get_correction(), " (F1.0 = full, F0.0 = none)");
     SERIAL_ECHOPGM("  Backlash Distance (mm):        ");
-    LOOP_XYZ(a) if (axis_can_calibrate(a)) {
+    LOOP_LINEAR(a) if (axis_can_calibrate(a)) {
       SERIAL_CHAR(' ', XYZ_CHAR(a));
       SERIAL_ECHO(backlash.distance_mm[a]);
       SERIAL_EOL();
