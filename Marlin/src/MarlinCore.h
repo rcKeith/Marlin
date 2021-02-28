@@ -37,11 +37,6 @@ void stop();
 void idle(TERN_(ADVANCED_PAUSE_FEATURE, bool no_stepper_sleep=false));
 inline void idle_no_sleep() { idle(TERN_(ADVANCED_PAUSE_FEATURE, true)); }
 
-#if ENABLED(EXPERIMENTAL_I2CBUS)
-  #include "feature/twibus.h"
-  extern TWIBus i2c;
-#endif
-
 #if ENABLED(G38_PROBE_TARGET)
   extern uint8_t G38_move;          // Flag to tell the ISR that G38 is in progress, and the type
   extern bool G38_did_trigger;      // Flag from the ISR to indicate the endstop changed
@@ -58,8 +53,6 @@ void disable_all_steppers();
 
 void kill(PGM_P const lcd_error=nullptr, PGM_P const lcd_component=nullptr, const bool steppers_off=false);
 void minkill(const bool steppers_off=false);
-
-void quickstop_stepper();
 
 // Global State of the firmware
 enum MarlinState : uint8_t {
@@ -103,7 +96,6 @@ extern bool wait_for_heatup;
 #endif
 
 bool pin_is_protected(const pin_t pin);
-void protected_pin_err();
 
 #if HAS_SUICIDE
   inline void suicide() { OUT_WRITE(SUICIDE_PIN, SUICIDE_PIN_INVERTING); }
@@ -121,8 +113,4 @@ void protected_pin_err();
   void event_probe_failure();
 #endif
 
-extern const char NUL_STR[], M112_KILL_STR[], G28_STR[], M21_STR[], M23_STR[], M24_STR[],
-                  SP_A_STR[], SP_B_STR[], SP_C_STR[], SP_E_STR[], SP_I_STR[], SP_J_STR[],
-                  SP_K_STR[], SP_P_STR[], SP_T_STR[], SP_X_STR[], SP_Y_STR[], SP_Z_STR[],
-                  E_LBL[], I_LBL[], J_LBL[], K_LBL[], X_LBL[], Y_LBL[], Z_LBL[],
-                  SP_E_LBL[], SP_I_LBL[], SP_J_LBL[], SP_K_LBL[], SP_X_LBL[], SP_Y_LBL[], SP_Z_LBL[];
+extern const char M112_KILL_STR[];
