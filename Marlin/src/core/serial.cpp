@@ -41,23 +41,22 @@ PGMSTR(I_LBL, AXIS4_STR ":"); PGMSTR(J_LBL, AXIS5_STR ":"); PGMSTR(K_LBL, AXIS6_
 PGMSTR(SP_I_STR, " " AXIS4_STR);     PGMSTR(SP_J_STR, " " AXIS5_STR);     PGMSTR(SP_K_STR, " " AXIS6_STR);
 PGMSTR(SP_I_LBL, " " AXIS4_STR ":"); PGMSTR(SP_J_LBL, " " AXIS5_STR ":"); PGMSTR(SP_K_LBL, " " AXIS6_STR ":");
 
-#if HAS_MULTI_SERIAL
-  #ifdef SERIAL_CATCHALL
-    SerialOutputT multiSerial(MYSERIAL, SERIAL_CATCHALL);
-  #else
-    #if HAS_ETHERNET
-      // Runtime checking of the condition variable
-      ConditionalSerial<decltype(MYSERIAL1)> serialOut1(ethernet.have_telnet_client, MYSERIAL1, false); // Takes reference here
-    #else
-      // Don't pay for runtime checking a true variable, instead use the output directly
-      #define serialOut1 MYSERIAL1
-    #endif
-    SerialOutputT multiSerial(MYSERIAL0, serialOut1);
-  #endif
+// Hook Meatpack if it's enabled on the first leaf
+#if ENABLED(MEATPACK_ON_SERIAL_PORT_1)
+  SerialLeafT1 mpSerial1(false, _SERIAL_LEAF_1);
+#endif
+#if ENABLED(MEATPACK_ON_SERIAL_PORT_2)
+  SerialLeafT2 mpSerial2(false, _SERIAL_LEAF_2);
 #endif
 
-#if ENABLED(MEATPACK)
-  MeatpackSerial<decltype(_SERIAL_IMPL)> mpSerial(false, _SERIAL_IMPL);
+// Step 2: For multiserial, handle the second serial port as well
+#if HAS_MULTI_SERIAL
+  #if HAS_ETHERNET
+    // We need a definition here
+    SerialLeafT2 msSerial2(ethernet.have_telnet_client, MYSERIAL2, false);
+  #endif
+
+  SerialOutputT multiSerial(SERIAL_LEAF_1, SERIAL_LEAF_2);
 #endif
 
 void serialprintPGM(PGM_P str) {

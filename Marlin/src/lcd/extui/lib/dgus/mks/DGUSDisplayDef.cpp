@@ -36,7 +36,7 @@
 #include "../../../../marlinui.h"
 
 #if ENABLED(HAS_STEALTHCHOP)
-  #include "../../../../module/stepper/trinamic.h"
+  #include "../../../../../module/stepper/trinamic.h"
 #endif
 
 #if ENABLED(DGUS_UI_MOVE_DIS_OPTION)
@@ -75,7 +75,7 @@ uint16_t z_park_pos = 10;
 xyz_pos_t position_before_pause;
 
 void MKS_pause_print_move() {
-  planner.synchronize();
+  queue.exhaust();
   position_before_pause = current_position;
   do_blocking_move_to(X_MIN_POS + x_park_pos, Y_MIN_POS + y_park_pos, current_position.z + z_park_pos);
 }
@@ -746,9 +746,9 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 
 
   // SDCard File listing
+  VPHELPER(VP_SD_FileSelected, nullptr, ScreenHandler.DGUSLCD_SD_FileSelected, nullptr),
   #if ENABLED(SDSUPPORT)
     VPHELPER(VP_SD_ScrollEvent, nullptr, ScreenHandler.DGUSLCD_SD_ScrollFilelist, nullptr),
-    VPHELPER(VP_SD_FileSelected, nullptr, ScreenHandler.DGUSLCD_SD_FileSelected, nullptr),
     VPHELPER(VP_SD_FileSelectConfirm, nullptr, ScreenHandler.DGUSLCD_SD_StartPrint, nullptr),
     VPHELPER_STR(VP_SD_FileName0, nullptr, VP_SD_FileName_LEN, nullptr, ScreenHandler.DGUSLCD_SD_SendFilename),
     VPHELPER_STR(VP_SD_FileName1, nullptr, VP_SD_FileName_LEN, nullptr, ScreenHandler.DGUSLCD_SD_SendFilename),
