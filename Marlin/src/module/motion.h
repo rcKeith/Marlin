@@ -287,31 +287,31 @@ inline void prepare_internal_move_to_destination(const_feedRate_t fr_mm_s=0.0f) 
  */
 void do_blocking_move_to(
   LIST_N(LINEAR_AXES, const float rx, const float ry, const float rz, const float ri, const float rj, const float rk),
-  const_feedRate_t &fr_mm_s=0.0f
+  const_feedRate_t fr_mm_s=0.0f
 );
-void do_blocking_move_to(const xy_pos_t &raw, const_feedRate_t &fr_mm_s=0.0f);
-void do_blocking_move_to(const xyz_pos_t &raw, const_feedRate_t &fr_mm_s=0.0f);
-void do_blocking_move_to(const xyze_pos_t &raw, const_feedRate_t &fr_mm_s=0.0f);
+void do_blocking_move_to(const xy_pos_t &raw, const_feedRate_t fr_mm_s=0.0f);
+void do_blocking_move_to(const xyz_pos_t &raw, const_feedRate_t fr_mm_s=0.0f);
+void do_blocking_move_to(const xyze_pos_t &raw, const_feedRate_t fr_mm_s=0.0f);
 
-void do_blocking_move_to_x(const_float_t rx, const_feedRate_t &fr_mm_s=0.0f);
-void do_blocking_move_to_y(const_float_t ry, const_feedRate_t &fr_mm_s=0.0f);
-void do_blocking_move_to_z(const_float_t rz, const_feedRate_t &fr_mm_s=0.0f);
+void do_blocking_move_to_x(const_float_t rx, const_feedRate_t fr_mm_s=0.0f);
+void do_blocking_move_to_y(const_float_t ry, const_feedRate_t fr_mm_s=0.0f);
+void do_blocking_move_to_z(const_float_t rz, const_feedRate_t fr_mm_s=0.0f);
 #if LINEAR_AXES >= 4
-  void do_blocking_move_to_i(const_float_t ri, const_feedRate_t &fr_mm_s=0.0f);
-  void do_blocking_move_to_xyz_i(const xyze_pos_t &raw, const_float_t i, const_feedRate_t &fr_mm_s=0.0f);
+  void do_blocking_move_to_i(const_float_t ri, const_feedRate_t fr_mm_s=0.0f);
+  void do_blocking_move_to_xyz_i(const xyze_pos_t &raw, const_float_t i, const_feedRate_t fr_mm_s=0.0f);
 #endif
 #if LINEAR_AXES >= 5
-  void do_blocking_move_to_j(const_float_t rj, const_feedRate_t &fr_mm_s=0.0f);
-  void do_blocking_move_to_xyzi_j(const xyze_pos_t &raw, const_float_t j, const_feedRate_t &fr_mm_s=0.0f);
+  void do_blocking_move_to_j(const_float_t rj, const_feedRate_t fr_mm_s=0.0f);
+  void do_blocking_move_to_xyzi_j(const xyze_pos_t &raw, const_float_t j, const_feedRate_t fr_mm_s=0.0f);
 #endif
 #if LINEAR_AXES >= 6
-  void do_blocking_move_to_k(const_float_t rk, const_feedRate_t &fr_mm_s=0.0f);
-  void do_blocking_move_to_xyzij_k(const xyze_pos_t &raw, const_float_t k, const_feedRate_t &fr_mm_s=0.0f);
+  void do_blocking_move_to_k(const_float_t rk, const_feedRate_t fr_mm_s=0.0f);
+  void do_blocking_move_to_xyzij_k(const xyze_pos_t &raw, const_float_t k, const_feedRate_t fr_mm_s=0.0f);
 #endif
-void do_blocking_move_to_xy(const_float_t rx, const_float_t ry, const_feedRate_t &fr_mm_s=0.0f);
-void do_blocking_move_to_xy(const xy_pos_t &raw, const_feedRate_t &fr_mm_s=0.0f);
-FORCE_INLINE void do_blocking_move_to_xy(const xyz_pos_t &raw, const_feedRate_t &fr_mm_s=0.0f)  { do_blocking_move_to_xy(xy_pos_t(raw), fr_mm_s); }
-FORCE_INLINE void do_blocking_move_to_xy(const xyze_pos_t &raw, const_feedRate_t &fr_mm_s=0.0f) { do_blocking_move_to_xy(xy_pos_t(raw), fr_mm_s); }
+void do_blocking_move_to_xy(const_float_t rx, const_float_t ry, const_feedRate_t fr_mm_s=0.0f);
+void do_blocking_move_to_xy(const xy_pos_t &raw, const_feedRate_t fr_mm_s=0.0f);
+FORCE_INLINE void do_blocking_move_to_xy(const xyz_pos_t &raw, const_feedRate_t fr_mm_s=0.0f)  { do_blocking_move_to_xy(xy_pos_t(raw), fr_mm_s); }
+FORCE_INLINE void do_blocking_move_to_xy(const xyze_pos_t &raw, const_feedRate_t fr_mm_s=0.0f) { do_blocking_move_to_xy(xy_pos_t(raw), fr_mm_s); }
 
 void do_blocking_move_to_xy_z(const xy_pos_t &raw, const_float_t z, const_feedRate_t fr_mm_s=0.0f);
 FORCE_INLINE void do_blocking_move_to_xy_z(const xyz_pos_t &raw, const_float_t z, const_feedRate_t fr_mm_s=0.0f)  { do_blocking_move_to_xy_z(xy_pos_t(raw), z, fr_mm_s); }
