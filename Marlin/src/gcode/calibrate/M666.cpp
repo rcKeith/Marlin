@@ -43,7 +43,7 @@
       if (parser.seen(AXIS_CHAR(i))) {
         const float v = parser.value_linear_units();
         if (v * Z_HOME_DIR <= 0) delta_endstop_adj[i] = v;
-        if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPAIR("delta_endstop_adj[", AXIS_CHAR(i), "] = ", delta_endstop_adj[i]);
+        if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPAIR("delta_endstop_adj[", AS_CHAR(AXIS_CHAR(i)), "] = ", delta_endstop_adj[i]);
       }
     }
   }

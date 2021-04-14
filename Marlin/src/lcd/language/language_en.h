@@ -116,10 +116,10 @@ namespace Language_en {
   PROGMEM Language_Str MSG_LASER_TOGGLE                    = _UxGT("Toggle Laser");
   PROGMEM Language_Str MSG_LASER_PULSE_MS                  = _UxGT("Test Pulse ms");
   PROGMEM Language_Str MSG_LASER_FIRE_PULSE                = _UxGT("Fire Pulse");
+  PROGMEM Language_Str MSG_FLOWMETER_FAULT                 = _UxGT("Coolant Flow Fault");
   PROGMEM Language_Str MSG_SPINDLE_TOGGLE                  = _UxGT("Toggle Spindle");
   PROGMEM Language_Str MSG_SPINDLE_FORWARD                 = _UxGT("Spindle Forward");
   PROGMEM Language_Str MSG_SPINDLE_REVERSE                 = _UxGT("Spindle Reverse");
-
   PROGMEM Language_Str MSG_SWITCH_PS_ON                    = _UxGT("Switch Power On");
   PROGMEM Language_Str MSG_SWITCH_PS_OFF                   = _UxGT("Switch Power Off");
   PROGMEM Language_Str MSG_EXTRUDE                         = _UxGT("Extrude");
@@ -281,6 +281,7 @@ namespace Language_en {
   PROGMEM Language_Str MSG_CHAMBER                         = _UxGT("Enclosure");
   PROGMEM Language_Str MSG_COOLER                          = _UxGT("Laser Coolant");
   PROGMEM Language_Str MSG_COOLER_TOGGLE                   = _UxGT("Toggle Cooler");
+  PROGMEM Language_Str MSG_FLOWMETER_SAFETY                = _UxGT("Flow Safety");
   PROGMEM Language_Str MSG_LASER                           = _UxGT("Laser");
   PROGMEM Language_Str MSG_FAN_SPEED                       = _UxGT("Fan Speed");
   PROGMEM Language_Str MSG_FAN_SPEED_N                     = _UxGT("Fan Speed ~");
@@ -540,6 +541,7 @@ namespace Language_en {
   PROGMEM Language_Str MSG_BILINEAR_LEVELING               = _UxGT("Bilinear Leveling");
   PROGMEM Language_Str MSG_UBL_LEVELING                    = _UxGT("Unified Bed Leveling");
   PROGMEM Language_Str MSG_MESH_LEVELING                   = _UxGT("Mesh Leveling");
+  PROGMEM Language_Str MSG_MESH_DONE                       = _UxGT("Mesh probing done");
   PROGMEM Language_Str MSG_INFO_STATS_MENU                 = _UxGT("Printer Stats");
   PROGMEM Language_Str MSG_INFO_BOARD_MENU                 = _UxGT("Board Info");
   PROGMEM Language_Str MSG_INFO_THERMISTOR_MENU            = _UxGT("Thermistors");

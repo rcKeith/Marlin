@@ -148,9 +148,10 @@ void SERIAL_ECHO(T x) { SERIAL_IMPL.print(x); }
 typedef struct SerialChar { char c; SerialChar(char n) : c(n) { } } serial_char_t;
 inline void SERIAL_ECHO(serial_char_t x) { SERIAL_IMPL.write(x.c); }
 #define AS_CHAR(C) serial_char_t(C)
+#define AS_DIGIT(C) AS_CHAR('0' + (C))
 
 // SERIAL_ECHO_F prints a floating point value with optional precision
-inline void SERIAL_ECHO_F(EnsureDouble x, int digit = 2) { SERIAL_IMPL.print(x, digit); }
+inline void SERIAL_ECHO_F(EnsureDouble x, int digit=2) { SERIAL_IMPL.print(x, digit); }
 
 template <typename T>
 void SERIAL_ECHOLN(T x) { SERIAL_IMPL.println(x); }
@@ -392,7 +393,7 @@ void serial_spaces(uint8_t count);
 
 void print_bin(const uint16_t val);
 void print_pos(
-  LIST_N(LINEAR_AXES, const float &x, const float &y, const float &z, const float &i, const float &j, const float &k),
+  LIST_N(LINEAR_AXES, const_float_t x, const_float_t y, const_float_t z, const_float_t i, const_float_t j, const_float_t k),
   PGM_P const prefix=nullptr, PGM_P const suffix=nullptr
 );
 

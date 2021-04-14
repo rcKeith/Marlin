@@ -44,31 +44,35 @@ enum EndstopEnum : char {
 
 class Endstops {
   public:
-    #if LINEAR_AXES >=4 || ENABLED(HAS_EXTRA_ENDSTOPS)
+    #if LINEAR_AXES >= 4 || ENABLED(HAS_EXTRA_ENDSTOPS)
       typedef uint16_t esbits_t;
     #else
       typedef uint8_t esbits_t;
     #endif
 
-    #if HAS_EXTRA_ENDSTOPS
-      TERN_(X_DUAL_ENDSTOPS, static float x2_endstop_adj);
-      TERN_(Y_DUAL_ENDSTOPS, static float y2_endstop_adj);
-      TERN_(Z_MULTI_ENDSTOPS, static float z2_endstop_adj);
-      #if ENABLED(Z_MULTI_ENDSTOPS) && NUM_Z_STEPPER_DRIVERS >= 3
-        static float z3_endstop_adj;
-      #endif
-      #if ENABLED(Z_MULTI_ENDSTOPS) && NUM_Z_STEPPER_DRIVERS >= 4
-        static float z4_endstop_adj;
-      #endif
+    #if ENABLED(X_DUAL_ENDSTOPS)
+      static float x2_endstop_adj;
     #endif
-    
+    #if ENABLED(Y_DUAL_ENDSTOPS)
+      static float y2_endstop_adj;
+    #endif
+    #if ENABLED(Z_MULTI_ENDSTOPS)
+      static float z2_endstop_adj;
+    #endif
+    #if ENABLED(Z_MULTI_ENDSTOPS) && NUM_Z_STEPPER_DRIVERS >= 3
+      static float z3_endstop_adj;
+    #endif
+    #if ENABLED(Z_MULTI_ENDSTOPS) && NUM_Z_STEPPER_DRIVERS >= 4
+      static float z4_endstop_adj;
+    #endif
+
   private:
     static bool enabled, enabled_globally;
     static esbits_t live_state;
     #if LINEAR_AXES >= 4
-      static volatile uint16_t hit_state;      // Use X_MIN, Y_MIN, Z_MIN and Z_MIN_PROBE as BIT index
+      static volatile uint16_t hit_state;     // Use X_MIN, Y_MIN, Z_MIN and Z_MIN_PROBE as BIT index
     #else
-      static volatile uint8_t hit_state;      // Use X_MIN, Y_MIN, Z_MIN and Z_MIN_PROBE as BIT index
+      static volatile uint8_t hit_state;
     #endif
 
     #if ENDSTOP_NOISE_THRESHOLD

@@ -441,7 +441,7 @@ class Stepper {
     #endif
 
     // Check if the given block is busy or not - Must not be called from ISR contexts
-    static bool is_block_busy(const block_t* const block);
+    static bool is_block_busy(const block_t * const block);
 
     // Get the position of a stepper, in steps
     static int32_t position(const AxisEnum axis);
@@ -557,7 +557,7 @@ class Stepper {
       _set_position(LIST_N(LINEAR_AXES, spos.a, spos.b, spos.c, spos.i, spos.j, spos.k), spos.e);
     }
 
-    FORCE_INLINE static uint32_t calc_timer_interval(uint32_t step_rate, uint8_t* loops) {
+    FORCE_INLINE static uint32_t calc_timer_interval(uint32_t step_rate, uint8_t *loops) {
       uint32_t timer;
 
       // Scale the frequency, as requested by the caller

@@ -99,7 +99,7 @@
 
 #define LEVELING_CONF_TITLE_EN          "Machine Settings>Leveling settings"
 #define LEVELING_PARA_CONF_EN           "Leveling settings"
-#define LEVELING_MANUAL_POS_EN          "Manual leveling coordinate settings"
+#define TRAMMING_POS_EN                 "Manual leveling coordinate settings"
 #define LEVELING_AUTO_COMMAND_EN        "AutoLeveling command settings"
 #define LEVELING_AUTO_ZOFFSET_EN        "Nozzle-to-probe offsets settings"
 
@@ -540,6 +540,7 @@
 #define USB_DRIVE_BACK_EN                 "< Back"
 #define FILE_PAGES_EN                     "%d/%d"
 #define FILE_NEXT_PAGE_EN                 "Next Page"
+#define MEDIA_SELECT_TITLE_EN             "Select Media"
 
 //BUILD PLATE
 #define PLATE_TITLE_EN                    "Build Plate"
