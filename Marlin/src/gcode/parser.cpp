@@ -217,21 +217,12 @@ void GCodeParser::parse(char *p) {
 
     #if ENABLED(GCODE_MOTION_MODES)
       #if ENABLED(ARC_SUPPORT)
-        case 'I' ... 'J':
+        case 'I' ... 'J': // TODO: (DerAndere) Fix axis conflicts with IJ parameters
           if (motion_mode_codenum != 2 && motion_mode_codenum != 3) return;
       #endif
       case 'Q':
         if (motion_mode_codenum != 5) return;
-      case 'X' ... 'Z': case 'E':
-        #if LINEAR_AXES >= 4
-          case AXIS4_NAME:
-        #endif
-        #if LINEAR_AXES >= 5
-          case AXIS5_NAME:
-        #endif
-        #if LINEAR_AXES >= 6
-          case AXIS6_NAME:
-        #endif
+      GANG_N(LINEAR_AXES, case 'X':, case 'Y':, case 'Z':, case 'E':, case AXIS4_NAME:, case AXIS5_NAME:, case AXIS6_NAME:)
       case 'F':
         if (motion_mode_codenum < 0) return;
         command_letter = 'G';

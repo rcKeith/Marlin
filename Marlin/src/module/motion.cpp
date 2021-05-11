@@ -196,19 +196,17 @@ inline void report_more_positions() {
 inline void report_logical_position(const xyze_pos_t &rpos) {
   const xyze_pos_t lpos = rpos.asLogical();
   SERIAL_ECHOPAIR_P(
-       X_LBL, lpos.x,
-    SP_Y_LBL, lpos.y,
-    SP_Z_LBL, lpos.z
-    #if LINEAR_AXES >= 4
-      , SP_I_LBL, lpos.i
+    LIST_N(DOUBLE(LINEAR_AXES),
+         X_LBL, lpos.x,
+      SP_Y_LBL, lpos.y,
+      SP_Z_LBL, lpos.z,
+      SP_I_LBL, lpos.i,
+      SP_J_LBL, lpos.j,
+      SP_K_LBL, lpos.k
+    ),
+    #if EXTRUDERS
+      SP_E_LBL, lpos.e
     #endif
-    #if LINEAR_AXES >= 5
-      , SP_J_LBL, lpos.j
-    #endif
-    #if LINEAR_AXES >= 6
-      , SP_K_LBL, lpos.k
-    #endif
-    , SP_E_LBL, lpos.e
   );
 }
 
@@ -216,24 +214,17 @@ inline void report_logical_position(const xyze_pos_t &rpos) {
 // Forward kinematics and un-leveling are applied.
 void report_real_position() {
   get_cartesian_from_steppers();
-  xyze_pos_t npos;
-  npos.x = cartes.x;
-  npos.y = cartes.y;
-  npos.z = cartes.z;
-  #if LINEAR_AXES >= 4
-    npos.i = planner.get_axis_position_mm(I_AXIS);
+  xyze_pos_t npos = ARRAY_N(LINEAR_AXES,
+    cartes.x, cartes.y, cartes.z,
+    planner.get_axis_position_mm(I_AXIS),
+    planner.get_axis_position_mm(J_AXIS),
+    planner.get_axis_position_mm(K_AXIS)
+  );
+  #if EXTRUDERS
+    npos.e = planner.get_axis_position_mm(E_AXIS);
   #endif
-  #if LINEAR_AXES >= 5
-    npos.j = planner.get_axis_position_mm(J_AXIS);
-  #endif
-  #if LINEAR_AXES >= 6
-    npos.k = planner.get_axis_position_mm(K_AXIS);
-  #endif
-  npos.e = planner.get_axis_position_mm(E_AXIS);
 
-  #if HAS_POSITION_MODIFIERS
-    planner.unapply_modifiers(npos, true);
-  #endif
+  TERN_(HAS_POSITION_MODIFIERS, planner.unapply_modifiers(npos, true));
 
   report_logical_position(npos);
   report_more_positions();
@@ -1272,26 +1263,21 @@ void prepare_line_to_destination() {
   uint8_t axis_homed, axis_trusted; // = 0
 
   uint8_t axes_should_home(uint8_t axis_bits/*=LINEAR_AXIS_MASK*/) {
-    #define SHOULD_HOME(A) TERN(HOME_AFTER_DEACTIVATE, axis_is_trusted, axis_was_homed)(A)
+    auto set_should = [](uint8_t &b, AxisEnum a) {
+      if (TEST(b, a) && TERN(HOME_AFTER_DEACTIVATE, axis_is_trusted, axis_was_homed)(a))
+        CBI(b, a);
+    };
     // Clear test bits that are trusted
-    if (TEST(axis_bits, X_AXIS) && SHOULD_HOME(X_AXIS)) CBI(axis_bits, X_AXIS);
-    if (TEST(axis_bits, Y_AXIS) && SHOULD_HOME(Y_AXIS)) CBI(axis_bits, Y_AXIS);
-    if (TEST(axis_bits, Z_AXIS) && SHOULD_HOME(Z_AXIS)) CBI(axis_bits, Z_AXIS);
-    #if LINEAR_AXES >= 4
-      if (TEST(axis_bits, I_AXIS) && SHOULD_HOME(I_AXIS)) CBI(axis_bits, I_AXIS);
-    #endif
-    #if LINEAR_AXES >= 5
-      if (TEST(axis_bits, J_AXIS) && SHOULD_HOME(J_AXIS)) CBI(axis_bits, J_AXIS);
-    #endif
-    #if LINEAR_AXES >= 6
-      if (TEST(axis_bits, K_AXIS) && SHOULD_HOME(K_AXIS)) CBI(axis_bits, K_AXIS);
-    #endif
+    CODE_N(LINEAR_AXES,
+      set_should(axis_bits, X_AXIS), set_should(axis_bits, Y_AXIS), set_should(axis_bits, Z_AXIS),
+      set_should(axis_bits, I_AXIS), set_should(axis_bits, J_AXIS), set_should(axis_bits, K_AXIS)
+    );
     return axis_bits;
   }
 
   bool homing_needed_error(uint8_t axis_bits/*=LINEAR_AXIS_MASK*/) {
     if ((axis_bits = axes_should_home(axis_bits))) {
-      PGM_P home_first = GET_TEXT(MSG_HOME_FIRST);
+      PGM_P home_first = GET_TEXT(MSG_HOME_FIRST);  // TODO: (DerAndere) Set this up for extra axes
       char msg[strlen_P(home_first)+1];
       sprintf_P(msg, home_first,
         LIST_N(LINEAR_AXES,

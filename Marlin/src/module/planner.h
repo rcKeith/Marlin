@@ -767,16 +767,9 @@ class Planner {
      *  extruder    - target extruder
      *  millimeters - the length of the movement, if known
      */
-    static bool buffer_segment(const_float_t a, const_float_t b, const_float_t c
-      #if LINEAR_AXES >= 4
-        , const_float_t i
-      #endif
-      #if LINEAR_AXES >= 5
-        , const_float_t j
-      #endif
-      #if LINEAR_AXES >= 6
-        , const_float_t k
-      #endif
+    static bool buffer_segment(
+      LIST_N(LINEAR_AXES, const_float_t a, const_float_t b, const_float_t c
+                        , const_float_t i, const_float_t j, const_float_t k)
       , const_float_t e
       #if HAS_DIST_MM_ARG
         , const xyze_float_t &cart_dist_mm
@@ -812,16 +805,9 @@ class Planner {
      *  millimeters  - the length of the movement, if known
      *  inv_duration - the reciprocal if the duration of the movement, if known (kinematic only if feeedrate scaling is enabled)
      */
-    static bool buffer_line(const_float_t rx, const_float_t ry, const_float_t rz
-      #if LINEAR_AXES >= 4
-        , const_float_t ri
-      #endif
-      #if LINEAR_AXES >= 5
-        , const_float_t rj
-      #endif
-      #if LINEAR_AXES >= 6
-        , const_float_t rk
-      #endif
+    static bool buffer_line(
+      LIST_N(LINEAR_AXES, const_float_t rx, const_float_t ry, const_float_t rz,
+                          const_float_t ri, const_float_t rj, const_float_t rk)
       , const_float_t e, const feedRate_t &fr_mm_s, const uint8_t extruder, const float millimeters=0.0
       #if ENABLED(SCARA_FEEDRATE_SCALING)
         , const_float_t inv_duration=0.0
@@ -859,16 +845,9 @@ class Planner {
      *
      * Clears previous speed values.
      */
-    static void set_position_mm(const_float_t rx, const_float_t ry, const_float_t rz
-      #if LINEAR_AXES >= 4
-        , const_float_t ri
-      #endif
-      #if LINEAR_AXES >= 5
-        , const_float_t rj
-      #endif
-      #if LINEAR_AXES > 5
-        , const_float_t rk
-      #endif
+    static void set_position_mm(
+      LIST_N(LINEAR_AXES, const_float_t rx, const_float_t ry, const_float_t rz,
+                          const_float_t ri, const_float_t rj, const_float_t rk)
       , const_float_t e
     );
     FORCE_INLINE static void set_position_mm(const xyze_pos_t &cart) {
@@ -882,16 +861,9 @@ class Planner {
      * The supplied position is in machine space, and no additional
      * conversions are applied.
      */
-    static void set_machine_position_mm(const_float_t a, const_float_t b, const_float_t c
-      #if LINEAR_AXES >= 4
-        , const_float_t i
-      #endif
-      #if LINEAR_AXES >= 5
-        , const_float_t j
-      #endif
-      #if LINEAR_AXES >= 6
-        , const_float_t k
-      #endif
+    static void set_machine_position_mm(
+      LIST_N(LINEAR_AXES, const_float_t a, const_float_t b, const_float_t c,
+                          const_float_t i, const_float_t j, const_float_t k)
       , const_float_t e
     );
     FORCE_INLINE static void set_machine_position_mm(const abce_pos_t &abce) {

@@ -873,12 +873,21 @@ void reset_trinamic_drivers() {
     #endif
     #if I_SENSORLESS
       stepperI.homing_threshold(I_STALL_SENSITIVITY);
+      #if AXIS_HAS_STALLGUARD(I)
+        stepperI.homing_threshold(CAT(TERN(I_SENSORLESS, I, I), _STALL_SENSITIVITY));
+      #endif
     #endif
     #if J_SENSORLESS
       stepperJ.homing_threshold(J_STALL_SENSITIVITY);
+      #if AXIS_HAS_STALLGUARD(J)
+        stepperJ.homing_threshold(CAT(TERN(J_SENSORLESS, J, J), _STALL_SENSITIVITY));
+      #endif
     #endif
     #if K_SENSORLESS
       stepperK.homing_threshold(K_STALL_SENSITIVITY);
+      #if AXIS_HAS_STALLGUARD(K)
+        stepperK.homing_threshold(CAT(TERN(K_SENSORLESS, K, K), _STALL_SENSITIVITY));
+      #endif
     #endif
   #endif // USE SENSORLESS
 

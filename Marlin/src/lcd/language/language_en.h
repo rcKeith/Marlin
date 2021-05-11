@@ -268,9 +268,9 @@ namespace Language_en {
   PROGMEM Language_Str MSG_MOVE_X                          = _UxGT("Move X");
   PROGMEM Language_Str MSG_MOVE_Y                          = _UxGT("Move Y");
   PROGMEM Language_Str MSG_MOVE_Z                          = _UxGT("Move Z");
-  PROGMEM Language_Str MSG_MOVE_I                          = _UxGT("Move I");
-  PROGMEM Language_Str MSG_MOVE_J                          = _UxGT("Move J");
-  PROGMEM Language_Str MSG_MOVE_K                          = _UxGT("Move K");
+  PROGMEM Language_Str MSG_MOVE_I                          = _UxGT("Move ") AXIS4_STR;
+  PROGMEM Language_Str MSG_MOVE_J                          = _UxGT("Move ") AXIS5_STR;
+  PROGMEM Language_Str MSG_MOVE_K                          = _UxGT("Move ") AXIS6_STR;
   PROGMEM Language_Str MSG_MOVE_E                          = _UxGT("Extruder");
   PROGMEM Language_Str MSG_MOVE_EN                         = _UxGT("Extruder *");
   PROGMEM Language_Str MSG_HOTEND_TOO_COLD                 = _UxGT("Hotend too cold");
@@ -504,9 +504,9 @@ namespace Language_en {
   PROGMEM Language_Str MSG_BABYSTEP_X                      = _UxGT("Babystep X");
   PROGMEM Language_Str MSG_BABYSTEP_Y                      = _UxGT("Babystep Y");
   PROGMEM Language_Str MSG_BABYSTEP_Z                      = _UxGT("Babystep Z");
-  PROGMEM Language_Str MSG_BABYSTEP_I                      = _UxGT("Babystep I");
-  PROGMEM Language_Str MSG_BABYSTEP_J                      = _UxGT("Babystep J");
-  PROGMEM Language_Str MSG_BABYSTEP_K                      = _UxGT("Babystep K");
+  PROGMEM Language_Str MSG_BABYSTEP_I                      = _UxGT("Babystep ") AXIS4_STR;
+  PROGMEM Language_Str MSG_BABYSTEP_J                      = _UxGT("Babystep ") AXIS5_STR;
+  PROGMEM Language_Str MSG_BABYSTEP_K                      = _UxGT("Babystep ") AXIS6_STR;
   PROGMEM Language_Str MSG_BABYSTEP_TOTAL                  = _UxGT("Total");
   PROGMEM Language_Str MSG_ENDSTOP_ABORT                   = _UxGT("Endstop Abort");
   PROGMEM Language_Str MSG_HEATING_FAILED_LCD              = _UxGT("Heating Failed");
