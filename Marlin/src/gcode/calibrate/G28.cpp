@@ -211,13 +211,15 @@ void GcodeSuite::G28() {
 
   TERN_(LASER_MOVE_G28_OFF, cutter.set_inline_enabled(false));  // turn off laser
 
+  TERN_(FULL_REPORT_TO_HOST_FEATURE, set_and_report_grblstate(M_HOMING));
+
   #if ENABLED(DUAL_X_CARRIAGE)
     bool IDEX_saved_duplication_state = extruder_duplication_enabled;
     DualXMode IDEX_saved_mode = dual_x_carriage_mode;
   #endif
 
   #if ENABLED(MARLIN_DEV_MODE)
-    if (parser.seen('S')) {
+    if (parser.seen_test('S')) {
       LOOP_LINEAR(a) set_axis_is_at_home((AxisEnum)a);
       sync_plan_position();
       SERIAL_ECHOLNPGM("Simulated Homing");
@@ -332,16 +334,16 @@ void GcodeSuite::G28() {
                  needK = _UNSAFE(K)
                ),
                // Home each axis if needed or flagged
-               homeX = needX || parser.seen('X'),
-               homeY = needY || parser.seen('Y'),
+               homeX = needX || parser.seen_test('X'),
+               homeY = needY || parser.seen_test('Y'),
                #if LINEAR_AXES >= 4
-                 homeI = needI || parser.seen(AXIS4_NAME),
+                 homeI = needI || parser.seen_test(AXIS4_NAME),
                #endif
                #if LINEAR_AXES >= 5
-                 homeJ = needJ || parser.seen(AXIS5_NAME),
+                 homeJ = needJ || parser.seen_test(AXIS5_NAME),
                #endif
                #if LINEAR_AXES >= 6
-                 homeK = needK || parser.seen(AXIS6_NAME),
+                 homeK = needK || parser.seen_test(AXIS6_NAME),
                #endif
                // Home-all if all or none are flagged
                home_all = true GANG_N(LINEAR_AXES,
@@ -546,6 +548,8 @@ void GcodeSuite::G28() {
 
   if (ENABLED(NANODLP_Z_SYNC) && (doZ || ENABLED(NANODLP_ALL_AXIS)))
     SERIAL_ECHOLNPGM(STR_Z_MOVE_COMP);
+
+  TERN_(FULL_REPORT_TO_HOST_FEATURE, set_and_report_grblstate(M_IDLE));
 
   #if HAS_L64XX
     // Set L6470 absolute position registers to counts

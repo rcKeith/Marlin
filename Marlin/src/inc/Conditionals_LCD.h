@@ -26,8 +26,8 @@
  * Conditionals that need to be set before Configuration_adv.h or pins.h
  */
 
-// MKS_LCD12864 is a variant of MKS_MINI_12864
-#if ENABLED(MKS_LCD12864)
+// MKS_LCD12864A/B is a variant of MKS_MINI_12864
+#if EITHER(MKS_LCD12864A, MKS_LCD12864B)
   #define MKS_MINI_12864
 #endif
 
@@ -641,6 +641,16 @@
 #endif
 
 /**
+ * Disable unused SINGLENOZZLE sub-options
+ */
+#if DISABLED(SINGLENOZZLE)
+  #undef SINGLENOZZLE_STANDBY_TEMP
+#endif
+#if !BOTH(HAS_FAN, SINGLENOZZLE)
+  #undef SINGLENOZZLE_STANDBY_FAN
+#endif
+
+/**
  * DISTINCT_E_FACTORS affects how some E factors are accessed
  */
 #ifndef LINEAR_AXES
@@ -800,14 +810,6 @@
   #endif
 #endif // FILAMENT_RUNOUT_SENSOR
 
-#if EITHER(MESH_BED_LEVELING, AUTO_BED_LEVELING_UBL)
-  #undef PROBE_MANUALLY
-#endif
-
-#if ANY(HAS_BED_PROBE, PROBE_MANUALLY, MESH_BED_LEVELING)
-  #define PROBE_SELECTED 1
-#endif
-
 #if HAS_BED_PROBE
   #if DISABLED(NOZZLE_AS_PROBE)
     #define HAS_PROBE_XY_OFFSET 1
@@ -877,13 +879,15 @@
     #define PLANNER_LEVELING 1
   #endif
 #endif
-#if EITHER(HAS_ABL_OR_UBL, Z_MIN_PROBE_REPEATABILITY_TEST)
-  #define HAS_PROBING_PROCEDURE 1
-#endif
 #if !HAS_LEVELING
-  #undef PROBE_MANUALLY
   #undef RESTORE_LEVELING_AFTER_G28
   #undef ENABLE_LEVELING_AFTER_G28
+#endif
+#if !HAS_LEVELING || EITHER(MESH_BED_LEVELING, AUTO_BED_LEVELING_UBL)
+  #undef PROBE_MANUALLY
+#endif
+#if ANY(HAS_BED_PROBE, PROBE_MANUALLY, MESH_BED_LEVELING)
+  #define PROBE_SELECTED 1
 #endif
 
 #ifdef GRID_MAX_POINTS_X
@@ -933,7 +937,7 @@
   #define NORMAL_AXIS Z_AXIS
 #endif
 
-#if EITHER(MORGAN_SCARA, AXEL_TPARA)
+#if ANY(MORGAN_SCARA, MP_SCARA, AXEL_TPARA)
   #define IS_SCARA 1
   #define IS_KINEMATIC 1
 #elif ENABLED(DELTA)
@@ -963,15 +967,19 @@
 // Serial Port Info
 //
 #ifdef SERIAL_PORT_2
-  #define NUM_SERIAL 2
   #define HAS_MULTI_SERIAL 1
+  #ifdef SERIAL_PORT_3
+    #define NUM_SERIAL 3
+  #else
+    #define NUM_SERIAL 2
+  #endif
 #elif defined(SERIAL_PORT)
   #define NUM_SERIAL 1
 #else
   #define NUM_SERIAL 0
   #undef BAUD_RATE_GCODE
 #endif
-#if SERIAL_PORT == -1 || SERIAL_PORT_2 == -1
+#if SERIAL_PORT == -1 || SERIAL_PORT_2 == -1 || SERIAL_PORT_3 == -1
   #define HAS_USB_SERIAL 1
 #endif
 #if SERIAL_PORT_2 == -2
@@ -1144,6 +1152,9 @@
   #define TFT_DEFAULT_ORIENTATION (TFT_EXCHANGE_XY)
   #define TFT_RES_1024x600
   #define TFT_INTERFACE_LTDC
+  #if ENABLED(TOUCH_SCREEN)
+    #define TFT_TOUCH_DEVICE_GT911
+  #endif
 #elif ENABLED(TFT_GENERIC)
   #define TFT_DEFAULT_ORIENTATION (TFT_EXCHANGE_XY | TFT_INVERT_X | TFT_INVERT_Y)
   #if NONE(TFT_RES_320x240, TFT_RES_480x272, TFT_RES_480x320)
@@ -1232,16 +1243,30 @@
   #define HAS_UI_1024x600 1
 #endif
 #if ANY(HAS_UI_320x240, HAS_UI_480x320, HAS_UI_480x272)
-  #define LCD_HEIGHT TERN(TOUCH_SCREEN, 6, 7) // Fewer lines with touch buttons onscreen
+  #define LCD_HEIGHT TERN(TOUCH_SCREEN, 6, 7)   // Fewer lines with touch buttons onscreen
 #elif HAS_UI_1024x600
   #define LCD_HEIGHT TERN(TOUCH_SCREEN, 12, 13) // Fewer lines with touch buttons onscreen
 #endif
 
 // This emulated DOGM has 'touch/xpt2046', not 'tft/xpt2046'
-#if ENABLED(TOUCH_SCREEN) && !HAS_GRAPHICAL_TFT
-  #undef TOUCH_SCREEN
-  #if ENABLED(TFT_CLASSIC_UI)
-    #define HAS_TOUCH_BUTTONS 1
+#if ENABLED(TOUCH_SCREEN)
+  #if NONE(TFT_TOUCH_DEVICE_GT911, TFT_TOUCH_DEVICE_XPT2046)
+    #define TFT_TOUCH_DEVICE_XPT2046          // ADS7843/XPT2046 ADC Touchscreen such as ILI9341 2.8
+  #endif
+  #if ENABLED(TFT_TOUCH_DEVICE_GT911)         // GT911 Capacitive touch screen such as BIQU_BX_TFT70
+    #undef TOUCH_SCREEN_CALIBRATION
+    #undef TOUCH_CALIBRATION_AUTO_SAVE
+  #endif
+  #if !HAS_GRAPHICAL_TFT
+    #undef TOUCH_SCREEN
+    #if ENABLED(TFT_CLASSIC_UI)
+      #define HAS_TOUCH_BUTTONS 1
+      #if ENABLED(TFT_TOUCH_DEVICE_GT911)
+        #define HAS_CAP_TOUCH_BUTTONS 1
+      #else
+        #define HAS_RES_TOUCH_BUTTONS 1
+      #endif
+    #endif
   #endif
 #endif
 

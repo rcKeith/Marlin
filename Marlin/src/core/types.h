@@ -93,6 +93,7 @@ typedef float feedRate_t;
 // For more resolition (e.g., for a chocolate printer) this may later be changed to Celsius x 100
 //
 typedef int16_t celsius_t;
+typedef float celsius_float_t;
 
 //
 // On AVR pointers are only 2 bytes so use 'const float &' for 'const float'
@@ -103,17 +104,18 @@ typedef int16_t celsius_t;
   typedef const float const_float_t;
 #endif
 typedef const_float_t const_feedRate_t;
+typedef const_float_t const_celsius_float_t;
 
 // Conversion macros
-#define MMM_TO_MMS(MM_M) feedRate_t(float(MM_M) / 60.0f)
-#define MMS_TO_MMM(MM_S) (float(MM_S) * 60.0f)
+#define MMM_TO_MMS(MM_M) feedRate_t(static_cast<float>(MM_M) / 60.0f)
+#define MMS_TO_MMM(MM_S) (static_cast<float>(MM_S) * 60.0f)
 
 //
 // Coordinates structures for XY, XYZ, XYZE...
 //
 
 // Helpers
-#define _RECIP(N) ((N) ? 1.0f / float(N) : 0.0f)
+#define _RECIP(N) ((N) ? 1.0f / static_cast<float>(N) : 0.0f)
 #define _ABS(N) ((N) < 0 ? -(N) : (N))
 #define _LS(N)  (N = (T)(uint32_t(N) << v))
 #define _RS(N)  (N = (T)(uint32_t(N) >> v))
@@ -234,8 +236,8 @@ struct XYval {
   FI XYval<int32_t>   asLong()                    const { return { int32_t(x), int32_t(y) }; }
   FI XYval<int32_t>   ROUNDL()                          { return { int32_t(LROUND(x)), int32_t(LROUND(y)) }; }
   FI XYval<int32_t>   ROUNDL()                    const { return { int32_t(LROUND(x)), int32_t(LROUND(y)) }; }
-  FI XYval<float>    asFloat()                          { return {   float(x),   float(y) }; }
-  FI XYval<float>    asFloat()                    const { return {   float(x),   float(y) }; }
+  FI XYval<float>    asFloat()                          { return { static_cast<float>(x), static_cast<float>(y) }; }
+  FI XYval<float>    asFloat()                    const { return { static_cast<float>(x), static_cast<float>(y) }; }
   FI XYval<float> reciprocal()                    const { return {  _RECIP(x),  _RECIP(y) }; }
   FI XYval<float>  asLogical()                    const { XYval<float> o = asFloat(); toLogical(o); return o; }
   FI XYval<float>   asNative()                    const { XYval<float> o = asFloat(); toNative(o);  return o; }
@@ -358,9 +360,11 @@ struct XYZval {
   FI XYZval<int16_t>   asInt()                   const { return ARRAY_N(LINEAR_AXES, int16_t(x), int16_t(y), int16_t(z), int16_t(i), int16_t(j), int16_t(k)); }
   FI XYZval<int32_t>  asLong()                         { return ARRAY_N(LINEAR_AXES, int32_t(x), int32_t(y), int32_t(z), int32_t(i), int32_t(j), int32_t(k)); }
   FI XYZval<int32_t>  asLong()                   const { return ARRAY_N(LINEAR_AXES, int32_t(x), int32_t(y), int32_t(z), int32_t(i), int32_t(j), int32_t(k)); }
-  FI XYZval<float>   asFloat()                         { return ARRAY_N(LINEAR_AXES,   float(x),   float(y),   float(z),   float(i),   float(j),   float(k)); }
-  FI XYZval<float>   asFloat()                   const { return ARRAY_N(LINEAR_AXES,   float(x),   float(y),   float(z),   float(i),   float(j),   float(k)); }
-  FI XYZval<float> reciprocal()                  const { return ARRAY_N(LINEAR_AXES,  _RECIP(x),  _RECIP(y),  _RECIP(z),  _RECIP(i),  _RECIP(j),  _RECIP(k)); }
+  FI XYZval<int32_t>  ROUNDL()                         { return ARRAY_N(LINEAR_AXES, int32_t(ROUNDL(x)), int32_t(ROUNDL(y)), int32_t(ROUNDL(z)), int32_t(ROUNDL(i)), int32_t(ROUNDL(j)), int32_t(ROUNDL(k))); }
+  FI XYZval<int32_t>  ROUNDL()                   const { return ARRAY_N(LINEAR_AXES, int32_t(ROUNDL(x)), int32_t(ROUNDL(y)), int32_t(ROUNDL(z)), int32_t(ROUNDL(i)), int32_t(ROUNDL(j)), int32_t(ROUNDL(k))); }
+  FI XYZval<float>   asFloat()                         { return ARRAY_N(LINEAR_AXES, static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), static_cast<float>(i), static_cast<float>(j), static_cast<float>(k)); }
+  FI XYZval<float>   asFloat()                   const { return ARRAY_N(LINEAR_AXES, static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), static_cast<float>(i), static_cast<float>(j), static_cast<float>(k)); }
+  FI XYZval<float> reciprocal()                  const { return ARRAY_N(LINEAR_AXES, _RECIP(x),  _RECIP(y),  _RECIP(z),  _RECIP(i),  _RECIP(j),  _RECIP(k)); }
   FI XYZval<float> asLogical()                   const { XYZval<float> o = asFloat(); toLogical(o); return o; }
   FI XYZval<float>  asNative()                   const { XYZval<float> o = asFloat(); toNative(o);  return o; }
   FI operator       XYval<T>&()                        { return *(XYval<T>*)this; }
@@ -494,9 +498,11 @@ struct XYZEval {
   FI XYZEval<int16_t>   asInt()                         const { return { LIST_N(LINEAR_AXES, int16_t(x), int16_t(y), int16_t(z), int16_t(i), int16_t(j), int16_t(k)), int16_t(e) }; }
   FI XYZEval<int32_t>  asLong()                               { return { LIST_N(LINEAR_AXES, int32_t(x), int32_t(y), int32_t(z), int32_t(i), int32_t(j), int32_t(k)), int32_t(e) }; }
   FI XYZEval<int32_t>  asLong()                         const { return { LIST_N(LINEAR_AXES, int32_t(x), int32_t(y), int32_t(z), int32_t(i), int32_t(j), int32_t(k)), int32_t(e) }; }
-  FI XYZEval<float>   asFloat()                               { return { LIST_N(LINEAR_AXES,   float(x),   float(y),   float(z),   float(i),   float(j),   float(k)),   float(e) }; }
-  FI XYZEval<float>   asFloat()                         const { return { LIST_N(LINEAR_AXES,   float(x),   float(y),   float(z),   float(i),   float(j),   float(k)),   float(e) }; }
-  FI XYZEval<float> reciprocal()                        const { return { LIST_N(LINEAR_AXES,  _RECIP(x),  _RECIP(y),  _RECIP(z),  _RECIP(i),  _RECIP(j),  _RECIP(k)),  _RECIP(e) }; }
+  FI XYZEval<int32_t>  ROUNDL()                               { return { LIST_N(LINEAR_AXES, int32_t(ROUNDL(x)), int32_t(ROUNDL(y)), int32_t(ROUNDL(z)), int32_t(ROUNDL(i)), int32_t(ROUNDL(j)), int32_t(ROUNDL(k))), int32_t(ROUNDL(e)) }; }
+  FI XYZEval<int32_t>  ROUNDL()                         const { return { LIST_N(LINEAR_AXES, int32_t(ROUNDL(x)), int32_t(ROUNDL(y)), int32_t(ROUNDL(z)), int32_t(ROUNDL(i)), int32_t(ROUNDL(j)), int32_t(ROUNDL(k))), int32_t(ROUNDL(e)) }; }
+  FI XYZEval<float>   asFloat()                               { return { LIST_N(LINEAR_AXES, static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), static_cast<float>(i), static_cast<float>(j), static_cast<float>(k)), static_cast<float>(e) }; }
+  FI XYZEval<float>   asFloat()                         const { return { LIST_N(LINEAR_AXES, static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), static_cast<float>(i), static_cast<float>(j), static_cast<float>(k)), static_cast<float>(e) }; }
+  FI XYZEval<float> reciprocal()                        const { return { LIST_N(LINEAR_AXES, _RECIP(x),  _RECIP(y),  _RECIP(z),  _RECIP(i),  _RECIP(j),  _RECIP(k)),  _RECIP(e) }; }
   FI XYZEval<float> asLogical()                         const { XYZEval<float> o = asFloat(); toLogical(o); return o; }
   FI XYZEval<float>  asNative()                         const { XYZEval<float> o = asFloat(); toNative(o);  return o; }
   FI operator       XYval<T>&()                               { return *(XYval<T>*)this; }

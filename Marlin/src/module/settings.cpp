@@ -154,8 +154,8 @@
 #endif
 
 #if ENABLED(DGUS_LCD_UI_MKS)
-  #include "../lcd/extui/lib/dgus/DGUSScreenHandler.h"
-  #include "../lcd/extui/lib/dgus/DGUSDisplayDef.h"
+  #include "../lcd/extui/dgus/DGUSScreenHandler.h"
+  #include "../lcd/extui/dgus/DGUSDisplayDef.h"
 #endif
 
 #pragma pack(push, 1) // No padding between variables
@@ -533,6 +533,8 @@ void MarlinSettings::postprocess() {
 
   TERN_(CASELIGHT_USES_BRIGHTNESS, caselight.update_brightness());
 
+  TERN_(EXTENSIBLE_UI, ExtUI::onPostprocessSettings());
+
   // Refresh steps_to_mm with the reciprocal of axis_steps_per_mm
   // and init stepper.count[], planner.position[] with current_position
   planner.refresh_positioning();
@@ -899,8 +901,8 @@ void MarlinSettings::postprocess() {
       HOTEND_LOOP() {
         PIDCF_t pidcf = {
           #if DISABLED(PIDTEMP)
-            MFNAN, MFNAN, MFNAN,
-            MFNAN, MFNAN
+            NAN, NAN, NAN,
+            NAN, NAN
           #else
                          PID_PARAM(Kp, e),
             unscalePID_i(PID_PARAM(Ki, e)),
@@ -927,7 +929,7 @@ void MarlinSettings::postprocess() {
 
       const PID_t bed_pid = {
         #if DISABLED(PIDTEMPBED)
-          MFNAN, MFNAN, MFNAN
+          NAN, NAN, NAN
         #else
           // Store the unscaled PID values
           thermalManager.temp_bed.pid.Kp,
@@ -946,7 +948,7 @@ void MarlinSettings::postprocess() {
 
       const PID_t chamber_pid = {
         #if DISABLED(PIDTEMPCHAMBER)
-          MFNAN, MFNAN, MFNAN
+          NAN, NAN, NAN
         #else
           // Store the unscaled PID values
           thermalManager.temp_chamber.pid.Kp,
@@ -1814,7 +1816,7 @@ void MarlinSettings::postprocess() {
           PIDCF_t pidcf;
           EEPROM_READ(pidcf);
           #if ENABLED(PIDTEMP)
-            if (!validating && !ISNAN(pidcf.Kp)) {
+            if (!validating && !isnan(pidcf.Kp)) {
               // Scale PID values since EEPROM values are unscaled
               PID_PARAM(Kp, e) = pidcf.Kp;
               PID_PARAM(Ki, e) = scalePID_i(pidcf.Ki);
@@ -1846,7 +1848,7 @@ void MarlinSettings::postprocess() {
         PID_t pid;
         EEPROM_READ(pid);
         #if ENABLED(PIDTEMPBED)
-          if (!validating && !ISNAN(pid.Kp)) {
+          if (!validating && !isnan(pid.Kp)) {
             // Scale PID values since EEPROM values are unscaled
             thermalManager.temp_bed.pid.Kp = pid.Kp;
             thermalManager.temp_bed.pid.Ki = scalePID_i(pid.Ki);
@@ -1862,7 +1864,7 @@ void MarlinSettings::postprocess() {
         PID_t pid;
         EEPROM_READ(pid);
         #if ENABLED(PIDTEMPCHAMBER)
-          if (!validating && !ISNAN(pid.Kp)) {
+          if (!validating && !isnan(pid.Kp)) {
             // Scale PID values since EEPROM values are unscaled
             thermalManager.temp_chamber.pid.Kp = pid.Kp;
             thermalManager.temp_chamber.pid.Ki = scalePID_i(pid.Ki);
@@ -2849,25 +2851,20 @@ void MarlinSettings::reset() {
   // Preheat parameters
   //
   #if PREHEAT_COUNT
+    #define _PITEM(N,T) PREHEAT_##N##_##T,
     #if HAS_HOTEND
-      constexpr uint16_t hpre[] = ARRAY_N(PREHEAT_COUNT, PREHEAT_1_TEMP_HOTEND, PREHEAT_2_TEMP_HOTEND, PREHEAT_3_TEMP_HOTEND, PREHEAT_4_TEMP_HOTEND, PREHEAT_5_TEMP_HOTEND);
+      constexpr uint16_t hpre[] = { REPEAT2_S(1, INCREMENT(PREHEAT_COUNT), _PITEM, TEMP_HOTEND) };
     #endif
     #if HAS_HEATED_BED
-      constexpr uint16_t bpre[] = ARRAY_N(PREHEAT_COUNT, PREHEAT_1_TEMP_BED, PREHEAT_2_TEMP_BED, PREHEAT_3_TEMP_BED, PREHEAT_4_TEMP_BED, PREHEAT_5_TEMP_BED);
+      constexpr uint16_t bpre[] = { REPEAT2_S(1, INCREMENT(PREHEAT_COUNT), _PITEM, TEMP_BED) };
     #endif
     #if HAS_FAN
-      constexpr uint8_t fpre[] = ARRAY_N(PREHEAT_COUNT, PREHEAT_1_FAN_SPEED, PREHEAT_2_FAN_SPEED, PREHEAT_3_FAN_SPEED, PREHEAT_4_FAN_SPEED, PREHEAT_5_FAN_SPEED);
+      constexpr uint8_t fpre[] = { REPEAT2_S(1, INCREMENT(PREHEAT_COUNT), _PITEM, FAN_SPEED) };
     #endif
     LOOP_L_N(i, PREHEAT_COUNT) {
-      #if HAS_HOTEND
-        ui.material_preset[i].hotend_temp = hpre[i];
-      #endif
-      #if HAS_HEATED_BED
-        ui.material_preset[i].bed_temp = bpre[i];
-      #endif
-      #if HAS_FAN
-        ui.material_preset[i].fan_speed = fpre[i];
-      #endif
+      TERN_(HAS_HOTEND,     ui.material_preset[i].hotend_temp = hpre[i]);
+      TERN_(HAS_HEATED_BED, ui.material_preset[i].bed_temp = bpre[i]);
+      TERN_(HAS_FAN,        ui.material_preset[i].fan_speed = fpre[i]);
     }
   #endif
 
