@@ -127,7 +127,8 @@ void setup_endstop_interrupts() {
       static_assert(digitalPinHasPCICR(X_MAX_PIN), "X_MAX_PIN is not interrupt-capable. Disable ENDSTOP_INTERRUPTS_FEATURE to continue.");
       pciSetup(X_MAX_PIN);
     #endif
-  #elif HAS_X_MIN
+  #endif
+  #if HAS_X_MIN
     #if (digitalPinToInterrupt(X_MIN_PIN) != NOT_AN_INTERRUPT)
       _ATTACH(X_MIN_PIN);
     #else
@@ -142,7 +143,8 @@ void setup_endstop_interrupts() {
       static_assert(digitalPinHasPCICR(Y_MAX_PIN), "Y_MAX_PIN is not interrupt-capable. Disable ENDSTOP_INTERRUPTS_FEATURE to continue.");
       pciSetup(Y_MAX_PIN);
     #endif
-  #elif HAS_Y_MIN
+  #endif
+  #if HAS_Y_MIN
     #if (digitalPinToInterrupt(Y_MIN_PIN) != NOT_AN_INTERRUPT)
       _ATTACH(Y_MIN_PIN);
     #else
@@ -157,7 +159,8 @@ void setup_endstop_interrupts() {
       static_assert(digitalPinHasPCICR(Z_MAX_PIN), "Z_MAX_PIN is not interrupt-capable. Disable ENDSTOP_INTERRUPTS_FEATURE to continue.");
       pciSetup(Z_MAX_PIN);
     #endif
-  #elif HAS_Z_MIN
+  #endif
+  #if HAS_Z_MIN
     #if (digitalPinToInterrupt(Z_MIN_PIN) != NOT_AN_INTERRUPT)
       _ATTACH(Z_MIN_PIN);
     #else
@@ -172,7 +175,8 @@ void setup_endstop_interrupts() {
       static_assert(digitalPinHasPCICR(X2_MAX_PIN), "X2_MAX_PIN is not interrupt-capable. Disable ENDSTOP_INTERRUPTS_FEATURE to continue.");
       pciSetup(X2_MAX_PIN);
     #endif
-  #elif HAS_X2_MIN
+  #endif
+  #if HAS_X2_MIN
     #if (digitalPinToInterrupt(X2_MIN_PIN) != NOT_AN_INTERRUPT)
       _ATTACH(X2_MIN_PIN);
     #else
@@ -187,7 +191,8 @@ void setup_endstop_interrupts() {
       static_assert(digitalPinHasPCICR(Y2_MAX_PIN), "Y2_MAX_PIN is not interrupt-capable. Disable ENDSTOP_INTERRUPTS_FEATURE to continue.");
       pciSetup(Y2_MAX_PIN);
     #endif
-  #elif HAS_Y2_MIN
+  #endif
+  #if HAS_Y2_MIN
     #if (digitalPinToInterrupt(Y2_MIN_PIN) != NOT_AN_INTERRUPT)
       _ATTACH(Y2_MIN_PIN);
     #else
@@ -202,7 +207,8 @@ void setup_endstop_interrupts() {
       static_assert(digitalPinHasPCICR(Z2_MAX_PIN), "Z2_MAX_PIN is not interrupt-capable. Disable ENDSTOP_INTERRUPTS_FEATURE to continue.");
       pciSetup(Z2_MAX_PIN);
     #endif
-  #elif HAS_Z2_MIN
+  #endif
+  #if HAS_Z2_MIN
     #if (digitalPinToInterrupt(Z2_MIN_PIN) != NOT_AN_INTERRUPT)
       _ATTACH(Z2_MIN_PIN);
     #else
@@ -217,7 +223,8 @@ void setup_endstop_interrupts() {
       static_assert(digitalPinHasPCICR(Z3_MAX_PIN), "Z3_MAX_PIN is not interrupt-capable. Disable ENDSTOP_INTERRUPTS_FEATURE to continue.");
       pciSetup(Z3_MAX_PIN);
     #endif
-  #elif HAS_Z3_MIN
+  #endif
+  #if HAS_Z3_MIN
     #if (digitalPinToInterrupt(Z3_MIN_PIN) != NOT_AN_INTERRUPT)
       _ATTACH(Z3_MIN_PIN);
     #else
@@ -232,7 +239,8 @@ void setup_endstop_interrupts() {
       static_assert(digitalPinHasPCICR(Z4_MAX_PIN), "Z4_MAX_PIN is not interrupt-capable. Disable ENDSTOP_INTERRUPTS_FEATURE to continue.");
       pciSetup(Z4_MAX_PIN);
     #endif
-  #elif HAS_Z4_MIN
+  #endif
+  #if HAS_Z4_MIN
     #if (digitalPinToInterrupt(Z4_MIN_PIN) != NOT_AN_INTERRUPT)
       _ATTACH(Z4_MIN_PIN);
     #else

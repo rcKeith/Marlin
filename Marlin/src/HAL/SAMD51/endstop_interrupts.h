@@ -176,7 +176,8 @@ void setup_endstop_interrupts() {
       #error "X_MAX_PIN has no EXTINT line available."
     #endif
     _ATTACH(X_MAX_PIN);
-  #elif HAS_X_MIN
+  #endif
+  #if HAS_X_MIN
     #if !AVAILABLE_EILINE(X_MIN_PIN)
       #error "X_MIN_PIN has no EXTINT line available."
     #endif
@@ -187,7 +188,8 @@ void setup_endstop_interrupts() {
       #error "Y_MAX_PIN has no EXTINT line available."
     #endif
     _ATTACH(Y_MAX_PIN);
-  #elif HAS_Y_MIN
+  #endif
+  #if HAS_Y_MIN
     #if !AVAILABLE_EILINE(Y_MIN_PIN)
       #error "Y_MIN_PIN has no EXTINT line available."
     #endif
@@ -198,7 +200,8 @@ void setup_endstop_interrupts() {
       #error "Z_MAX_PIN has no EXTINT line available."
     #endif
     _ATTACH(Z_MAX_PIN);
-  #elif HAS_Z_MIN
+  #endif
+  #if HAS_Z_MIN
     #if !AVAILABLE_EILINE(Z_MIN_PIN)
       #error "Z_MIN_PIN has no EXTINT line available."
     #endif
@@ -209,7 +212,8 @@ void setup_endstop_interrupts() {
       #error "Z2_MAX_PIN has no EXTINT line available."
     #endif
     _ATTACH(Z2_MAX_PIN);
-  #elif HAS_Z2_MIN
+  #endif
+  #if HAS_Z2_MIN
     #if !AVAILABLE_EILINE(Z2_MIN_PIN)
       #error "Z2_MIN_PIN has no EXTINT line available."
     #endif
@@ -220,7 +224,8 @@ void setup_endstop_interrupts() {
       #error "Z3_MAX_PIN has no EXTINT line available."
     #endif
     _ATTACH(Z3_MAX_PIN);
-  #elif HAS_Z3_MIN
+  #endif
+  #if HAS_Z3_MIN
     #if !AVAILABLE_EILINE(Z3_MIN_PIN)
       #error "Z3_MIN_PIN has no EXTINT line available."
     #endif
@@ -231,7 +236,8 @@ void setup_endstop_interrupts() {
       #error "Z4_MAX_PIN has no EXTINT line available."
     #endif
     _ATTACH(Z4_MAX_PIN);
-  #elif HAS_Z4_MIN
+  #endif
+  #if HAS_Z4_MIN
     #if !AVAILABLE_EILINE(Z4_MIN_PIN)
       #error "Z4_MIN_PIN has no EXTINT line available."
     #endif

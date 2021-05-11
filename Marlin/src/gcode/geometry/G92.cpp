@@ -57,11 +57,10 @@ void GcodeSuite::G92() {
   #endif
 
   switch (subcode_G92) {
-    default: return;
+    default: return;                                                  // Ignore unknown G92.x
 
     #if ENABLED(CNC_COORDINATE_SYSTEMS) && !IS_SCARA
-      case 1:
-        // Zero the G92 values and restore current position
+      case 1:                                                         // G92.1 - Zero the Workspace Offset
         LOOP_LINEAR(i) if (position_shift[i]) {
           position_shift[i] = 0;
           update_workspace_offset((AxisEnum)i);
@@ -79,6 +78,7 @@ void GcodeSuite::G92() {
         }
         break;
     #endif
+
     case 0:
       LOOP_NUM_AXIS(i) {
         if (parser.seenval(axis_codes[i])) {
