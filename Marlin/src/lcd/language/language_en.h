@@ -72,6 +72,9 @@ namespace Language_en {
   PROGMEM Language_Str MSG_AUTO_HOME_X                     = _UxGT("Home X");
   PROGMEM Language_Str MSG_AUTO_HOME_Y                     = _UxGT("Home Y");
   PROGMEM Language_Str MSG_AUTO_HOME_Z                     = _UxGT("Home Z");
+  PROGMEM Language_Str MSG_AUTO_HOME_I                     = _UxGT("Home ") AXIS4_STR;
+  PROGMEM Language_Str MSG_AUTO_HOME_J                     = _UxGT("Home ") AXIS5_STR;
+  PROGMEM Language_Str MSG_AUTO_HOME_K                     = _UxGT("Home ") AXIS6_STR;
   PROGMEM Language_Str MSG_AUTO_Z_ALIGN                    = _UxGT("Auto Z-Align");
   PROGMEM Language_Str MSG_ITERATION                       = _UxGT("G34 Iteration: %i");
   PROGMEM Language_Str MSG_DECREASING_ACCURACY             = _UxGT("Accuracy Decreasing!");
