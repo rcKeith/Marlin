@@ -202,8 +202,11 @@ void L64XX_Marlin::init_to_defaults() {
   #if AXIS_IS_L64XX(Z2)
     L6470_INIT_CHIP(Z2);
   #endif
-  #if AXIS_IS_L64XX(Z3) // TODO: What about Z4?
+  #if AXIS_IS_L64XX(Z3)
     L6470_INIT_CHIP(Z3);
+  #endif
+  #if AXIS_IS_L64XX(Z4)
+    L6470_INIT_CHIP(Z4);
   #endif
   #if AXIS_IS_L64XX(I)
     L6470_INIT_CHIP(I);
