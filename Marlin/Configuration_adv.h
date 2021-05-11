@@ -2010,9 +2010,6 @@
 // Support for G5 with XYZE destination and IJPQ offsets. Requires ~2666 bytes.
 //#define BEZIER_CURVE_SUPPORT
 
-// Support for G81 (drilling), G82 (spot drilling) G83 (peck drilling)
-//#define DRILLING_CANNED_CYCLES
-
 /**
  * Direct Stepping
  *
