@@ -36,7 +36,6 @@
 #define _XMIN_   100
 #define _YMIN_   200
 #define _ZMIN_   300
-#define _DMIN_   400
 #define _IMIN_   400
 #define _JMIN_   500
 #define _KMIN_   600
@@ -247,18 +246,25 @@
     memcpy(&a[0],&b[0],_MIN(sizeof(a),sizeof(b))); \
   }while(0)
 
-#define CODE_9( A,B,C,D,E,F,G,H,I,...) do{ A; B; C; D; E; F; G; H; I; }while(0)
-#define CODE_8( A,B,C,D,E,F,G,H,...) do{ A; B; C; D; E; F; G; H; }while(0)
-#define CODE_7( A,B,C,D,E,F,G,...) do{ A; B; C; D; E; F; G; }while(0)
-#define CODE_6( A,B,C,D,E,F,...) do{ A; B; C; D; E; F; }while(0)
-#define CODE_5( A,B,C,D,E,...) do{ A; B; C; D; E; }while(0)
-#define CODE_4( A,B,C,D,...) do{ A; B; C; D; }while(0)
-#define CODE_3( A,B,C,...) do{ A; B; C; }while(0)
-#define CODE_2( A,B,...) do{ A; B; }while(0)
-#define CODE_1( A,...) do{ A; }while(0)
+#define CODE_9( A,B,C,D,E,F,G,H,I,...) A; B; C; D; E; F; G; H; I
+#define CODE_8( A,B,C,D,E,F,G,H,...) A; B; C; D; E; F; G; H
+#define CODE_7( A,B,C,D,E,F,G,...) A; B; C; D; E; F; G
+#define CODE_6( A,B,C,D,E,F,...) A; B; C; D; E; F
+#define CODE_5( A,B,C,D,E,...) A; B; C; D; E
+#define CODE_4( A,B,C,D,...) A; B; C; D
+#define CODE_3( A,B,C,...) A; B; C
+#define CODE_2( A,B,...) A; B
+#define CODE_1( A,...) A
 #define _CODE_N(N,V...) CODE_##N(V)
 #define CODE_N(N,V...) _CODE_N(N,V)
 
+#define GANG_16(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,...) A B C D E F G H I J K L M N O P
+#define GANG_15(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,...) A B C D E F G H I J K L M N O
+#define GANG_14(A,B,C,D,E,F,G,H,I,J,K,L,M,N,...) A B C D E F G H I J K L M N
+#define GANG_13(A,B,C,D,E,F,G,H,I,J,K,L,M...) A B C D E F G H I J K L M
+#define GANG_12(A,B,C,D,E,F,G,H,I,J,K,L...) A B C D E F G H I J K L
+#define GANG_11(A,B,C,D,E,F,G,H,I,J,K,...) A B C D E F G H I J K
+#define GANG_10(A,B,C,D,E,F,G,H,I,J,...) A B C D E F G H I J
 #define GANG_9( A,B,C,D,E,F,G,H,I,...) A B C D E F G H I
 #define GANG_8( A,B,C,D,E,F,G,H,...) A B C D E F G H
 #define GANG_7( A,B,C,D,E,F,G,...) A B C D E F G
@@ -270,6 +276,7 @@
 #define GANG_1( A,...) A
 #define _GANG_N(N,V...) GANG_##N(V)
 #define GANG_N(N,V...) _GANG_N(N,V)
+#define GANG_N_1(N,K) _GANG_N(N,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K)
 
 // Macros for initializing arrays
 #define LIST_16(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,...) A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P

@@ -1638,18 +1638,14 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
  */
 constexpr float hbm[] = HOMING_BUMP_MM;
 static_assert(COUNT(hbm) == LINEAR_AXES, "HOMING_BUMP_MM requires one element per linear axis.");
-static_assert(hbm[X_AXIS] >= 0, "HOMING_BUMP_MM.X must be greater than or equal to 0.");
-static_assert(hbm[Y_AXIS] >= 0, "HOMING_BUMP_MM.Y must be greater than or equal to 0.");
-static_assert(hbm[Z_AXIS] >= 0, "HOMING_BUMP_MM.Z must be greater than or equal to 0.");
-#if LINEAR_AXES >= 4
-  static_assert(hbm[I_AXIS] >= 0, "HOMING_BUMP_MM.I must be greater than or equal to 0.");
-#endif
-#if LINEAR_AXES >= 5
-  static_assert(hbm[J_AXIS] >= 0, "HOMING_BUMP_MM.J must be greater than or equal to 0.");
-#endif
-#if LINEAR_AXES >= 6
-  static_assert(hbm[K_AXIS] >= 0, "HOMING_BUMP_MM.K must be greater than or equal to 0.");
-#endif
+CODE_N(LINEAR_AXES,
+  static_assert(hbm[X_AXIS] >= 0, "HOMING_BUMP_MM.X must be greater than or equal to 0."),
+  static_assert(hbm[Y_AXIS] >= 0, "HOMING_BUMP_MM.Y must be greater than or equal to 0."),
+  static_assert(hbm[Z_AXIS] >= 0, "HOMING_BUMP_MM.Z must be greater than or equal to 0."),
+  static_assert(hbm[I_AXIS] >= 0, "HOMING_BUMP_MM.I must be greater than or equal to 0."),
+  static_assert(hbm[J_AXIS] >= 0, "HOMING_BUMP_MM.J must be greater than or equal to 0."),
+  static_assert(hbm[K_AXIS] >= 0, "HOMING_BUMP_MM.K must be greater than or equal to 0.")
+);
 #if ENABLED(CODEPENDENT_XY_HOMING)
   #if ENABLED(QUICK_HOME)
     #error "QUICK_HOME is incompatible with CODEPENDENT_XY_HOMING."
@@ -2125,15 +2121,7 @@ static_assert(hbm[Z_AXIS] >= 0, "HOMING_BUMP_MM.Z must be greater than or equal 
 #define _PLUG_UNUSED_TEST(A,P) (DISABLED(USE_##P##MIN_PLUG, USE_##P##MAX_PLUG) \
   && !(ENABLED(A##_DUAL_ENDSTOPS) && WITHIN(A##2_USE_ENDSTOP, _##P##MAX_, _##P##MIN_)) \
   && !(ENABLED(A##_MULTI_ENDSTOPS) && WITHIN(A##2_USE_ENDSTOP, _##P##MAX_, _##P##MIN_)) )
-#if LINEAR_AXES == 6
-  #define _AXIS_PLUG_UNUSED_TEST(A) (_PLUG_UNUSED_TEST(A,X) && _PLUG_UNUSED_TEST(A,Y) && _PLUG_UNUSED_TEST(A,Z) && _PLUG_UNUSED_TEST(A,I) && _PLUG_UNUSED_TEST(A,J) && _PLUG_UNUSED_TEST(A,K))
-#elif LINEAR_AXES == 5
-  #define _AXIS_PLUG_UNUSED_TEST(A) (_PLUG_UNUSED_TEST(A,X) && _PLUG_UNUSED_TEST(A,Y) && _PLUG_UNUSED_TEST(A,Z) && _PLUG_UNUSED_TEST(A,I) && _PLUG_UNUSED_TEST(A,J))
-#elif LINEAR_AXES == 4
-  #define _AXIS_PLUG_UNUSED_TEST(A) (_PLUG_UNUSED_TEST(A,X) && _PLUG_UNUSED_TEST(A,Y) && _PLUG_UNUSED_TEST(A,Z) && _PLUG_UNUSED_TEST(A,I))
-#else
-  #define _AXIS_PLUG_UNUSED_TEST(A) (_PLUG_UNUSED_TEST(A,X) && _PLUG_UNUSED_TEST(A,Y) && _PLUG_UNUSED_TEST(A,Z))
-#endif
+#define _AXIS_PLUG_UNUSED_TEST(A) (1 GANG_N(LINEAR_AXES, && _PLUG_UNUSED_TEST(A,X), && _PLUG_UNUSED_TEST(A,Y), && _PLUG_UNUSED_TEST(A,Z), && _PLUG_UNUSED_TEST(A,I), && _PLUG_UNUSED_TEST(A,J), && _PLUG_UNUSED_TEST(A,K) ) )
 
 // A machine with endstops must have a minimum of 3
 #if HAS_ENDSTOPS
@@ -2146,20 +2134,14 @@ static_assert(hbm[Z_AXIS] >= 0, "HOMING_BUMP_MM.Z must be greater than or equal 
   #if _AXIS_PLUG_UNUSED_TEST(Z)
     #error "You must enable USE_ZMIN_PLUG or USE_ZMAX_PLUG."
   #endif
-  #if LINEAR_AXES >= 4
-    #if _AXIS_PLUG_UNUSED_TEST(I)
-      #error "You must enable USE_IMIN_PLUG or USE_IMAX_PLUG."
-    #endif
+  #if LINEAR_AXES >= 4 && _AXIS_PLUG_UNUSED_TEST(I)
+    #error "You must enable USE_IMIN_PLUG or USE_IMAX_PLUG."
   #endif
-  #if LINEAR_AXES >= 5
-    #if _AXIS_PLUG_UNUSED_TEST(J)
-      #error "You must enable USE_JMIN_PLUG or USE_JMAX_PLUG."
-    #endif
+  #if LINEAR_AXES >= 5 && _AXIS_PLUG_UNUSED_TEST(J)
+    #error "You must enable USE_JMIN_PLUG or USE_JMAX_PLUG."
   #endif
-  #if LINEAR_AXES >= 6
-    #if _AXIS_PLUG_UNUSED_TEST(K)
-      #error "You must enable USE_KMIN_PLUG or USE_KMAX_PLUG."
-    #endif
+  #if LINEAR_AXES >= 6 && _AXIS_PLUG_UNUSED_TEST(K)
+    #error "You must enable USE_KMIN_PLUG or USE_KMAX_PLUG."
   #endif
 
   // Delta and Cartesian use 3 homing endstops

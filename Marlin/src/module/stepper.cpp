@@ -2150,18 +2150,14 @@ uint32_t Stepper::block_phase_isr() {
       #endif
 
       uint8_t axis_bits = 0;
-      if (X_MOVE_TEST) SBI(axis_bits, A_AXIS);
-      if (Y_MOVE_TEST) SBI(axis_bits, B_AXIS);
-      if (Z_MOVE_TEST) SBI(axis_bits, C_AXIS);
-      #if LINEAR_AXES >= 4
-        if (current_block->steps.i) SBI(axis_bits, I_AXIS);
-      #endif
-      #if LINEAR_AXES >= 5
-        if (current_block->steps.j) SBI(axis_bits, J_AXIS);
-      #endif
-      #if LINEAR_AXES >= 6
-        if (current_block->steps.k) SBI(axis_bits, K_AXIS);
-      #endif
+      CODE_N(LINEAR_AXES,
+        if (X_MOVE_TEST)            SBI(axis_bits, A_AXIS),
+        if (Y_MOVE_TEST)            SBI(axis_bits, B_AXIS),
+        if (Z_MOVE_TEST)            SBI(axis_bits, C_AXIS),
+        if (current_block->steps.i) SBI(axis_bits, I_AXIS),
+        if (current_block->steps.j) SBI(axis_bits, J_AXIS),
+        if (current_block->steps.k) SBI(axis_bits, K_AXIS)
+      );
       //if (!!current_block->steps.e) SBI(axis_bits, E_AXIS);
       //if (!!current_block->steps.a) SBI(axis_bits, X_HEAD);
       //if (!!current_block->steps.b) SBI(axis_bits, Y_HEAD);

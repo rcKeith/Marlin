@@ -35,16 +35,14 @@
 #include <HardwareSerial.h>
 #include <SPI.h>
 
-enum StealthIndex : uint8_t { STEALTH_AXIS_XY, STEALTH_AXIS_Z,
-  #if LINEAR_AXES >= 4
+enum StealthIndex : uint8_t {
+  LIST_N(DECREMENT(LINEAR_AXES),
+    STEALTH_AXIS_XY,
+    STEALTH_AXIS_Z,
     STEALTH_AXIS_I,
-  #endif
-  #if LINEAR_AXES >= 5
     STEALTH_AXIS_J,
-  #endif
-  #if LINEAR_AXES >= 6
-    STEALTH_AXIS_K,
-  #endif
+    STEALTH_AXIS_K
+  ),
   STEALTH_AXIS_E
 };
 #define TMC_INIT(ST, STEALTH_INDEX) tmc_init(stepper##ST, ST##_CURRENT, ST##_MICROSTEPS, ST##_HYBRID_THRESHOLD, stealthchop_by_axis[STEALTH_INDEX], chopper_timing_##ST, ST##_INTERPOLATE)

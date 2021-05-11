@@ -68,18 +68,7 @@ void menu_backlash();
     START_MENU();
     BACK_ITEM(MSG_ADVANCED_SETTINGS);
     #define EDIT_DAC_PERCENT(A) EDIT_ITEM(uint8, MSG_DAC_PERCENT_##A, &driverPercent[_AXIS(A)], 0, 100, []{ stepper_dac.set_current_percents(driverPercent); })
-    EDIT_DAC_PERCENT(X);
-    EDIT_DAC_PERCENT(Y);
-    EDIT_DAC_PERCENT(Z);
-    #if LINEAR_AXES >= 4
-      EDIT_DAC_PERCENT(I);
-    #endif
-    #if LINEAR_AXES >= 5
-      EDIT_DAC_PERCENT(J);
-    #endif
-    #if LINEAR_AXES >= 6
-      EDIT_DAC_PERCENT(K);
-    #endif
+    CODE_N(LINEAR_AXES, EDIT_DAC_PERCENT(X), EDIT_DAC_PERCENT(Y), EDIT_DAC_PERCENT(Z), EDIT_DAC_PERCENT(I), EDIT_DAC_PERCENT(J), EDIT_DAC_PERCENT(K));
     EDIT_DAC_PERCENT(E);
     ACTION_ITEM(MSG_DAC_EEPROM_WRITE, stepper_dac.commit_eeprom);
     END_MENU();
