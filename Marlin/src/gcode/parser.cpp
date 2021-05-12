@@ -206,7 +206,7 @@ void GCodeParser::parse(char *p) {
 
       #if ENABLED(GCODE_MOTION_MODES)
         if (letter == 'G'
-          && (codenum <= TERN(ARC_SUPPORT, 3, 1) || codenum == 5 || TERN0(G38_PROBE_TARGET, codenum == 38))
+          && (codenum <= TERN(ARC_SUPPORT, 3, 1) || TERN0(BEZIER_CURVE_SUPPORT, codenum == 5) || TERN0(G38_PROBE_TARGET, codenum == 38))
         ) {
           motion_mode_codenum = codenum;
           TERN_(USE_GCODE_SUBCODES, motion_mode_subcode = subcode);
@@ -216,12 +216,10 @@ void GCodeParser::parse(char *p) {
       break;
 
     #if ENABLED(GCODE_MOTION_MODES)
-      #if ENABLED(ARC_SUPPORT)
-        case 'I' ... 'J': // TODO: (DerAndere) Fix axis conflicts with IJ parameters
-          if (motion_mode_codenum != 2 && motion_mode_codenum != 3) return;
-      #endif
-      case 'Q':
-        if (motion_mode_codenum != 5) return;
+      case 'I' ... 'J': // TODO: (DerAndere) Fix axis conflicts with IJ parameters
+        if (TERN1(BEZIER_CURVE_SUPPORT, motion_mode_codenum != 5) \
+          && TERN1(ARC_SUPPORT, motion_mode_codenum != 2 && motion_mode_codenum != 3)) return;
+      case 'Q': if (TERN1(BEZIER_CURVE_SUPPORT, motion_mode_codenum != 5)) return;
       GANG_N(LINEAR_AXES, case 'X':, case 'Y':, case 'Z':, case 'E':, case AXIS4_NAME:, case AXIS5_NAME:, case AXIS6_NAME:)
       case 'F':
         if (motion_mode_codenum < 0) return;
@@ -239,7 +237,7 @@ void GCodeParser::parse(char *p) {
             if (ENABLED(ARC_SUPPORT) && !WITHIN(motion_mode_codenum, 2, 3)) return;
           #endif
         }
-        else if (TERN0(GCODE_MOTION_MODES, motion_mode_codenum != 5)) return;
+        else if (TERN0(GCODE_MOTION_MODES, TERN1(BEZIER_CURVE_SUPPORT, motion_mode_codenum != 5))) return;
       } // fall-thru
       case 'S': {
         codenum = 0;                  // The only valid codenum is 0
