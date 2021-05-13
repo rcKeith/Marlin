@@ -203,9 +203,9 @@ inline void report_logical_position(const xyze_pos_t &rpos) {
       SP_I_LBL, lpos.i,
       SP_J_LBL, lpos.j,
       SP_K_LBL, lpos.k
-    ),
+    )
     #if EXTRUDERS
-      SP_E_LBL, lpos.e
+      , SP_E_LBL, lpos.e
     #endif
   );
 }
