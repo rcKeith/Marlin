@@ -580,12 +580,10 @@
   #undef I_MIN_PIN
   #define I_MIN_PIN          -1
 #endif
-
 #if DISABLED(USE_JMIN_PLUG)
   #undef J_MIN_PIN
   #define J_MIN_PIN          -1
 #endif
-
 #if DISABLED(USE_KMIN_PLUG)
   #undef K_MIN_PIN
   #define K_MIN_PIN          -1
