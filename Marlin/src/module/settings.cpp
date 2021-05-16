@@ -761,7 +761,7 @@ void MarlinSettings::postprocess() {
         EEPROM_WRITE(planner.bed_level_matrix);
       #else
         dummyf = 0;
-        for (uint8_t q = LINEAR_AXES * 3; q--;) EEPROM_WRITE(dummyf);
+        for (uint8_t q = 9; q--;) EEPROM_WRITE(dummyf);
       #endif
     }
 
@@ -1670,7 +1670,7 @@ void MarlinSettings::postprocess() {
         #if ABL_PLANAR
           EEPROM_READ(planner.bed_level_matrix);
         #else
-          for (uint8_t q = LINEAR_AXES * 3; q--;) EEPROM_READ(dummyf);
+          for (uint8_t q = 9; q--;) EEPROM_READ(dummyf);
         #endif
       }
 
