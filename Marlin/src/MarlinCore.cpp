@@ -944,7 +944,7 @@ inline void tmc_standby_setup() {
   #if PIN_EXISTS(Z4_STDBY)
     SET_INPUT_PULLDOWN(Z4_STDBY_PIN);
   #endif
-    #if PIN_EXISTS(I_STDBY)
+  #if PIN_EXISTS(I_STDBY)
     SET_INPUT_PULLDOWN(I_STDBY_PIN);
   #endif
   #if PIN_EXISTS(J_STDBY)
