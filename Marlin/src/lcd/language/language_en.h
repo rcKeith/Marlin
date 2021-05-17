@@ -88,6 +88,9 @@ namespace Language_en {
   PROGMEM Language_Str MSG_HOME_OFFSET_X                   = _UxGT("Home Offset X");
   PROGMEM Language_Str MSG_HOME_OFFSET_Y                   = _UxGT("Home Offset Y");
   PROGMEM Language_Str MSG_HOME_OFFSET_Z                   = _UxGT("Home Offset Z");
+  PROGMEM Language_Str MSG_HOME_OFFSET_I                   = _UxGT("Home Offset ") AXIS4_STR;
+  PROGMEM Language_Str MSG_HOME_OFFSET_J                   = _UxGT("Home Offset ") AXIS5_STR;
+  PROGMEM Language_Str MSG_HOME_OFFSET_K                   = _UxGT("Home Offset ") AXIS6_STR;
   PROGMEM Language_Str MSG_HOME_OFFSETS_APPLIED            = _UxGT("Offsets Applied");
   PROGMEM Language_Str MSG_SET_ORIGIN                      = _UxGT("Set Origin");
   PROGMEM Language_Str MSG_ASSISTED_TRAMMING               = _UxGT("Assisted Tramming");

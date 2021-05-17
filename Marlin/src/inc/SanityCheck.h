@@ -2641,6 +2641,12 @@ CODE_N(LINEAR_AXES,
   INVALID_TMC_ADDRESS(Z3);
 #elif AXIS_DRIVER_TYPE_Z4(TMC2209)
   INVALID_TMC_ADDRESS(Z4);
+#elif AXIS_DRIVER_TYPE_I(TMC2209)
+  INVALID_TMC_ADDRESS(I);
+#elif AXIS_DRIVER_TYPE_J(TMC2209)
+  INVALID_TMC_ADDRESS(J);
+#elif AXIS_DRIVER_TYPE_K(TMC2209)
+  INVALID_TMC_ADDRESS(K);
 #elif AXIS_DRIVER_TYPE_E0(TMC2209)
   INVALID_TMC_ADDRESS(E0);
 #elif AXIS_DRIVER_TYPE_E1(TMC2209)
@@ -2910,6 +2916,12 @@ CODE_N(LINEAR_AXES,
       #define CS_COMPARE Z2_CS_PIN
     #elif IN_CHAIN(Z3)
       #define CS_COMPARE Z3_CS_PIN
+    #elif IN_CHAIN(I)
+      #define CS_COMPARE I_CS_PIN
+    #elif IN_CHAIN(J)
+      #define CS_COMPARE J_CS_PIN
+    #elif IN_CHAIN(K)
+      #define CS_COMPARE K_CS_PIN
     #elif IN_CHAIN(E0)
       #define CS_COMPARE E0_CS_PIN
     #elif IN_CHAIN(E1)
@@ -2929,6 +2941,7 @@ CODE_N(LINEAR_AXES,
     #endif
     #define BAD_CS_PIN(A) (IN_CHAIN(A) && A##_CS_PIN != CS_COMPARE)
     #if  BAD_CS_PIN(X ) || BAD_CS_PIN(Y ) || BAD_CS_PIN(Z ) || BAD_CS_PIN(X2) || BAD_CS_PIN(Y2) || BAD_CS_PIN(Z2) || BAD_CS_PIN(Z3) || BAD_CS_PIN(Z4) \
+	  || BAD_CS_PIN(I) || BAD_CS_PIN(J) || BAD_CS_PIN(K) \
       || BAD_CS_PIN(E0) || BAD_CS_PIN(E1) || BAD_CS_PIN(E2) || BAD_CS_PIN(E3) || BAD_CS_PIN(E4) || BAD_CS_PIN(E5) || BAD_CS_PIN(E6) || BAD_CS_PIN(E7)
       #error "All chained TMC drivers must use the same CS pin."
     #endif
@@ -3420,18 +3433,18 @@ static_assert(   _ARR_TEST(3,0) && _ARR_TEST(3,1) && _ARR_TEST(3,2)
   #error "Z_DRIVER_TYPE is not recognized."
 #endif
 #if LINEAR_AXES >= 4
-  #if _BAD_DRIVER(Z)
+  #if _BAD_DRIVER(I)
     #error "I_DRIVER_TYPE is not recognized."
   #endif
 #endif
 #if LINEAR_AXES >= 5
-  #if _BAD_DRIVER(Z)
-    #error "I_DRIVER_TYPE is not recognized."
+  #if _BAD_DRIVER(J)
+    #error "J_DRIVER_TYPE is not recognized."
   #endif
 #endif
 #if LINEAR_AXES >= 6
-  #if _BAD_DRIVER(Z)
-    #error "I_DRIVER_TYPE is not recognized."
+  #if _BAD_DRIVER(K)
+    #error "K_DRIVER_TYPE is not recognized."
   #endif
 #endif
 

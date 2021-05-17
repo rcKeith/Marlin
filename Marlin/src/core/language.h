@@ -338,9 +338,9 @@
     #define STR_I_MIN "w_min"
     #define STR_I_MAX "w_max"
   #else
-    #define AXIS4_STR "I"
-    #define STR_I_MIN "i_min"
-    #define STR_I_MAX "i_max"
+    #define AXIS4_STR "A"
+    #define STR_I_MIN "a_min"
+    #define STR_I_MAX "a_max"
   #endif
 #else
   #define AXIS4_STR   ""
@@ -372,9 +372,9 @@
     #define STR_J_MIN "w_min"
     #define STR_J_MAX "w_max"
   #else
-    #define AXIS5_STR "J"
-    #define STR_J_MIN "j_min"
-    #define STR_J_MAX "j_max"
+    #define AXIS5_STR "B"
+    #define STR_J_MIN "b_min"
+    #define STR_J_MAX "b_max"
   #endif
 #else
   #define AXIS5_STR   ""
@@ -406,9 +406,9 @@
     #define STR_K_MIN "w_min"
     #define STR_K_MAX "w_max"
   #else
-    #define AXIS6_STR "K"
-    #define STR_K_MIN "k_min"
-    #define STR_K_MAX "k_max"
+    #define AXIS6_STR "C"
+    #define STR_K_MIN "c_min"
+    #define STR_K_MAX "c_max"
   #endif
 #else
   #define AXIS6_STR   ""

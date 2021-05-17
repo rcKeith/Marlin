@@ -1963,6 +1963,15 @@
   #ifndef Z_SLAVE_ADDRESS
     #define Z_SLAVE_ADDRESS  0
   #endif
+  #ifndef I_SLAVE_ADDRESS
+    #define I_SLAVE_ADDRESS 0
+  #endif
+  #ifndef J_SLAVE_ADDRESS
+    #define J_SLAVE_ADDRESS 0
+  #endif
+  #ifndef K_SLAVE_ADDRESS
+    #define K_SLAVE_ADDRESS 0
+  #endif
   #ifndef X2_SLAVE_ADDRESS
     #define X2_SLAVE_ADDRESS 0
   #endif

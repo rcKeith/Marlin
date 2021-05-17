@@ -1249,13 +1249,13 @@ void MarlinSettings::postprocess() {
         tmc_stealth_enabled.Z = stepperZ.get_stored_stealthChop();
       #endif
       #if AXIS_HAS_STEALTHCHOP(I)
-        tmc_stealth_enabled.I = stepperI.get_stealthChop_status();
+        tmc_stealth_enabled.I = stepperI.get_stored_stealthChop();
       #endif
       #if AXIS_HAS_STEALTHCHOP(J)
-        tmc_stealth_enabled.J = stepperJ.get_stealthChop_status();
+        tmc_stealth_enabled.J = stepperJ.get_stored_stealthChop();
       #endif
       #if AXIS_HAS_STEALTHCHOP(K)
-        tmc_stealth_enabled.K = stepperK.get_stealthChop_status();
+        tmc_stealth_enabled.K = stepperK.get_stored_stealthChop();
       #endif
       #if AXIS_HAS_STEALTHCHOP(X2)
         tmc_stealth_enabled.X2 = stepperX2.get_stored_stealthChop();
