@@ -312,7 +312,7 @@ enum StealthIndex : uint8_t {
     #else
       TMC_UART_DEFINE(SW, J, J);
       #define J_HAS_SW_SERIAL 1
-      #endif
+    #endif
   #endif
   #if AXIS_HAS_UART(K)
     #ifdef K_HARDWARE_SERIAL
