@@ -35,12 +35,12 @@
 void GcodeSuite::M17() {
   if (parser.seen(GANG_N(LINEAR_AXES, "X", "Y", "Z", AXIS4_STR, AXIS5_STR, AXIS6_STR) "E")) {
     CODE_N(LINEAR_AXES,
-      if (parser.seen_test('X'))       ENABLE_AXIS_X(),
-      if (parser.seen_test('Y'))       ENABLE_AXIS_Y(),
-      if (parser.seen_test('Z'))       ENABLE_AXIS_Z(),
-      if (parser.seen_test(AXIS4_STR)) ENABLE_AXIS_I(),
-      if (parser.seen_test(AXIS5_STR)) ENABLE_AXIS_J(),
-      if (parser.seen_test(AXIS6_STR)) ENABLE_AXIS_K()
+      if (parser.seen_test('X'))        ENABLE_AXIS_X(),
+      if (parser.seen_test('Y'))        ENABLE_AXIS_Y(),
+      if (parser.seen_test('Z'))        ENABLE_AXIS_Z(),
+      if (parser.seen_test(AXIS4_NAME)) ENABLE_AXIS_I(),
+      if (parser.seen_test(AXIS5_NAME)) ENABLE_AXIS_J(),
+      if (parser.seen_test(AXIS6_NAME)) ENABLE_AXIS_K()
     );
     if (TERN0(HAS_E_STEPPER_ENABLE, parser.seen_test('E'))) enable_e_steppers();
   }
