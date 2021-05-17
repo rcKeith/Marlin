@@ -99,7 +99,7 @@ typedef struct {
     #define CHOPPER_TIMING_J CHOPPER_TIMING
   #endif
 #endif
-#if LINEAR_AXES >= 5
+#if LINEAR_AXES >= 6
   #ifndef CHOPPER_TIMING_K
     #define CHOPPER_TIMING_K CHOPPER_TIMING
   #endif
