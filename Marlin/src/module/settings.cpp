@@ -1556,6 +1556,7 @@ void MarlinSettings::postprocess() {
           planner.settings.axis_steps_per_mm[i]          = in ? tmp2[i] : pgm_read_float(&_DASU[ALIM(i, _DASU)]);
           planner.settings.max_feedrate_mm_s[i]          = in ? tmp3[i] : pgm_read_float(&_DMF[ALIM(i, _DMF)]);
         }
+
         EEPROM_READ(planner.settings.acceleration);
         EEPROM_READ(planner.settings.retract_acceleration);
         EEPROM_READ(planner.settings.travel_acceleration);
@@ -3636,6 +3637,7 @@ void MarlinSettings::reset() {
        * TMC stepper driver current
        */
       CONFIG_ECHO_HEADING("Stepper driver current:");
+
       #if AXIS_IS_TMC(X) || AXIS_IS_TMC(Y) || AXIS_IS_TMC(Z)
         say_M906(forReplay);
         #if AXIS_IS_TMC(X)

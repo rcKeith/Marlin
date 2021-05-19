@@ -416,12 +416,8 @@ void Endstops::resync() {
 #endif
 
 void Endstops::event_handler() {
-  #if LINEAR_AXES >= 4
-    static uint16_t prev_hit_state; // = 0
-  #else
-    static uint8_t prev_hit_state; // = 0
-  #endif
-    if (hit_state == prev_hit_state) return;
+  static esbits_t prev_hit_state; // = 0
+  if (hit_state == prev_hit_state) return;
   prev_hit_state = hit_state;
   if (hit_state) {
     #if HAS_STATUS_MESSAGE
