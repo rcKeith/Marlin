@@ -440,7 +440,7 @@
 
 #if LINEAR_AXES >= 4
   #ifdef I_STOP_PIN
-    #if I_HOME_DIR < 0
+    #if I_HOME_TO_MIN
       #define I_MIN_PIN I_STOP_PIN
       #define I_MAX_PIN -1
     #else
@@ -459,7 +459,7 @@
 
 #if LINEAR_AXES >= 5
   #ifdef J_STOP_PIN
-    #if J_HOME_DIR < 0
+    #if J_HOME_TO_MIN
       #define J_MIN_PIN J_STOP_PIN
       #define J_MAX_PIN -1
     #else
@@ -471,7 +471,7 @@
 
 #if LINEAR_AXES >= 6
   #ifdef K_STOP_PIN
-    #if K_HOME_DIR < 0
+    #if K_HOME_TO_MIN
       #define K_MIN_PIN K_STOP_PIN
       #define K_MAX_PIN -1
     #else

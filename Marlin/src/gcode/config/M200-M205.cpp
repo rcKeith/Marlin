@@ -147,9 +147,7 @@ void GcodeSuite::M204() {
  *    J = Junction Deviation (mm) (If not using CLASSIC_JERK)
  */
 void GcodeSuite::M205() {
-  #define J_PARAM TERN_(HAS_JUNCTION_DEVIATION, "J")
-  #define XYZE_PARAM TERN_(HAS_CLASSIC_JERK, "XYZ" AXIS4_STR AXIS5_STR AXIS6_STR "E")
-  if (!parser.seen("BST" J_PARAM XYZE_PARAM)) return;
+  if (!parser.seen("BST" TERN_(HAS_JUNCTION_DEVIATION, "J") TERN_(HAS_CLASSIC_JERK, "XYZE"))) return;
 
   //planner.synchronize();
   if (parser.seenval('B')) planner.settings.min_segment_time_us = parser.value_ulong();

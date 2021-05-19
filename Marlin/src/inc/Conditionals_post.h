@@ -214,7 +214,7 @@
 #ifdef MANUAL_X_HOME_POS
   #define X_HOME_POS MANUAL_X_HOME_POS
 #else
-  #define X_END_POS (X_HOME_TO_MIN ? X_MIN_POS : X_MAX_POS)
+  #define X_END_POS TERN(X_HOME_TO_MIN, X_MIN_POS, X_MAX_POS)
   #if ENABLED(BED_CENTER_AT_0_0)
     #define X_HOME_POS TERN(DELTA, 0, X_END_POS)
   #else
@@ -225,7 +225,7 @@
 #ifdef MANUAL_Y_HOME_POS
   #define Y_HOME_POS MANUAL_Y_HOME_POS
 #else
-  #define Y_END_POS (Y_HOME_TO_MIN ? Y_MIN_POS : Y_MAX_POS)
+  #define Y_END_POS TERN(Y_HOME_TO_MIN, Y_MIN_POS, Y_MAX_POS)
   #if ENABLED(BED_CENTER_AT_0_0)
     #define Y_HOME_POS TERN(DELTA, 0, Y_END_POS)
   #else
@@ -236,28 +236,28 @@
 #ifdef MANUAL_Z_HOME_POS
   #define Z_HOME_POS MANUAL_Z_HOME_POS
 #else
-  #define Z_HOME_POS (Z_HOME_TO_MIN ? Z_MIN_POS : Z_MAX_POS)
+  #define Z_HOME_POS TERN(Z_HOME_TO_MIN, Z_MIN_POS, Z_MAX_POS)
 #endif
 
 #if LINEAR_AXES >= 4
   #ifdef MANUAL_I_HOME_POS
     #define I_HOME_POS MANUAL_I_HOME_POS
   #else
-    #define I_HOME_POS (I_HOME_DIR < 0 ? I_MIN_POS : I_MAX_POS)
+    #define I_HOME_POS TERN(I_HOME_TO_MIN, I_MIN_POS, I_MAX_POS)
   #endif
 #endif
 #if LINEAR_AXES >= 5
   #ifdef MANUAL_J_HOME_POS
     #define J_HOME_POS MANUAL_J_HOME_POS
   #else
-    #define J_HOME_POS (J_HOME_DIR < 0 ? J_MIN_POS : J_MAX_POS)
+    #define J_HOME_POS TERN(J_HOME_TO_MIN, J_MIN_POS, J_MAX_POS)
   #endif
 #endif
 #if LINEAR_AXES >= 6
   #ifdef MANUAL_K_HOME_POS
     #define K_HOME_POS MANUAL_K_HOME_POS
   #else
-    #define K_HOME_POS (K_HOME_DIR < 0 ? K_MIN_POS : K_MAX_POS)
+    #define K_HOME_POS TERN(K_HOME_TO_MIN, K_MIN_POS, K_MAX_POS)
   #endif
 #endif
 

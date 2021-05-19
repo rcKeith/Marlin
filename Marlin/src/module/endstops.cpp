@@ -1042,12 +1042,12 @@ void Endstops::update() {
   #if LINEAR_AXES >= 4
     if (stepper.axis_is_moving(I_AXIS)) {
       if (stepper.motor_direction(I_AXIS_HEAD)) { // -direction
-        #if HAS_I_MIN || (I_SPI_SENSORLESS && I_HOME_DIR < 0)
+        #if HAS_I_MIN || (I_SPI_SENSORLESS && I_HOME_TO_MIN)
           PROCESS_ENDSTOP(I, MIN);
         #endif
       }
       else { // +direction
-        #if HAS_I_MAX || (I_SPI_SENSORLESS && I_HOME_DIR > 0)
+        #if HAS_I_MAX || (I_SPI_SENSORLESS && I_HOME_TO_MAX)
           PROCESS_ENDSTOP(I, MAX);
         #endif
       }
@@ -1057,12 +1057,12 @@ void Endstops::update() {
   #if LINEAR_AXES >= 5
     if (stepper.axis_is_moving(J_AXIS)) {
       if (stepper.motor_direction(J_AXIS_HEAD)) { // -direction
-        #if HAS_J_MIN || (J_SPI_SENSORLESS && J_HOME_DIR < 0)
+        #if HAS_J_MIN || (J_SPI_SENSORLESS && J_HOME_TO_MIN)
           PROCESS_ENDSTOP(J, MIN);
         #endif
       }
       else { // +direction
-        #if HAS_J_MAX || (J_SPI_SENSORLESS && J_HOME_DIR > 0)
+        #if HAS_J_MAX || (J_SPI_SENSORLESS && J_HOME_TO_MAX)
           PROCESS_ENDSTOP(J, MAX);
         #endif
       }
@@ -1072,12 +1072,12 @@ void Endstops::update() {
   #if LINEAR_AXES >= 6
     if (stepper.axis_is_moving(K_AXIS)) {
       if (stepper.motor_direction(K_AXIS_HEAD)) { // -direction
-        #if HAS_K_MIN || (K_SPI_SENSORLESS && K_HOME_DIR < 0)
+        #if HAS_K_MIN || (K_SPI_SENSORLESS && K_HOME_TO_MIN)
           PROCESS_ENDSTOP(K, MIN);
         #endif
       }
       else { // +direction
-        #if HAS_K_MAX || (K_SPI_SENSORLESS && K_HOME_DIR > 0)
+        #if HAS_K_MAX || (K_SPI_SENSORLESS && K_HOME_TO_MAX)
           PROCESS_ENDSTOP(K, MAX);
         #endif
       }

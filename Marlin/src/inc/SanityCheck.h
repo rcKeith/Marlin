@@ -2161,17 +2161,17 @@ CODE_N(LINEAR_AXES,
       #error "Enable USE_YMIN_PLUG when homing Y to MIN."
     #elif Y_HOME_TO_MAX && DISABLED(USE_YMAX_PLUG)
       #error "Enable USE_YMAX_PLUG when homing Y to MAX."
-    #elif LINEAR_AXES >= 4 && I_HOME_DIR < 0 && DISABLED(USE_IMIN_PLUG)
+    #elif LINEAR_AXES >= 4 && I_HOME_TO_MIN && DISABLED(USE_IMIN_PLUG)
       #error "Enable USE_IMIN_PLUG when homing I to MIN."
-    #elif LINEAR_AXES >= 4 && I_HOME_DIR > 0 && DISABLED(USE_IMAX_PLUG)
+    #elif LINEAR_AXES >= 4 && I_HOME_TO_MAX && DISABLED(USE_IMAX_PLUG)
       #error "Enable USE_IMAX_PLUG when homing I to MAX."
-    #elif LINEAR_AXES >= 5 && J_HOME_DIR < 0 && DISABLED(USE_JMIN_PLUG)
+    #elif LINEAR_AXES >= 5 && J_HOME_TO_MIN && DISABLED(USE_JMIN_PLUG)
       #error "Enable USE_JMIN_PLUG when homing J to MIN."
-    #elif LINEAR_AXES >= 5 && J_HOME_DIR > 0 && DISABLED(USE_JMAX_PLUG)
+    #elif LINEAR_AXES >= 5 && J_HOME_TO_MAX && DISABLED(USE_JMAX_PLUG)
       #error "Enable USE_JMAX_PLUG when homing J to MAX."
-    #elif LINEAR_AXES >= 6 && K_HOME_DIR < 0 && DISABLED(USE_KMIN_PLUG)
+    #elif LINEAR_AXES >= 6 && K_HOME_TO_MIN && DISABLED(USE_KMIN_PLUG)
       #error "Enable USE_KMIN_PLUG when homing K to MIN."
-    #elif LINEAR_AXES >= 6 && K_HOME_DIR > 0 && DISABLED(USE_KMAX_PLUG)
+    #elif LINEAR_AXES >= 6 && K_HOME_TO_MAX && DISABLED(USE_KMAX_PLUG)
       #error "Enable USE_KMAX_PLUG when homing K to MAX."
     #endif
   #endif
@@ -2751,11 +2751,11 @@ CODE_N(LINEAR_AXES,
       #error "SENSORLESS_HOMING requires ENDSTOPPULLUP_ZMIN (or ENDSTOPPULLUPS) when homing to Z_MIN."
     #elif Z_SENSORLESS && Z_HOME_TO_MAX && DISABLED(ENDSTOPPULLUP_ZMAX)
       #error "SENSORLESS_HOMING requires ENDSTOPPULLUP_ZMAX (or ENDSTOPPULLUPS) when homing to Z_MAX."
-    #elif LINEAR_AXES >= 4 && I_SENSORLESS && I_HOME_DIR > 0 && DISABLED(ENDSTOPPULLUP_IMAX)
+    #elif LINEAR_AXES >= 4 && I_SENSORLESS && I_HOME_TO_MAX && DISABLED(ENDSTOPPULLUP_IMAX)
       #error "SENSORLESS_HOMING requires ENDSTOPPULLUP_IMAX (or ENDSTOPPULLUPS) when homing to I_MAX."
-    #elif LINEAR_AXES >= 5 && J_SENSORLESS && J_HOME_DIR > 0 && DISABLED(ENDSTOPPULLUP_JMAX)
+    #elif LINEAR_AXES >= 5 && J_SENSORLESS && J_HOME_TO_MAX && DISABLED(ENDSTOPPULLUP_JMAX)
       #error "SENSORLESS_HOMING requires ENDSTOPPULLUP_JMAX (or ENDSTOPPULLUPS) when homing to J_MAX."
-    #elif LINEAR_AXES >= 6 && K_SENSORLESS && K_HOME_DIR > 0 && DISABLED(ENDSTOPPULLUP_KMAX)
+    #elif LINEAR_AXES >= 6 && K_SENSORLESS && K_HOME_TO_MAX && DISABLED(ENDSTOPPULLUP_KMAX)
       #error "SENSORLESS_HOMING requires ENDSTOPPULLUP_KMAX (or ENDSTOPPULLUPS) when homing to K_MAX."
     #endif
   #endif
@@ -2801,37 +2801,37 @@ CODE_N(LINEAR_AXES,
       #else
         #error "SENSORLESS_HOMING requires Z_MAX_ENDSTOP_INVERTING = false when homing TMC2209 to Z_MAX."
       #endif
-    #elif LINEAR_AXES >= 4 && I_SENSORLESS && I_HOME_DIR < 0 && I_MIN_ENDSTOP_INVERTING != I_ENDSTOP_INVERTING
+    #elif LINEAR_AXES >= 4 && I_SENSORLESS && I_HOME_TO_MIN && I_MIN_ENDSTOP_INVERTING != I_ENDSTOP_INVERTING
       #if I_ENDSTOP_INVERTING
         #error "SENSORLESS_HOMING requires I_MIN_ENDSTOP_INVERTING = true when homing to I_MIN."
       #else
         #error "SENSORLESS_HOMING requires I_MIN_ENDSTOP_INVERTING = false when homing TMC2209 to I_MIN."
       #endif
-    #elif LINEAR_AXES >= 4 && I_SENSORLESS && I_HOME_DIR > 0 && I_MAX_ENDSTOP_INVERTING != I_ENDSTOP_INVERTING
+    #elif LINEAR_AXES >= 4 && I_SENSORLESS && I_HOME_TO_MAX && I_MAX_ENDSTOP_INVERTING != I_ENDSTOP_INVERTING
       #if I_ENDSTOP_INVERTING
         #error "SENSORLESS_HOMING requires I_MAX_ENDSTOP_INVERTING = true when homing to I_MAX."
       #else
         #error "SENSORLESS_HOMING requires I_MAX_ENDSTOP_INVERTING = false when homing TMC2209 to I_MAX."
       #endif
-    #elif LINEAR_AXES >= 5 && J_SENSORLESS && J_HOME_DIR < 0 && J_MIN_ENDSTOP_INVERTING != J_ENDSTOP_INVERTING
+    #elif LINEAR_AXES >= 5 && J_SENSORLESS && J_HOME_TO_MIN && J_MIN_ENDSTOP_INVERTING != J_ENDSTOP_INVERTING
       #if J_ENDSTOP_INVERTING
         #error "SENSORLESS_HOMING requires J_MIN_ENDSTOP_INVERTING = true when homing to J_MIN."
       #else
         #error "SENSORLESS_HOMING requires J_MIN_ENDSTOP_INVERTING = false when homing TMC2209 to J_MIN."
       #endif
-    #elif LINEAR_AXES >= 5 && J_SENSORLESS && J_HOME_DIR > 0 && J_MAX_ENDSTOP_INVERTING != J_ENDSTOP_INVERTING
+    #elif LINEAR_AXES >= 5 && J_SENSORLESS && J_HOME_TO_MAX && J_MAX_ENDSTOP_INVERTING != J_ENDSTOP_INVERTING
       #if J_ENDSTOP_INVERTING
         #error "SENSORLESS_HOMING requires J_MAX_ENDSTOP_INVERTING = true when homing to J_MAX."
       #else
         #error "SENSORLESS_HOMING requires J_MAX_ENDSTOP_INVERTING = false when homing TMC2209 to J_MAX."
       #endif
-    #elif LINEAR_AXES >= 6 && K_SENSORLESS && K_HOME_DIR < 0 && K_MIN_ENDSTOP_INVERTING != K_ENDSTOP_INVERTING
+    #elif LINEAR_AXES >= 6 && K_SENSORLESS && K_HOME_TO_MIN && K_MIN_ENDSTOP_INVERTING != K_ENDSTOP_INVERTING
       #if K_ENDSTOP_INVERTING
         #error "SENSORLESS_HOMING requires K_MIN_ENDSTOP_INVERTING = true when homing to K_MIN."
       #else
         #error "SENSORLESS_HOMING requires K_MIN_ENDSTOP_INVERTING = false when homing TMC2209 to K_MIN."
       #endif
-    #elif LINEAR_AXES >= 6 && K_SENSORLESS && K_HOME_DIR > 0 && K_MAX_ENDSTOP_INVERTING != K_ENDSTOP_INVERTING
+    #elif LINEAR_AXES >= 6 && K_SENSORLESS && K_HOME_TO_MAX && K_MAX_ENDSTOP_INVERTING != K_ENDSTOP_INVERTING
       #if K_ENDSTOP_INVERTING
         #error "SENSORLESS_HOMING requires K_MAX_ENDSTOP_INVERTING = true when homing to K_MAX."
       #else

@@ -817,18 +817,33 @@
 // Homing to Min or Max
 #if X_HOME_DIR > 0
   #define X_HOME_TO_MAX 1
-#else
+#elif X_HOME_DIR < 0
   #define X_HOME_TO_MIN 1
 #endif
 #if Y_HOME_DIR > 0
   #define Y_HOME_TO_MAX 1
-#else
+#elif Y_HOME_DIR < 0
   #define Y_HOME_TO_MIN 1
 #endif
 #if Z_HOME_DIR > 0
   #define Z_HOME_TO_MAX 1
-#else
+#elif Z_HOME_DIR < 0
   #define Z_HOME_TO_MIN 1
+#endif
+#if I_HOME_DIR > 0
+  #define I_HOME_TO_MAX 1
+#elif I_HOME_DIR < 0
+  #define I_HOME_TO_MIN 1
+#endif
+#if J_HOME_DIR > 0
+  #define J_HOME_TO_MAX 1
+#elif J_HOME_DIR < 0
+  #define J_HOME_TO_MIN 1
+#endif
+#if K_HOME_DIR > 0
+  #define K_HOME_TO_MAX 1
+#elif K_HOME_DIR < 0
+  #define K_HOME_TO_MIN 1
 #endif
 
 #if HAS_BED_PROBE
