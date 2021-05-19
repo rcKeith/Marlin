@@ -712,12 +712,12 @@ void GcodeSuite::G425() {
   SET_SOFT_ENDSTOP_LOOSE(true);
 
   measurements_t m;
-  float uncertainty = parser.seenval('U') ? parser.value_float() : CALIBRATION_MEASUREMENT_UNCERTAIN;
+  const float uncertainty = parser.floatval('U', CALIBRATION_MEASUREMENT_UNCERTAIN);
 
-  if (parser.seen('B'))
+  if (parser.seen_test('B'))
     calibrate_backlash(m, uncertainty);
-  else if (parser.seen('T'))
-    calibrate_toolhead(m, uncertainty, parser.has_value() ? parser.value_int() : active_extruder);
+  else if (parser.seen_test('T'))
+    calibrate_toolhead(m, uncertainty, parser.intval('T', active_extruder));
   #if ENABLED(CALIBRATION_REPORTING)
     else if (parser.seen('V')) {
       probe_sides(m, uncertainty);

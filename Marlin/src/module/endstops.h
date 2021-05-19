@@ -28,15 +28,34 @@
 #include "../inc/MarlinConfig.h"
 #include <stdint.h>
 
+#define __ES_ITEM(N) N,
+#define _ES_ITEM(K,N) TERN_(K,DEFER4(__ES_ITEM)(N))
+
 enum EndstopEnum : char {
-  LIST_N(LINEAR_AXES, X_MIN, Y_MIN, Z_MIN, I_MIN, J_MIN, K_MIN),
-  LIST_N(LINEAR_AXES, X_MAX, Y_MAX, Z_MAX, I_MAX, J_MAX, K_MAX),
-  Z_MIN_PROBE,
-  X2_MIN, X2_MAX,
-  Y2_MIN, Y2_MAX,
-  Z2_MIN, Z2_MAX,
-  Z3_MIN, Z3_MAX,
-  Z4_MIN, Z4_MAX
+  _ES_ITEM(HAS_X_MIN, X_MIN)
+  _ES_ITEM(HAS_X_MAX, X_MAX)
+  _ES_ITEM(HAS_Y_MIN, Y_MIN)
+  _ES_ITEM(HAS_Y_MAX, Y_MAX)
+  _ES_ITEM(HAS_Z_MIN, Z_MIN)
+  _ES_ITEM(HAS_Z_MAX, Z_MAX)
+  _ES_ITEM(HAS_I_MIN, I_MIN)
+  _ES_ITEM(HAS_I_MAX, I_MAX)
+  _ES_ITEM(HAS_J_MIN, J_MIN)
+  _ES_ITEM(HAS_J_MAX, J_MAX)
+  _ES_ITEM(HAS_K_MIN, K_MIN)
+  _ES_ITEM(HAS_K_MAX, K_MAX)
+  _ES_ITEM(HAS_X2_MIN, X2_MIN)
+  _ES_ITEM(HAS_X2_MAX, X2_MAX)
+  _ES_ITEM(HAS_Y2_MIN, Y2_MIN)
+  _ES_ITEM(HAS_Y2_MAX, Y2_MAX)
+  _ES_ITEM(HAS_Z2_MIN, Z2_MIN)
+  _ES_ITEM(HAS_Z2_MAX, Z2_MAX)
+  _ES_ITEM(HAS_Z3_MIN, Z3_MIN)
+  _ES_ITEM(HAS_Z3_MAX, Z3_MAX)
+  _ES_ITEM(HAS_Z4_MIN, Z4_MIN)
+  _ES_ITEM(HAS_Z4_MAX, Z4_MAX)
+  _ES_ITEM(HAS_Z_MIN_PROBE_PIN, Z_MIN_PROBE)
+  NUM_ENDSTOP_STATES
 };
 
 #define X_ENDSTOP (x_home_dir(active_extruder) < 0 ? X_MIN : X_MAX)
@@ -45,11 +64,8 @@ enum EndstopEnum : char {
 
 class Endstops {
   public:
-    #if LINEAR_AXES >= 4 || ENABLED(HAS_EXTRA_ENDSTOPS)
-      typedef uint16_t esbits_t;
-    #else
-      typedef uint8_t esbits_t;
-    #endif
+
+    typedef IF<(NUM_ENDSTOP_STATES > 8), uint16_t, uint8_t>::type esbits_t;
 
     #if ENABLED(X_DUAL_ENDSTOPS)
       static float x2_endstop_adj;
@@ -70,11 +86,7 @@ class Endstops {
   private:
     static bool enabled, enabled_globally;
     static esbits_t live_state;
-    #if LINEAR_AXES >= 4
-      static volatile uint16_t hit_state;     // Use X_MIN, Y_MIN, Z_MIN and Z_MIN_PROBE as BIT index
-    #else
-      static volatile uint8_t hit_state;
-    #endif
+    static volatile esbits_t hit_state;     // Use X_MIN, Y_MIN, Z_MIN and Z_MIN_PROBE as BIT index
 
     #if ENDSTOP_NOISE_THRESHOLD
       static esbits_t validated_live_state;
@@ -113,11 +125,7 @@ class Endstops {
     /**
      * Get Endstop hit state.
      */
-    #if LINEAR_AXES > 3
-      FORCE_INLINE static uint16_t trigger_state() { return hit_state; }
-    #else
-      FORCE_INLINE static uint8_t trigger_state() { return hit_state; }
-    #endif
+    FORCE_INLINE static esbits_t trigger_state() { return hit_state; }
 
     /**
      * Get current endstops state

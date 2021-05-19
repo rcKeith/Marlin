@@ -133,7 +133,7 @@ inline int8_t pgm_read_any(const int8_t *p) { return TERN(__IMXRT1062__, *p, pgm
 
 #define XYZ_DEFS(T, NAME, OPT) \
   inline T NAME(const AxisEnum axis) { \
-      static const XYZval<T> NAME##_P DEFS_PROGMEM = ARRAY_N(LINEAR_AXES, X_##OPT, Y_##OPT, Z_##OPT, I_##OPT, J_##OPT, K_##OPT); \
+    static const XYZval<T> NAME##_P DEFS_PROGMEM = ARRAY_N(LINEAR_AXES, X_##OPT, Y_##OPT, Z_##OPT, I_##OPT, J_##OPT, K_##OPT); \
     return pgm_read_any(&NAME##_P[axis]); \
   }
 XYZ_DEFS(float, base_min_pos,   MIN_POS);
@@ -367,9 +367,9 @@ void do_z_clearance(const_float_t zclear, const bool lower_allowed=false);
 /**
  * Homing and Trusted Axes
  */
-constexpr uint8_t xyz_bits = _BV(X_AXIS) | _BV(Y_AXIS) | _BV(Z_AXIS);
+typedef IF<(LINEAR_AXES>8), uint16_t, uint8_t>::type linear_axis_bits_t;
+constexpr linear_axis_bits_t linear_bits = _BV(LINEAR_AXES) - 1;
 
-#define LINEAR_AXIS_MASK (_BV(LINEAR_AXES)-1)
 void set_axis_is_at_home(const AxisEnum axis);
 
 #if HAS_ENDSTOPS
@@ -382,23 +382,23 @@ void set_axis_is_at_home(const AxisEnum axis);
    *   Flags that the position is trusted in each linear axis. Set when homed.
    *   Cleared whenever a stepper powers off, potentially losing its position.
    */
-  extern uint8_t axis_homed, axis_trusted;
+  extern linear_axis_bits_t axis_homed, axis_trusted;
   void homeaxis(const AxisEnum axis);
   void set_axis_never_homed(const AxisEnum axis);
-  uint8_t axes_should_home(uint8_t axis_bits=LINEAR_AXIS_MASK);
-  bool homing_needed_error(uint8_t axis_bits=LINEAR_AXIS_MASK);
+  linear_axis_bits_t axes_should_home(linear_axis_bits_t axis_bits=linear_bits);
+  bool homing_needed_error(linear_axis_bits_t axis_bits=linear_bits);
   FORCE_INLINE void set_axis_unhomed(const AxisEnum axis)   { CBI(axis_homed, axis); }
   FORCE_INLINE void set_axis_untrusted(const AxisEnum axis) { CBI(axis_trusted, axis); }
   FORCE_INLINE void set_all_unhomed()                       { axis_homed = axis_trusted = 0; }
   FORCE_INLINE void set_axis_homed(const AxisEnum axis)     { SBI(axis_homed, axis); }
   FORCE_INLINE void set_axis_trusted(const AxisEnum axis)   { SBI(axis_trusted, axis); }
-  FORCE_INLINE void set_all_homed()                         { axis_homed = axis_trusted = xyz_bits; }
+  FORCE_INLINE void set_all_homed()                         { axis_homed = axis_trusted = linear_bits; }
 #else
-  constexpr uint8_t axis_homed = xyz_bits, axis_trusted = xyz_bits; // Zero-endstop machines are always homed and trusted
+  constexpr linear_axis_bits_t axis_homed = linear_bits, axis_trusted = linear_bits; // Zero-endstop machines are always homed and trusted
   FORCE_INLINE void homeaxis(const AxisEnum axis)           {}
   FORCE_INLINE void set_axis_never_homed(const AxisEnum)    {}
-  FORCE_INLINE uint8_t axes_should_home(uint8_t=LINEAR_AXIS_MASK)       { return false; }
-  FORCE_INLINE bool homing_needed_error(uint8_t=LINEAR_AXIS_MASK)       { return false; }
+  FORCE_INLINE linear_axis_bits_t axes_should_home(linear_axis_bits_t=linear_bits) { return false; }
+  FORCE_INLINE bool homing_needed_error(linear_axis_bits_t=linear_bits) { return false; }
   FORCE_INLINE void set_axis_unhomed(const AxisEnum axis)   {}
   FORCE_INLINE void set_axis_untrusted(const AxisEnum axis) {}
   FORCE_INLINE void set_all_unhomed()                       {}
@@ -411,9 +411,9 @@ FORCE_INLINE bool axis_was_homed(const AxisEnum axis)       { return TEST(axis_h
 FORCE_INLINE bool axis_is_trusted(const AxisEnum axis)      { return TEST(axis_trusted, axis); }
 FORCE_INLINE bool axis_should_home(const AxisEnum axis)     { return (axes_should_home() & _BV(axis)) != 0; }
 FORCE_INLINE bool no_axes_homed()                           { return !axis_homed; }
-FORCE_INLINE bool all_axes_homed()                          { return xyz_bits == (axis_homed & xyz_bits); }
+FORCE_INLINE bool all_axes_homed()                          { return linear_bits == (axis_homed & linear_bits); }
 FORCE_INLINE bool homing_needed()                           { return !all_axes_homed(); }
-FORCE_INLINE bool all_axes_trusted()                        { return xyz_bits == (axis_trusted & xyz_bits); }
+FORCE_INLINE bool all_axes_trusted()                        { return linear_bits == (axis_trusted & linear_bits); }
 
 #if ENABLED(NO_MOTION_BEFORE_HOMING)
   #define MOTION_CONDITIONS (IsRunning() && !homing_needed_error())

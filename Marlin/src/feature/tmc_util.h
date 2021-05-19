@@ -342,8 +342,8 @@ void tmc_print_current(TMC &st) {
 
 void monitor_tmc_drivers();
 void test_tmc_connection(
-  LIST_N(LINEAR_AXES, const bool test_x, const bool test_y, const bool test_z, const bool test_i, const bool test_j, const bool test_k),
-  const bool test_e
+  LIST_N(LINEAR_AXES, const bool test_x=true, const bool test_y=true, const bool test_z=true, const bool test_i=true, const bool test_j=true, const bool test_k=true),
+  const bool test_e=true
 );
 
 #if ENABLED(TMC_DEBUG)
@@ -351,8 +351,8 @@ void test_tmc_connection(
     void tmc_set_report_interval(const uint16_t update_interval);
   #endif
   void tmc_report_all(
-    LIST_N(LINEAR_AXES, const bool print_x, const bool print_y, const bool print_z, const bool print_i, const bool print_j, const bool print_k),
-    const bool print_e
+    LIST_N(LINEAR_AXES, const bool print_x=true, const bool print_y=true, const bool print_z=true, const bool print_i=true, const bool print_j=true, const bool print_k=true),
+    const bool print_e=true
   );
   void tmc_get_registers(
     LIST_N(LINEAR_AXES, const bool print_x, const bool print_y, const bool print_z, const bool print_i, const bool print_j, const bool print_k),

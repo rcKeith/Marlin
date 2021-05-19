@@ -194,7 +194,7 @@ typedef struct SettingsDataStruct {
   //
   // DISTINCT_E_FACTORS
   //
-  uint8_t   esteppers;                                  // XYZE_N - XYZ
+  uint8_t   esteppers;                                  // DISTINCT_AXES - LINEAR_AXES
 
   planner_settings_t planner_settings;
 
@@ -516,7 +516,7 @@ void MarlinSettings::postprocess() {
   #endif
 
   // Software endstops depend on home_offset
-  LOOP_LINEAR(i) {
+  LOOP_LINEAR_AXES(i) {
     update_workspace_offset((AxisEnum)i);
     update_software_endstops((AxisEnum)i);
   }
@@ -637,7 +637,7 @@ void MarlinSettings::postprocess() {
 
     working_crc = 0; // clear before first "real data"
 
-    const uint8_t esteppers = NUM_AXIS_N - LINEAR_AXES;
+    const uint8_t esteppers = COUNT(planner.settings.axis_steps_per_mm) - LINEAR_AXES;
     _FIELD_TEST(esteppers);
     EEPROM_WRITE(esteppers);
 
@@ -1550,11 +1550,11 @@ void MarlinSettings::postprocess() {
         EEPROM_READ((uint8_t *)tmp2, sizeof(tmp2)); // axis_steps_per_mm
         EEPROM_READ((uint8_t *)tmp3, sizeof(tmp3)); // max_feedrate_mm_s
 
-        if (!validating) LOOP_NUM_AXIS_N(i) {
-          const bool in = (i < LINEAR_AXES + esteppers);
-            planner.settings.max_acceleration_mm_per_s2[i] = in ? tmp1[i] : pgm_read_dword(&_DMA[ALIM(i, _DMA)]);
-            planner.settings.axis_steps_per_mm[i]          = in ? tmp2[i] : pgm_read_float(&_DASU[ALIM(i, _DASU)]);
-            planner.settings.max_feedrate_mm_s[i]          = in ? tmp3[i] : pgm_read_float(&_DMF[ALIM(i, _DMF)]);
+        if (!validating) LOOP_DISTINCT_AXES(i) {
+          const bool in = (i < esteppers + LINEAR_AXES);
+          planner.settings.max_acceleration_mm_per_s2[i] = in ? tmp1[i] : pgm_read_dword(&_DMA[ALIM(i, _DMA)]);
+          planner.settings.axis_steps_per_mm[i]          = in ? tmp2[i] : pgm_read_float(&_DASU[ALIM(i, _DASU)]);
+          planner.settings.max_feedrate_mm_s[i]          = in ? tmp3[i] : pgm_read_float(&_DMF[ALIM(i, _DMF)]);
         }
         EEPROM_READ(planner.settings.acceleration);
         EEPROM_READ(planner.settings.retract_acceleration);
@@ -1568,7 +1568,7 @@ void MarlinSettings::postprocess() {
             EEPROM_READ(dummyf);
           #endif
         #else
-          for (uint8_t q = NUM_AXIS; q--;) EEPROM_READ(dummyf);
+          for (uint8_t q = LOGICAL_AXES; q--;) EEPROM_READ(dummyf);
         #endif
 
         EEPROM_READ(TERN(CLASSIC_JERK, dummyf, planner.junction_deviation_mm));
@@ -2640,7 +2640,7 @@ void MarlinSettings::postprocess() {
  * M502 - Reset Configuration
  */
 void MarlinSettings::reset() {
-  LOOP_NUM_AXIS_N(i) {
+  LOOP_DISTINCT_AXES(i) {
     planner.settings.max_acceleration_mm_per_s2[i] = pgm_read_dword(&_DMA[ALIM(i, _DMA)]);
     planner.settings.axis_steps_per_mm[i] = pgm_read_float(&_DASU[ALIM(i, _DASU)]);
     planner.settings.max_feedrate_mm_s[i] = pgm_read_float(&_DMF[ALIM(i, _DMF)]);
@@ -2775,7 +2775,7 @@ void MarlinSettings::reset() {
     constexpr float dpo[] = NOZZLE_TO_PROBE_OFFSET;
     static_assert(COUNT(dpo) == 3, "NOZZLE_TO_PROBE_OFFSET must contain offsets for X, Y, and Z.");
     #if HAS_PROBE_XY_OFFSET
-      LOOP_XYZ(a) probe.offset[a] = dpo[a];
+      LOOP_LINEAR_AXES(a) probe.offset[a] = dpo[a];
     #else
       probe.offset.set(0, 0, dpo[Z_AXIS]);
     #endif
@@ -4022,7 +4022,7 @@ void MarlinSettings::reset() {
         );
       #elif HAS_MOTOR_CURRENT_SPI
         SERIAL_ECHOPGM("  M907");                              // SPI-based has 5 values:
-        LOOP_NUM_AXIS(q) {                                     // X Y Z (I J K) E (map to X Y Z (I J K) E0 by default)
+        LOOP_LOGICAL_AXES(q) {                                 // X Y Z (I J K) E (map to X Y Z (I J K) E0 by default)
           SERIAL_CHAR(' ', axis_codes[q]);
           SERIAL_ECHO(stepper.motor_current_setting[q]);
         }
@@ -4061,18 +4061,14 @@ void MarlinSettings::reset() {
       CONFIG_ECHO_START();
       SERIAL_ECHOLNPAIR_P(
           PSTR("  M425 F"), backlash.get_correction()
-        , SP_X_STR, LINEAR_UNIT(backlash.distance_mm.x)
-        , SP_Y_STR, LINEAR_UNIT(backlash.distance_mm.y)
-        , SP_Z_STR, LINEAR_UNIT(backlash.distance_mm.z)
-        #if LINEAR_AXES >= 4
-          , SP_I_STR, LINEAR_UNIT(backlash.distance_mm.i)
-          #if LINEAR_AXES >= 5
-            , SP_J_STR, LINEAR_UNIT(backlash.distance_mm.j)
-            #if LINEAR_AXES >= 6
-              , SP_K_STR, LINEAR_UNIT(backlash.distance_mm.k)
-            #endif
-          #endif
-        #endif
+        , LIST_N(DOUBLE(LINEAR_AXES),
+            SP_X_STR, LINEAR_UNIT(backlash.distance_mm.x),
+            SP_Y_STR, LINEAR_UNIT(backlash.distance_mm.y),
+            SP_Z_STR, LINEAR_UNIT(backlash.distance_mm.z),
+            SP_I_STR, LINEAR_UNIT(backlash.distance_mm.i),
+            SP_J_STR, LINEAR_UNIT(backlash.distance_mm.j),
+            SP_K_STR, LINEAR_UNIT(backlash.distance_mm.k)
+          )
         #ifdef BACKLASH_SMOOTHING_MM
           , PSTR(" S"), LINEAR_UNIT(backlash.smoothing_mm)
         #endif

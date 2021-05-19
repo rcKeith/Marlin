@@ -51,7 +51,7 @@ static void set_stealth_status(const bool enable, const int8_t target_extruder) 
       || AXIS_HAS_STEALTHCHOP(K)
     const uint8_t index = parser.byteval('I');
   #endif
-  LOOP_NUM_AXIS(i) if (parser.seen(axis_codes[i])) {
+  LOOP_LOGICAL_AXES(i) if (parser.seen(axis_codes[i])) {
     switch (i) {
       case X_AXIS:
         #if AXIS_HAS_STEALTHCHOP(X)

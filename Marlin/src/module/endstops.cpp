@@ -57,12 +57,7 @@ Endstops endstops;
 
 bool Endstops::enabled, Endstops::enabled_globally; // Initialized by settings.load()
 
-#if LINEAR_AXES >= 4
-  volatile uint16_t Endstops::hit_state; //TODO (DerAndere): volatile hitbits_t Endstops::hit_state;
-#else
-  volatile uint8_t Endstops::hit_state; //TODO (DerAndere): volatile hitbits_t Endstops::hit_state;
-#endif
-
+volatile Endstops::esbits_t Endstops::hit_state;
 Endstops::esbits_t Endstops::live_state = 0;
 
 #if ENDSTOP_NOISE_THRESHOLD
@@ -434,15 +429,14 @@ void Endstops::event_handler() {
            chrP = ' ';
       #define _SET_STOP_CHAR(A,C) (chr## A = C)
     #else
-      #define _SET_STOP_CHAR(A,C) ;
+      #define _SET_STOP_CHAR(A,C) NOOP
     #endif
 
     #define _ENDSTOP_HIT_ECHO(A,C) do{ \
-      SERIAL_ECHOPAIR(" " STRINGIFY(A) ":", planner.triggered_position_mm(_AXIS(A))); \
-      _SET_STOP_CHAR(A,C); }while(0)
+      SERIAL_ECHOPAIR(" " STRINGIFY(A) ":", planner.triggered_position_mm(_AXIS(A))); _SET_STOP_CHAR(A,C); }while(0)
 
     #define _ENDSTOP_HIT_TEST(A,C) \
-      if (TEST(hit_state, A ##_MIN) || TEST(hit_state, A ##_MAX)) \
+      if (TERN0(HAS_##A##_MIN, TEST(hit_state, A##_MIN)) || TERN0(HAS_##A##_MAX, TEST(hit_state, A##_MAX))) \
         _ENDSTOP_HIT_ECHO(A,C)
 
     #define ENDSTOP_HIT_TEST_X() _ENDSTOP_HIT_TEST(X,'X')
@@ -612,7 +606,7 @@ void Endstops::update() {
   #define UPDATE_ENDSTOP_BIT(AXIS, MINMAX) SET_BIT_TO(live_state, _ENDSTOP(AXIS, MINMAX), (READ(_ENDSTOP_PIN(AXIS, MINMAX)) != _ENDSTOP_INVERTING(AXIS, MINMAX)))
   #define COPY_LIVE_STATE(SRC_BIT, DST_BIT) SET_BIT_TO(live_state, DST_BIT, TEST(live_state, SRC_BIT))
 
-  #if ENABLED(G38_PROBE_TARGET) && PIN_EXISTS(Z_MIN_PROBE) && NONE(CORE_IS_XY, CORE_IS_XZ, MARKFORGED_XY)
+  #if BOTH(G38_PROBE_TARGET, HAS_Z_MIN_PROBE_PIN) && NONE(CORE_IS_XY, CORE_IS_XZ, MARKFORGED_XY)
     // If G38 command is active check Z_MIN_PROBE for ALL movement
     if (G38_move) UPDATE_ENDSTOP_BIT(Z, MIN_PROBE);
   #endif
@@ -933,7 +927,7 @@ void Endstops::update() {
     #define PROCESS_ENDSTOP_Z(MINMAX) PROCESS_DUAL_ENDSTOP(Z, MINMAX)
   #endif
 
-  #if ENABLED(G38_PROBE_TARGET) && PIN_EXISTS(Z_MIN_PROBE) && NONE(CORE_IS_XY, CORE_IS_XZ, MARKFORGED_XY)
+  #if BOTH(G38_PROBE_TARGET, HAS_Z_MIN_PROBE_PIN) && NONE(CORE_IS_XY, CORE_IS_XZ, MARKFORGED_XY)
     #if ENABLED(G38_PROBE_AWAY)
       #define _G38_OPEN_STATE (G38_move >= 4)
     #else

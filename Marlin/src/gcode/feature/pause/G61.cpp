@@ -71,11 +71,11 @@ void GcodeSuite::G61(void) {
   else {
     if (parser.seen(GANG_N(LINEAR_AXES, "X", "Y", "Z", AXIS4_STR, AXIS5_STR, AXIS6_STR))) {
       DEBUG_ECHOPAIR(STR_RESTORING_POS " S", slot);
-      LOOP_LINEAR(i) {
-        destination[i] = parser.seen(XYZ_CHAR(i))
+      LOOP_LINEAR_AXES(i) {
+        destination[i] = parser.seen(AXIS_CHAR(i))
           ? stored_position[slot][i] + parser.value_axis_units((AxisEnum)i)
           : current_position[i];
-        DEBUG_CHAR(' ', XYZ_CHAR(i));
+        DEBUG_CHAR(' ', AXIS_CHAR(i));
         DEBUG_ECHO_F(destination[i]);
       }
       DEBUG_EOL();

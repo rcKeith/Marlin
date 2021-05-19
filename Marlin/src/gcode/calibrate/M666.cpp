@@ -39,7 +39,7 @@
    */
   void GcodeSuite::M666() {
     DEBUG_SECTION(log_M666, "M666", DEBUGGING(LEVELING));
-    LOOP_XYZ(i) {
+    LOOP_LINEAR_AXES(i) {
       if (parser.seen(AXIS_CHAR(i))) {
         const float v = parser.value_linear_units();
         if (v * Z_HOME_DIR <= 0) delta_endstop_adj[i] = v;

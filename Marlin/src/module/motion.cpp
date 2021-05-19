@@ -124,7 +124,7 @@ xyze_pos_t destination; // {0}
       "Offsets for the first hotend must be 0.0."
     );
     // Transpose from [XYZ][HOTENDS] to [HOTENDS][XYZ]
-    HOTEND_LOOP() LOOP_XYZ(a) hotend_offset[e][a] = tmp[a][e];
+    HOTEND_LOOP() LOOP_LINEAR_AXES(a) hotend_offset[e][a] = tmp[a][e];
     #if ENABLED(DUAL_X_CARRIAGE)
       hotend_offset[1].x = _MAX(X2_HOME_POS, X2_MAX_POS);
     #endif
@@ -303,7 +303,7 @@ void report_current_position_projected() {
 void quickstop_stepper() {
   planner.quick_stop();
   planner.synchronize();
-  set_current_from_steppers_for_axis(ALL_AXES);
+  set_current_from_steppers_for_axis(ALL_AXES_MASK);
   sync_plan_position();
 }
 
@@ -381,7 +381,7 @@ void set_current_from_steppers_for_axis(const AxisEnum axis) {
     planner.unapply_modifiers(pos, true);
   #endif
 
-  if (axis == ALL_AXES)
+  if (axis == ALL_AXES_MASK)
     current_position = pos;
   else
     current_position[axis] = pos[axis];
@@ -1265,10 +1265,10 @@ void prepare_line_to_destination() {
 
 #if HAS_ENDSTOPS
 
-  uint8_t axis_homed, axis_trusted; // = 0
+  linear_axis_bits_t axis_homed, axis_trusted; // = 0
 
-  uint8_t axes_should_home(uint8_t axis_bits/*=LINEAR_AXIS_MASK*/) {
-    auto set_should = [](uint8_t &b, AxisEnum a) {
+  linear_axis_bits_t axes_should_home(linear_axis_bits_t axis_bits/*=linear_bits*/) {
+    auto set_should = [](linear_axis_bits_t &b, AxisEnum a) {
       if (TEST(b, a) && TERN(HOME_AFTER_DEACTIVATE, axis_is_trusted, axis_was_homed)(a))
         CBI(b, a);
     };
@@ -1280,7 +1280,7 @@ void prepare_line_to_destination() {
     return axis_bits;
   }
 
-  bool homing_needed_error(uint8_t axis_bits/*=LINEAR_AXIS_MASK*/) {
+  bool homing_needed_error(linear_axis_bits_t axis_bits/*=linear_bits*/) {
     if ((axis_bits = axes_should_home(axis_bits))) {
       PGM_P home_first = GET_TEXT(MSG_HOME_FIRST);  // TODO: (DerAndere) Set this up for extra axes
       char msg[strlen_P(home_first)+1];

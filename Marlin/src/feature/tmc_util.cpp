@@ -211,7 +211,7 @@
       SERIAL_PRINTLN(data.drv_status, HEX);
       if (data.is_ot) SERIAL_ECHOLNPGM("overtemperature");
       if (data.is_s2g) SERIAL_ECHOLNPGM("coil short circuit");
-      TERN_(TMC_DEBUG, tmc_report_all(LIST_N_1(NUM_AXIS, true)));
+      TERN_(TMC_DEBUG, tmc_report_all());
       kill(PSTR("Driver error"));
     }
   #endif
@@ -933,8 +933,8 @@
    */
 
   void tmc_report_all(
-    LIST_N(LINEAR_AXES, const bool print_x, const bool print_y, const bool print_z, const bool print_i, const bool print_j, const bool print_k),
-    const bool print_e
+    LIST_N(LINEAR_AXES, const bool print_x/*=true*/, const bool print_y/*=true*/, const bool print_z/*=true*/, const bool print_i/*=true*/, const bool print_j/*=true*/, const bool print_k/*=true*/),
+    const bool print_e/*=true*/
   ) {
     #define TMC_REPORT(LABEL, ITEM) do{ SERIAL_ECHOPGM(LABEL);  tmc_debug_loop(ITEM, LIST_N(LINEAR_AXES, print_x, print_y, print_z, print_i, print_j, print_k), print_e); }while(0)
     #define DRV_REPORT(LABEL, ITEM) do{ SERIAL_ECHOPGM(LABEL); drv_status_loop(ITEM, LIST_N(LINEAR_AXES, print_x, print_y, print_z, print_i, print_j, print_k), print_e); }while(0)
@@ -1288,8 +1288,8 @@ static bool test_connection(TMC &st) {
 }
 
 void test_tmc_connection(
-  LIST_N(LINEAR_AXES, const bool test_x, const bool test_y, const bool test_z, const bool test_i, const bool test_j, const bool test_k),
-  const bool test_e
+  LIST_N(LINEAR_AXES, const bool test_x/*=true*/, const bool test_y/*=true*/, const bool test_z/*=true*/, const bool test_i/*=true*/, const bool test_j/*=true*/, const bool test_k/*=true*/),
+  const bool test_e/*=true*/
 ) {
   uint8_t axis_connection = 0;
 
