@@ -57,11 +57,11 @@ Endstops endstops;
 
 bool Endstops::enabled, Endstops::enabled_globally; // Initialized by settings.load()
 
-volatile Endstops::esbits_t Endstops::hit_state;
-Endstops::esbits_t Endstops::live_state = 0;
+volatile Endstops::endstop_mask_t Endstops::hit_state;
+Endstops::endstop_mask_t Endstops::live_state = 0;
 
 #if ENDSTOP_NOISE_THRESHOLD
-  Endstops::esbits_t Endstops::validated_live_state;
+  Endstops::endstop_mask_t Endstops::validated_live_state;
   uint8_t Endstops::endstop_poll_count;
 #endif
 
@@ -416,7 +416,7 @@ void Endstops::resync() {
 #endif
 
 void Endstops::event_handler() {
-  static esbits_t prev_hit_state; // = 0
+  static endstop_mask_t prev_hit_state; // = 0
   if (hit_state == prev_hit_state) return;
   prev_hit_state = hit_state;
   if (hit_state) {
@@ -829,7 +829,7 @@ void Endstops::update() {
      * still exist. The only way to reduce them further is to increase the number of samples.
      * To reduce the chance to 1% (1/128th) requires 7 samples (adding 7ms of delay).
      */
-    static esbits_t old_live_state;
+    static endstop_mask_t old_live_state;
     if (old_live_state != live_state) {
       endstop_poll_count = ENDSTOP_NOISE_THRESHOLD;
       old_live_state = live_state;

@@ -78,7 +78,7 @@ enum EndstopEnum : char {
 class Endstops {
   public:
 
-    typedef IF<(NUM_ENDSTOP_STATES > 8), uint16_t, uint8_t>::type esbits_t;
+    typedef IF<(NUM_ENDSTOP_STATES > 8), uint16_t, uint8_t>::type endstop_mask_t;
 
     #if ENABLED(X_DUAL_ENDSTOPS)
       static float x2_endstop_adj;
@@ -98,11 +98,11 @@ class Endstops {
 
   private:
     static bool enabled, enabled_globally;
-    static esbits_t live_state;
-    static volatile esbits_t hit_state;     // Use X_MIN, Y_MIN, Z_MIN and Z_MIN_PROBE as BIT index
+    static endstop_mask_t live_state;
+    static volatile endstop_mask_t hit_state; // Use X_MIN, Y_MIN, Z_MIN and Z_MIN_PROBE as BIT index
 
     #if ENDSTOP_NOISE_THRESHOLD
-      static esbits_t validated_live_state;
+      static endstop_mask_t validated_live_state;
       static uint8_t endstop_poll_count;    // Countdown from threshold for polling
     #endif
 
@@ -138,12 +138,12 @@ class Endstops {
     /**
      * Get Endstop hit state.
      */
-    FORCE_INLINE static esbits_t trigger_state() { return hit_state; }
+    FORCE_INLINE static endstop_mask_t trigger_state() { return hit_state; }
 
     /**
      * Get current endstops state
      */
-    FORCE_INLINE static esbits_t state() {
+    FORCE_INLINE static endstop_mask_t state() {
       return
         #if ENDSTOP_NOISE_THRESHOLD
           validated_live_state
