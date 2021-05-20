@@ -681,7 +681,7 @@ void MarlinUI::quick_feedback(const bool clear_buttons/*=true*/) {
     xyze_pos_t ManualMove::all_axes_destination = { 0 };
     bool ManualMove::processing = false;
   #endif
-  #if MULTI_MANUAL
+  #if MULTI_E_MANUAL
     int8_t ManualMove::e_index = 0;
   #endif
   AxisEnum ManualMove::axis = NO_AXIS_ENUM;
@@ -718,7 +718,7 @@ void MarlinUI::quick_feedback(const bool clear_buttons/*=true*/) {
 
         #if HAS_MULTI_EXTRUDER
           REMEMBER(ae, active_extruder);
-          #if MULTI_MANUAL
+          #if MULTI_E_MANUAL
             if (axis == E_AXIS) active_extruder = e_index;
           #endif
         #endif
@@ -747,7 +747,7 @@ void MarlinUI::quick_feedback(const bool clear_buttons/*=true*/) {
 
         // For Cartesian / Core motion simply move to the current_position
         planner.buffer_line(current_position, fr_mm_s,
-          TERN_(MULTI_MANUAL, axis == E_AXIS ? e_index :) active_extruder
+          TERN_(MULTI_E_MANUAL, axis == E_AXIS ? e_index :) active_extruder
         );
 
         //SERIAL_ECHOLNPAIR("Add planner.move with Axis ", AS_CHAR(axis_codes[axis]), " at FR ", fr_mm_s);
@@ -762,11 +762,11 @@ void MarlinUI::quick_feedback(const bool clear_buttons/*=true*/) {
   // Tell ui.update() to start a move to current_position after a short delay.
   //
   void ManualMove::soon(const AxisEnum move_axis
-    #if MULTI_MANUAL
+    #if MULTI_E_MANUAL
       , const int8_t eindex/*=-1*/
     #endif
   ) {
-    #if MULTI_MANUAL
+    #if MULTI_E_MANUAL
       if (move_axis == E_AXIS) e_index = eindex >= 0 ? eindex : active_extruder;
     #endif
     start_time = millis() + (menu_scale < 0.99f ? 0UL : 250UL); // delay for bigger moves
