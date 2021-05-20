@@ -1737,7 +1737,7 @@ CODE_N(LINEAR_AXES,
  * Allen Key
  * Deploying the Allen Key probe uses big moves in z direction. Too dangerous for an unhomed z-axis.
  */
-#if BOTH(Z_PROBE_ALLEN_KEY, Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN) && Z_HOME_TO_MIN
+#if ALL(Z_HOME_TO_MIN, Z_PROBE_ALLEN_KEY, Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN)
   #error "You can't home to a Z min endstop with a Z_PROBE_ALLEN_KEY."
 #endif
 
