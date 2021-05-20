@@ -69,8 +69,9 @@ void GcodeSuite::M92() {
   if (target_extruder < 0) return;
 
   // No arguments? Show M92 report.
-  if (!parser.seen("E"
+  if (!parser.seen(
     GANG_N(LINEAR_AXES, "X", "Y", "Z", AXIS4_STR, AXIS5_STR, AXIS6_STR)
+    TERN_(HAS_EXTRUDERS, "E")
     TERN_(MAGIC_NUMBERS_GCODE, "HL")
   )) return report_M92(true, target_extruder);
 
