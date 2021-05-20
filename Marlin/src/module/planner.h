@@ -775,7 +775,9 @@ class Planner {
     static bool buffer_segment(
       LIST_N(LINEAR_AXES, const_float_t a, const_float_t b, const_float_t c
                         , const_float_t i, const_float_t j, const_float_t k)
-      , const_float_t e
+      #if HAS_EXTRUDERS
+        , const_float_t e
+      #endif
       #if HAS_DIST_MM_ARG
         , const xyze_float_t &cart_dist_mm
       #endif
@@ -789,7 +791,10 @@ class Planner {
       , const_feedRate_t fr_mm_s, const uint8_t extruder, const_float_t millimeters=0.0
     ) {
       return buffer_segment(
-        LIST_N(LINEAR_AXES, abce.a, abce.b, abce.c, abce.i, abce.j, abce.k), abce.e
+        LIST_N(LINEAR_AXES, abce.a, abce.b, abce.c, abce.i, abce.j, abce.k)
+        #if HAS_EXTRUDERS
+          , abce.e
+        #endif
         #if HAS_DIST_MM_ARG
           , cart_dist_mm
         #endif
@@ -813,7 +818,10 @@ class Planner {
     static bool buffer_line(
       LIST_N(LINEAR_AXES, const_float_t rx, const_float_t ry, const_float_t rz,
                           const_float_t ri, const_float_t rj, const_float_t rk)
-      , const_float_t e, const feedRate_t &fr_mm_s, const uint8_t extruder, const float millimeters=0.0
+      #if HAS_EXTRUDERS
+        , const_float_t e
+      #endif
+      , const feedRate_t &fr_mm_s, const uint8_t extruder, const float millimeters=0.0
       #if ENABLED(SCARA_FEEDRATE_SCALING)
         , const_float_t inv_duration=0.0
       #endif
@@ -826,7 +834,10 @@ class Planner {
     ) {
       return buffer_line(
         LIST_N(LINEAR_AXES, cart.x, cart.y, cart.z, cart.i, cart.j, cart.k)
-        , cart.e, fr_mm_s, extruder, millimeters
+        #if HAS_EXTRUDERS
+          , cart.e
+        #endif
+        , fr_mm_s, extruder, millimeters
         #if ENABLED(SCARA_FEEDRATE_SCALING)
           , inv_duration
         #endif
@@ -853,12 +864,21 @@ class Planner {
     static void set_position_mm(
       LIST_N(LINEAR_AXES, const_float_t rx, const_float_t ry, const_float_t rz,
                           const_float_t ri, const_float_t rj, const_float_t rk)
-      , const_float_t e
+      #if HAS_EXTRUDERS
+        , const_float_t e
+      #endif
     );
     FORCE_INLINE static void set_position_mm(const xyze_pos_t &cart) {
-      set_position_mm(LIST_N(LINEAR_AXES, cart.x, cart.y, cart.z, cart.i, cart.j, cart.k), cart.e);
+      set_position_mm(LIST_N(LINEAR_AXES, cart.x, cart.y, cart.z, cart.i, cart.j, cart.k)
+        #if HAS_EXTRUDERS
+          , cart.e
+        #endif
+      );
     }
-    static void set_e_position_mm(const_float_t e);
+
+    #if HAS_EXTRUDERS
+      static void set_e_position_mm(const_float_t e);
+    #endif
 
     /**
      * Set the planner.position and individual stepper positions.
@@ -869,11 +889,16 @@ class Planner {
     static void set_machine_position_mm(
       LIST_N(LINEAR_AXES, const_float_t a, const_float_t b, const_float_t c,
                           const_float_t i, const_float_t j, const_float_t k)
-      , const_float_t e
+      #if HAS_EXTRUDERS
+        , const_float_t e
+      #endif
     );
     FORCE_INLINE static void set_machine_position_mm(const abce_pos_t &abce) {
       set_machine_position_mm(
-        LIST_N(LINEAR_AXES, abce.a, abce.b, abce.c, abce.i, abce.j, abce.k), abce.e
+        LIST_N(LINEAR_AXES, abce.a, abce.b, abce.c, abce.i, abce.j, abce.k)
+        #if HAS_EXTRUDERS
+          , abce.e
+        #endif
       );
     }
 

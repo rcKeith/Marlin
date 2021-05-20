@@ -1342,7 +1342,7 @@ void Planner::check_axes_activity() {
       TERN_(HAS_HEATER_2, tail_e_to_p_pressure = block->e_to_p_pressure);
     #endif
 
-    #if ANY(DISABLE_X, DISABLE_Y, DISABLE_Z, DISABLE_E)
+    #if ANY(DISABLE_X, DISABLE_Y, DISABLE_Z, DISABLE_I, DISABLE_J, DISABLE_K, DISABLE_E)
       for (uint8_t b = block_buffer_tail; b != block_buffer_head; b = next_block_index(b)) {
         block_t *block = &block_buffer[b];
         CODE_N(LINEAR_AXES,
@@ -1943,8 +1943,6 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
   #if HAS_EXTRUDERS
     const float esteps_float = de * e_factor[extruder];
     const uint32_t esteps = ABS(esteps_float) + 0.5f;
-  #else
-    constexpr uint32_t esteps = 0;
   #endif
 
   // Clear all flags, including the "busy" bit
@@ -2029,8 +2027,6 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
 
   #if HAS_EXTRUDERS
     steps_dist_mm.e = esteps_float * steps_to_mm[E_AXIS_N(extruder)];
-  #else
-    steps_dist_mm.e = 0.0f;
   #endif
 
   TERN_(LCD_SHOW_E_TOTAL, e_move_accumulator += steps_dist_mm.e);
@@ -2044,11 +2040,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
       && block->steps.k < MIN_STEPS_PER_SEGMENT
     )
   ) {
-    block->millimeters = (0
-      #if HAS_EXTRUDERS
-        + ABS(steps_dist_mm.e)
-      #endif
-    );
+    block->millimeters = TERN0(HAS_EXTRUDERS, ABS(steps_dist_mm.e));
   }
   else {
     if (millimeters)
@@ -2097,9 +2089,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
     TERN_(BACKLASH_COMPENSATION, backlash.add_correction_steps(da, db, dc, dm, block));
   }
 
-  #if HAS_EXTRUDERS
-    block->steps.e = esteps;
-  #endif
+  TERN_(HAS_EXTRUDERS, block->steps.e = esteps);
 
   block->step_event_count = _MAX(
     LIST_N(LINEAR_AXES, block->steps.a, block->steps.b, block->steps.c, block->steps.i, block->steps.j, block->steps.k),
@@ -2526,7 +2516,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
                                  + (-prev_unit_vec.i * unit_vec.i),
                                  + (-prev_unit_vec.j * unit_vec.j),
                                  + (-prev_unit_vec.k * unit_vec.k)
-                               ) + (-prev_unit_vec.e * unit_vec.e);
+                               ) PLUS_TERN(HAS_EXTRUDERS, -prev_unit_vec.e * unit_vec.e);
 
       // NOTE: Computed without any expensive trig, sin() or acos(), by trig half angle identity of cos(theta).
       if (junction_cos_theta > 0.999999f) {
@@ -2882,11 +2872,13 @@ bool Planner::buffer_segment(
     const xyze_pos_t target_float = { LIST_N(LINEAR_AXES, a, b, c, i, j, k), e };
   #endif
 
-  // DRYRUN prevents E moves from taking place
-  if (DEBUGGING(DRYRUN) || TERN0(CANCEL_OBJECTS, cancelable.skipping)) {
-    position.e = target.e;
-    TERN_(HAS_POSITION_FLOAT, position_float.e = e);
-  }
+  #if HAS_EXTRUDERS
+    // DRYRUN prevents E moves from taking place
+    if (DEBUGGING(DRYRUN) || TERN0(CANCEL_OBJECTS, cancelable.skipping)) {
+      position.e = target.e;
+      TERN_(HAS_POSITION_FLOAT, position_float.e = e);
+    }
+  #endif
 
   /* <-- add a slash to enable
     SERIAL_ECHOPAIR("  buffer_segment FR:", fr_mm_s);
@@ -2971,7 +2963,12 @@ bool Planner::buffer_line(
     , const_float_t inv_duration
   #endif
 ) {
-  xyze_pos_t machine = { LIST_N(LINEAR_AXES, rx, ry, rz, ri, rj, rk), e };
+  xyze_pos_t machine = {
+    LIST_N(LINEAR_AXES, rx, ry, rz, ri, rj, rk)
+    #if HAS_EXTRUDERS
+      , e
+    #endif
+  };
   TERN_(HAS_POSITION_MODIFIERS, apply_modifiers(machine));
 
   #if IS_KINEMATIC
@@ -3121,9 +3118,7 @@ void Planner::set_position_mm(
   , const_float_t e
 ) {
   xyze_pos_t machine = { LIST_N(LINEAR_AXES, rx, ry, rz, ri, rj, rk), e };
-  #if HAS_POSITION_MODIFIERS
-    apply_modifiers(machine, true);
-  #endif
+  TERN_(HAS_POSITION_MODIFIERS, apply_modifiers(machine, true));
   #if IS_KINEMATIC
     position_cart.set(rx, ry, rz, e);
     inverse_kinematics(machine);

@@ -69,7 +69,7 @@ void menu_backlash();
     BACK_ITEM(MSG_ADVANCED_SETTINGS);
     #define EDIT_DAC_PERCENT(A) EDIT_ITEM(uint8, MSG_DAC_PERCENT_##A, &driverPercent[_AXIS(A)], 0, 100, []{ stepper_dac.set_current_percents(driverPercent); })
     CODE_N(LINEAR_AXES, EDIT_DAC_PERCENT(X), EDIT_DAC_PERCENT(Y), EDIT_DAC_PERCENT(Z), EDIT_DAC_PERCENT(I), EDIT_DAC_PERCENT(J), EDIT_DAC_PERCENT(K));
-    EDIT_DAC_PERCENT(E);
+    TERN_(HAS_EXTRUDERS, EDIT_DAC_PERCENT(E));
     ACTION_ITEM(MSG_DAC_EEPROM_WRITE, stepper_dac.commit_eeprom);
     END_MENU();
   }
@@ -483,7 +483,7 @@ void menu_backlash();
         EDIT_JERK(I), EDIT_JERK(J), EDIT_JERK(K)
       );
 
-      #if HAS_CLASSIC_E_JERK
+      #if HAS_EXTRUDERS
         EDIT_ITEM_FAST(float52sign, MSG_VE_JERK, &planner.max_jerk.e, 0.1f, max_jerk_edit.e);
       #endif
 

@@ -89,7 +89,12 @@ bool relative_mode; // = false;
   #define Z_INIT_POS Z_HOME_POS
 #endif
 
-xyze_pos_t current_position = { LIST_N(LINEAR_AXES, X_HOME_POS, Y_HOME_POS, Z_INIT_POS, I_HOME_POS, J_HOME_POS, K_HOME_POS), 0 };
+xyze_pos_t current_position = {
+  LIST_N(LINEAR_AXES, X_HOME_POS, Y_HOME_POS, Z_INIT_POS, I_HOME_POS, J_HOME_POS, K_HOME_POS)
+  #if HAS_EXTRUDERS
+    , 0
+  #endif
+};
 
 /**
  * Cartesian Destination

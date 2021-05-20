@@ -540,6 +540,7 @@
 #if !EXTRUDERS
   #undef EXTRUDERS
   #define EXTRUDERS 0
+  #undef DISABLE_E
   #undef MIXING_EXTRUDER
   #undef SINGLENOZZLE
   #undef SWITCHING_EXTRUDER

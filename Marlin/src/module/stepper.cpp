@@ -2716,12 +2716,14 @@ void Stepper::init() {
  * The input is based on the typical per-axis XYZ steps.
  * For CORE machines XYZ needs to be translated to ABC.
  *
- * This allows get_axis_position_mm to correctly
- * derive the current XYZ position later on.
+ * This allows get_axis_position_mm to correctly derive
+ * the current XYZ position later on.
  */
 void Stepper::_set_position(
-  LIST_N(LINEAR_AXES, const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &i, const int32_t &j, const int32_t &k),
-  const int32_t &e
+  LIST_N(LINEAR_AXES, const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &i, const int32_t &j, const int32_t &k)
+  #if HAS_EXTRUDERS
+    , const int32_t &e
+  #endif
 ) {
   #if CORE_IS_XY
     // corexy positioning
@@ -2764,12 +2766,18 @@ int32_t Stepper::position(const AxisEnum axis) {
 // Set the current position in steps
 //TODO: Test for LINEAR_AXES >= 4
 void Stepper::set_position(
-  LIST_N(LINEAR_AXES, const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &i, const int32_t &j, const int32_t &k),
-  const int32_t &e
+  LIST_N(LINEAR_AXES, const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &i, const int32_t &j, const int32_t &k)
+  #if HAS_EXTRUDERS
+    , const int32_t &e
+  #endif
 ) {
   planner.synchronize();
   const bool was_enabled = suspend();
-  _set_position(LIST_N(LINEAR_AXES, a, b, c, i, j, k), e);
+  _set_position(LIST_N(LINEAR_AXES, a, b, c, i, j, k)
+    #if HAS_EXTRUDERS
+      , e
+    #endif
+  );
   if (was_enabled) wake_up();
 }
 

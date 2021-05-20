@@ -42,8 +42,10 @@ enum StealthIndex : uint8_t {
     STEALTH_AXIS_I,
     STEALTH_AXIS_J,
     STEALTH_AXIS_K
-  ),
-  STEALTH_AXIS_E
+  )
+  #if HAS_EXTRUDERS
+    , STEALTH_AXIS_E
+  #endif
 };
 #define TMC_INIT(ST, STEALTH_INDEX) tmc_init(stepper##ST, ST##_CURRENT, ST##_MICROSTEPS, ST##_HYBRID_THRESHOLD, stealthchop_by_axis[STEALTH_INDEX], chopper_timing_##ST, ST##_INTERPOLATE)
 

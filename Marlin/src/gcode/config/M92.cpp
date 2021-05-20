@@ -38,7 +38,7 @@ void report_M92(const bool echo=true, const int8_t e=-1) {
   #endif
   SERIAL_EOL();
 
-  #if BOTH(HAS_EXTRUDERS, DISTINCT_E_FACTORS)
+  #if ENABLED(DISTINCT_E_FACTORS)
     LOOP_L_N(i, E_STEPPERS) {
       if (e >= 0 && i != e) continue;
       if (echo) SERIAL_ECHO_START(); else SERIAL_CHAR(' ');

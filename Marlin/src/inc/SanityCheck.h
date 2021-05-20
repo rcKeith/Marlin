@@ -1606,7 +1606,7 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
 #endif
 
 #if ENABLED(G26_MESH_VALIDATION)
-  #if !EXTRUDERS
+  #if !HAS_EXTRUDERS
     #error "G26_MESH_VALIDATION requires at least one extruder."
   #elif !HAS_MESH
     #error "G26_MESH_VALIDATION requires MESH_BED_LEVELING, AUTO_BED_LEVELING_BILINEAR, or AUTO_BED_LEVELING_UBL."
@@ -1672,9 +1672,9 @@ CODE_N(LINEAR_AXES,
 /**
  * Make sure DISABLE_[XYZ] compatible with selected homing options
  */
-#if ANY(DISABLE_X, DISABLE_Y, DISABLE_Z)
+#if ANY(DISABLE_X, DISABLE_Y, DISABLE_Z, DISABLE_I, DISABLE_J, DISABLE_K)
   #if EITHER(HOME_AFTER_DEACTIVATE, Z_SAFE_HOMING)
-    #error "DISABLE_[XYZ] is not compatible with HOME_AFTER_DEACTIVATE or Z_SAFE_HOMING."
+    #error "DISABLE_[XYZIJK] is not compatible with HOME_AFTER_DEACTIVATE or Z_SAFE_HOMING."
   #endif
 #endif
 

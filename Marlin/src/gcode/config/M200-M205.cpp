@@ -177,7 +177,9 @@ void GcodeSuite::M205() {
       if (parser.seenval(AXIS5_NAME)) planner.set_max_jerk(J_AXIS, parser.value_linear_units()),
       if (parser.seenval(AXIS6_NAME)) planner.set_max_jerk(K_AXIS, parser.value_linear_units())
     );
-    if (parser.seenval('E')) planner.set_max_jerk(E_AXIS, parser.value_linear_units());
+    #if HAS_EXTRUDERS
+      if (parser.seenval('E')) planner.set_max_jerk(E_AXIS, parser.value_linear_units());
+    #endif
     #if HAS_MESH && DISABLED(LIMITED_JERK_EDITING)
       if (seenZ && planner.max_jerk.z <= 0.1f)
         SERIAL_ECHOLNPGM("WARNING! Low Z Jerk may lead to unwanted pauses.");
