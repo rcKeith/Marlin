@@ -88,7 +88,7 @@ void GcodeSuite::M201() {
 
   LOOP_LOGICAL_AXES(i) {
     if (parser.seenval(axis_codes[i])) {
-      const uint8_t a = (i == E_AXIS ? uint8_t(E_AXIS_N(target_extruder)) : i);
+      const uint8_t a = TERN(HAS_EXTRUDERS, (i == E_AXIS ? uint8_t(E_AXIS_N(target_extruder)) : i), i);
       planner.set_max_acceleration(a, parser.value_axis_units((AxisEnum)a));
     }
   }
@@ -106,7 +106,7 @@ void GcodeSuite::M203() {
 
   LOOP_LOGICAL_AXES(i)
     if (parser.seenval(axis_codes[i])) {
-      const uint8_t a = (i == E_AXIS ? uint8_t(E_AXIS_N(target_extruder)) : i);
+      const uint8_t a = TERN(HAS_EXTRUDERS, (i == E_AXIS ? uint8_t(E_AXIS_N(target_extruder)) : i), i);
       planner.set_max_feedrate(a, parser.value_axis_units((AxisEnum)a));
     }
 }
@@ -155,6 +155,9 @@ void GcodeSuite::M205() {
   if (parser.seenval('T')) planner.settings.min_travel_feedrate_mm_s = parser.value_linear_units();
   #if HAS_JUNCTION_DEVIATION
     if (parser.seenval('J')) {
+      #if HAS_CLASSIC_JERK && (AXIS4_NAME == 'J' || AXIS5_NAME == 'J' || AXIS6_NAME == 'J')
+        #error "Can't set_max_jerk for J axis."
+      #endif
       const float junc_dev = parser.value_linear_units();
       if (WITHIN(junc_dev, 0.01f, 0.3f)) {
         planner.junction_deviation_mm = junc_dev;
@@ -170,9 +173,9 @@ void GcodeSuite::M205() {
       if (parser.seenval('X')) planner.set_max_jerk(X_AXIS, parser.value_linear_units()),
       if (parser.seenval('Y')) planner.set_max_jerk(Y_AXIS, parser.value_linear_units()),
       if ((seenZ = parser.seenval('Z'))) planner.set_max_jerk(Z_AXIS, parser.value_linear_units()),
-      if (parser.seenval('I')) planner.set_max_jerk(I_AXIS, parser.value_linear_units()),
-      if (parser.seenval('J')) planner.set_max_jerk(J_AXIS, parser.value_linear_units()),
-      if (parser.seenval('K')) planner.set_max_jerk(K_AXIS, parser.value_linear_units())
+      if (parser.seenval(AXIS4_NAME)) planner.set_max_jerk(I_AXIS, parser.value_linear_units()),
+      if (parser.seenval(AXIS5_NAME)) planner.set_max_jerk(J_AXIS, parser.value_linear_units()),
+      if (parser.seenval(AXIS6_NAME)) planner.set_max_jerk(K_AXIS, parser.value_linear_units())
     );
     if (parser.seenval('E')) planner.set_max_jerk(E_AXIS, parser.value_linear_units());
     #if HAS_MESH && DISABLED(LIMITED_JERK_EDITING)

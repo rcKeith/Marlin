@@ -204,7 +204,7 @@ inline void report_logical_position(const xyze_pos_t &rpos) {
       SP_J_LBL, lpos.j,
       SP_K_LBL, lpos.k
     )
-    #if EXTRUDERS
+    #if HAS_EXTRUDERS
       , SP_E_LBL, lpos.e
     #endif
   );
@@ -220,7 +220,7 @@ void report_real_position() {
     planner.get_axis_position_mm(J_AXIS),
     planner.get_axis_position_mm(K_AXIS)
   );
-  #if EXTRUDERS
+  #if HAS_EXTRUDERS
     npos.e = planner.get_axis_position_mm(E_AXIS);
   #endif
 
@@ -330,7 +330,9 @@ void sync_plan_position() {
   planner.set_position_mm(current_position);
 }
 
-void sync_plan_position_e() { planner.set_e_position_mm(current_position.e); }
+#if HAS_EXTRUDERS
+  void sync_plan_position_e() { planner.set_e_position_mm(current_position.e); }
+#endif
 
 /**
  * Get the stepper positions in the cartes[] array.
@@ -375,7 +377,10 @@ void get_cartesian_from_steppers() {
 void set_current_from_steppers_for_axis(const AxisEnum axis) {
   get_cartesian_from_steppers();
   xyze_pos_t pos = cartes;
-  pos.e = planner.get_axis_position_mm(E_AXIS);
+
+  #if HAS_EXTRUDERS
+    pos.e = planner.get_axis_position_mm(E_AXIS);
+  #endif
 
   #if HAS_POSITION_MODIFIERS
     planner.unapply_modifiers(pos, true);
@@ -395,7 +400,7 @@ void line_to_current_position(const_feedRate_t fr_mm_s/*=feedrate_mm_s*/) {
   planner.buffer_line(current_position, fr_mm_s, active_extruder);
 }
 
-#if EXTRUDERS
+#if HAS_EXTRUDERS
   void unscaled_e_move(const_float_t length, const_feedRate_t fr_mm_s) {
     TERN_(HAS_FILAMENT_SENSOR, runout.reset());
     current_position.e += length / planner.e_factor[active_extruder];
@@ -442,7 +447,7 @@ void _internal_move_to_destination(const_feedRate_t fr_mm_s/*=0.0f*/
   const uint16_t old_pct = feedrate_percentage;
   feedrate_percentage = 100;
 
-  #if EXTRUDERS
+  #if HAS_EXTRUDERS
     const float old_fac = planner.e_factor[active_extruder];
     planner.e_factor[active_extruder] = 1.0f;
   #endif
@@ -454,7 +459,7 @@ void _internal_move_to_destination(const_feedRate_t fr_mm_s/*=0.0f*/
 
   feedrate_mm_s = old_feedrate;
   feedrate_percentage = old_pct;
-  #if EXTRUDERS
+  #if HAS_EXTRUDERS
     planner.e_factor[active_extruder] = old_fac;
   #endif
 }

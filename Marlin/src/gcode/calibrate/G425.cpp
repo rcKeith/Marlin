@@ -313,20 +313,20 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
     probe_side(m, uncertainty, TOP);
   #endif
 
-  TERN_(CALIBRATION_MEASURE_RIGHT, probe_side(m, uncertainty, RIGHT, probe_top_at_edge));
-  TERN_(CALIBRATION_MEASURE_FRONT, probe_side(m, uncertainty, FRONT, probe_top_at_edge));
-  TERN_(CALIBRATION_MEASURE_LEFT,  probe_side(m, uncertainty, LEFT,  probe_top_at_edge));
-  TERN_(CALIBRATION_MEASURE_BACK,  probe_side(m, uncertainty, BACK,  probe_top_at_edge));
-  TERN_(CALIBRATION_MEASURE_IMIN,  probe_side(m, uncertainty, IMINIMUM,  probe_top_at_edge));
-  TERN_(CALIBRATION_MEASURE_IMAX,  probe_side(m, uncertainty, IMAXIMUM,  probe_top_at_edge));
-  TERN_(CALIBRATION_MEASURE_JMIN,  probe_side(m, uncertainty, JMINIMUM,  probe_top_at_edge));
-  TERN_(CALIBRATION_MEASURE_JMAX,  probe_side(m, uncertainty, JMAXIMUM,  probe_top_at_edge));
-  TERN_(CALIBRATION_MEASURE_KMIN,  probe_side(m, uncertainty, KMINIMUM,  probe_top_at_edge));
-  TERN_(CALIBRATION_MEASURE_KMAX,  probe_side(m, uncertainty, KMAXIMUM,  probe_top_at_edge));
+  TERN_(CALIBRATION_MEASURE_RIGHT, probe_side(m, uncertainty, RIGHT,    probe_top_at_edge));
+  TERN_(CALIBRATION_MEASURE_FRONT, probe_side(m, uncertainty, FRONT,    probe_top_at_edge));
+  TERN_(CALIBRATION_MEASURE_LEFT,  probe_side(m, uncertainty, LEFT,     probe_top_at_edge));
+  TERN_(CALIBRATION_MEASURE_BACK,  probe_side(m, uncertainty, BACK,     probe_top_at_edge));
+  TERN_(CALIBRATION_MEASURE_IMIN,  probe_side(m, uncertainty, IMINIMUM, probe_top_at_edge));
+  TERN_(CALIBRATION_MEASURE_IMAX,  probe_side(m, uncertainty, IMAXIMUM, probe_top_at_edge));
+  TERN_(CALIBRATION_MEASURE_JMIN,  probe_side(m, uncertainty, JMINIMUM, probe_top_at_edge));
+  TERN_(CALIBRATION_MEASURE_JMAX,  probe_side(m, uncertainty, JMAXIMUM, probe_top_at_edge));
+  TERN_(CALIBRATION_MEASURE_KMIN,  probe_side(m, uncertainty, KMINIMUM, probe_top_at_edge));
+  TERN_(CALIBRATION_MEASURE_KMAX,  probe_side(m, uncertainty, KMAXIMUM, probe_top_at_edge));
 
   // Compute the measured center of the calibration object.
-  TERN_(HAS_X_CENTER, m.obj_center.x = (m.obj_side[LEFT] + m.obj_side[RIGHT]) / 2);
-  TERN_(HAS_Y_CENTER, m.obj_center.y = (m.obj_side[FRONT] + m.obj_side[BACK]) / 2);
+  TERN_(HAS_X_CENTER, m.obj_center.x = (m.obj_side[LEFT]     + m.obj_side[RIGHT])    / 2);
+  TERN_(HAS_Y_CENTER, m.obj_center.y = (m.obj_side[FRONT]    + m.obj_side[BACK])     / 2);
   TERN_(HAS_I_CENTER, m.obj_center.i = (m.obj_side[IMINIMUM] + m.obj_side[IMAXIMUM]) / 2);
   TERN_(HAS_J_CENTER, m.obj_center.j = (m.obj_side[JMINIMUM] + m.obj_side[JMAXIMUM]) / 2);
   TERN_(HAS_K_CENTER, m.obj_center.k = (m.obj_side[KMINIMUM] + m.obj_side[KMAXIMUM]) / 2);
@@ -439,26 +439,26 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
     #endif
     #if LINEAR_AXES >= 4
       #if ENABLED(CALIBRATION_MEASURE_IMIN)
-        SERIAL_ECHOLNPAIR("  Imin: ", m.backlash[IMINIMUM]);
+        SERIAL_ECHOLNPAIR("  " AXIS4_STR "min: ", m.backlash[IMINIMUM]);
       #endif
       #if ENABLED(CALIBRATION_MEASURE_IMAX)
-        SERIAL_ECHOLNPAIR("  Imax: ", m.backlash[IMAXIMUM]);
+        SERIAL_ECHOLNPAIR("  " AXIS4_STR "max: ", m.backlash[IMAXIMUM]);
       #endif
     #endif
     #if LINEAR_AXES >= 5
       #if ENABLED(CALIBRATION_MEASURE_JMIN)
-        SERIAL_ECHOLNPAIR("  Jmin: ", m.backlash[JMINIMUM]);
+        SERIAL_ECHOLNPAIR("  " AXIS5_STR "min: ", m.backlash[JMINIMUM]);
       #endif
       #if ENABLED(CALIBRATION_MEASURE_JMAX)
-        SERIAL_ECHOLNPAIR("  Jmax: ", m.backlash[JMAXIMUM]);
+        SERIAL_ECHOLNPAIR("  " AXIS5_STR "max: ", m.backlash[JMAXIMUM]);
       #endif
     #endif
     #if LINEAR_AXES >= 6
       #if ENABLED(CALIBRATION_MEASURE_KMIN)
-        SERIAL_ECHOLNPAIR("  Kmin: ", m.backlash[KMINIMUM]);
+        SERIAL_ECHOLNPAIR("  " AXIS6_STR "min: ", m.backlash[KMINIMUM]);
       #endif
       #if ENABLED(CALIBRATION_MEASURE_KMAX)
-        SERIAL_ECHOLNPAIR("  Kmax: ", m.backlash[KMAXIMUM]);
+        SERIAL_ECHOLNPAIR("  " AXIS6_STR "max: ", m.backlash[KMAXIMUM]);
       #endif
     #endif
     SERIAL_EOL();

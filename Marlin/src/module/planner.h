@@ -76,7 +76,12 @@
 // Feedrate for manual moves
 #ifdef MANUAL_FEEDRATE
   constexpr xyze_feedrate_t _mf = MANUAL_FEEDRATE,
-                            manual_feedrate_mm_s { _mf.x / 60.0f, _mf.y / 60.0f, _mf.z / 60.0f, _mf.e / 60.0f };
+                            manual_feedrate_mm_s {
+                              LIST_N(LINEAR_AXES, _mf.x / 60.0f, _mf.y / 60.0f, _mf.z / 60.0f, _mf.i / 60.0f, _mf.j / 60.0f, _mf.k / 60.0f)
+                              #if HAS_EXTRUDERS
+                                , _mf.e / 60.0f
+                              #endif
+                            };
 #endif
 
 #if IS_KINEMATIC && HAS_JUNCTION_DEVIATION
@@ -337,7 +342,7 @@ class Planner {
       static xyze_bool_t last_page_dir;             // Last page direction given
     #endif
 
-    #if EXTRUDERS
+    #if HAS_EXTRUDERS
       static int16_t flow_percentage[EXTRUDERS];    // Extrusion factor for each extruder
       static float e_factor[EXTRUDERS];             // The flow percentage and volumetric multiplier combine to scale E movement
     #endif
@@ -494,7 +499,7 @@ class Planner {
       static inline void set_max_jerk(const AxisEnum, const_float_t ) {}
     #endif
 
-    #if EXTRUDERS
+    #if HAS_EXTRUDERS
       FORCE_INLINE static void refresh_e_factor(const uint8_t e) {
         e_factor[e] = flow_percentage[e] * 0.01f * TERN(NO_VOLUMETRICS, 1.0f, volumetric_multiplier[e]);
       }
@@ -887,8 +892,10 @@ class Planner {
           get_axis_position_mm(I_AXIS),
           get_axis_position_mm(J_AXIS),
           get_axis_position_mm(K_AXIS)
-        ),
-        get_axis_position_mm(E_AXIS)
+        )
+        #if HAS_EXTRUDERS
+          , get_axis_position_mm(E_AXIS)
+        #endif
       };
       return out;
     }

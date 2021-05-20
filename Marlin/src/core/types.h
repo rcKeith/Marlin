@@ -65,7 +65,7 @@ enum AxisEnum : uint8_t {
   NUM_AXIS_ENUMS,
 
   // Most of the time we refer only to the single E_AXIS
-  #if EXTRUDERS
+  #if HAS_EXTRUDERS
     E_AXIS = E0_AXIS,
   #endif
 

@@ -402,7 +402,7 @@ typedef struct SettingsDataStruct {
   //
   // ADVANCED_PAUSE_FEATURE
   //
-  #if EXTRUDERS
+  #if HAS_EXTRUDERS
     fil_change_settings_t fc_settings[EXTRUDERS];       // M603 T U L
   #endif
 
@@ -1351,7 +1351,7 @@ void MarlinSettings::postprocess() {
     //
     // Advanced Pause filament load & unload lengths
     //
-    #if EXTRUDERS
+    #if HAS_EXTRUDERS
     {
       #if DISABLED(ADVANCED_PAUSE_FEATURE)
         const fil_change_settings_t fc_settings[EXTRUDERS] = { 0, 0 };
@@ -2295,7 +2295,7 @@ void MarlinSettings::postprocess() {
       //
       // Advanced Pause filament load & unload lengths
       //
-      #if EXTRUDERS
+      #if HAS_EXTRUDERS
       {
         #if DISABLED(ADVANCED_PAUSE_FEATURE)
           fil_change_settings_t fc_settings[EXTRUDERS];
@@ -3221,7 +3221,7 @@ void MarlinSettings::reset() {
         SP_J_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[J_AXIS]),
         SP_K_STR, LINEAR_UNIT(planner.settings.max_feedrate_mm_s[K_AXIS])
       )
-      #if DISABLED(DISTINCT_E_FACTORS)
+      #if HAS_EXTRUDERS && DISABLED(DISTINCT_E_FACTORS)
         , SP_E_STR, VOLUMETRIC_UNIT(planner.settings.max_feedrate_mm_s[E_AXIS])
       #endif
     );
@@ -3246,7 +3246,7 @@ void MarlinSettings::reset() {
         SP_J_STR, LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[J_AXIS]),
         SP_K_STR, LINEAR_UNIT(planner.settings.max_acceleration_mm_per_s2[K_AXIS])
       )
-      #if DISABLED(DISTINCT_E_FACTORS)
+      #if HAS_EXTRUDERS && DISABLED(DISTINCT_E_FACTORS)
         , SP_E_STR, VOLUMETRIC_UNIT(planner.settings.max_acceleration_mm_per_s2[E_AXIS])
       #endif
     );

@@ -523,7 +523,7 @@ void Stepper::set_directions() {
         MIXER_STEPPER_LOOP(j) NORM_E_DIR(j);
         count_direction.e = 1;
       }
-    #else
+    #elif HAS_EXTRUDERS
       if (motor_direction(E_AXIS)) {
         REV_E_DIR(stepper_extruder);
         count_direction.e = -1;
@@ -1652,7 +1652,7 @@ void Stepper::pulse_phase_isr() {
           PAGE_PULSE_PREP(X);
           PAGE_PULSE_PREP(Y);
           PAGE_PULSE_PREP(Z);
-          PAGE_PULSE_PREP(E);
+          TERN_(HAS_EXTRUDERS, PAGE_PULSE_PREP(E));
 
           page_step_state.segment_steps++;
 
@@ -1685,7 +1685,7 @@ void Stepper::pulse_phase_isr() {
           PAGE_PULSE_PREP(X);
           PAGE_PULSE_PREP(Y);
           PAGE_PULSE_PREP(Z);
-          PAGE_PULSE_PREP(E);
+          TERN_(HAS_EXTRUDERS, PAGE_PULSE_PREP(E));
 
           page_step_state.segment_steps++;
 

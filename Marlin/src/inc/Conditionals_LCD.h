@@ -537,17 +537,20 @@
  *  E_STEPPERS   - Number of actual E stepper motors
  *  E_MANUAL     - Number of E steppers for LCD move options
  */
-
-#if EXTRUDERS == 0
+#if !EXTRUDERS
   #undef EXTRUDERS
   #define EXTRUDERS 0
+  #undef MIXING_EXTRUDER
   #undef SINGLENOZZLE
   #undef SWITCHING_EXTRUDER
   #undef SWITCHING_NOZZLE
-  #undef MIXING_EXTRUDER
   #undef HOTEND_IDLE_TIMEOUT
-#elif EXTRUDERS > 1
-  #define HAS_MULTI_EXTRUDER 1
+#else
+  #define HAS_EXTRUDERS 1
+  #if EXTRUDERS > 1
+    #define HAS_MULTI_EXTRUDER 1
+  #endif
+  #define E_AXIS_N(E) AxisEnum(E_AXIS + E_INDEX_N(E))
 #endif
 
 #if ENABLED(SWITCHING_EXTRUDER)   // One stepper for every two EXTRUDERS
@@ -601,6 +604,50 @@
   #define E_MANUAL EXTRUDERS
 #endif
 
+/**
+ * Number of Linear Axes (e.g., XYZ)
+ * All the logical axes except for the tool (E) axis
+ */
+#ifndef LINEAR_AXES
+  #define LINEAR_AXES XYZ
+#endif
+
+/**
+ * Number of Logical Axes (e.g., XYZE)
+ * All the logical axes that can be commanded directly by G-code.
+ * Delta maps stepper-specific values to ABC steppers.
+ */
+#if HAS_EXTRUDERS
+  #define LOGICAL_AXES INCREMENT(LINEAR_AXES)
+#else
+  #define LOGICAL_AXES LINEAR_AXES
+#endif
+
+/**
+ * DISTINCT_E_FACTORS is set to give extruders (some) individual settings.
+ *
+ * DISTINCT_AXES is the number of distinct addressable axes (not steppers).
+ *  Includes all linear axes plus all distinguished extruders.
+ *  The default behavior is to treat all extruders as a single E axis
+ *  with shared motion and temperature settings.
+ *
+ * DISTINCT_E is the number of distinguished extruders. By default this
+ *  well be 1 which indicates all extruders share the same settings.
+ *
+ * E_INDEX_N(E) should be used to get the E index of any item that might be
+ *  distinguished.
+ */
+#if ENABLED(DISTINCT_E_FACTORS) && E_STEPPERS > 1
+  #define DISTINCT_AXES (LINEAR_AXES + E_STEPPERS)
+  #define DISTINCT_E E_STEPPERS
+  #define E_INDEX_N(E) (E)
+#else
+  #undef DISTINCT_E_FACTORS
+  #define DISTINCT_AXES LOGICAL_AXES
+  #define DISTINCT_E 1
+  #define E_INDEX_N(E) 0
+#endif
+
 #if HOTENDS
   #define HAS_HOTEND 1
   #ifndef HOTEND_OVERSHOOT
@@ -649,40 +696,6 @@
 #if !BOTH(HAS_FAN, SINGLENOZZLE)
   #undef SINGLENOZZLE_STANDBY_FAN
 #endif
-
-/**
- * Number of Linear Axes (e.g., XYZ)
- * All the logical axes except for the tool (E) axis
- */
-#ifndef LINEAR_AXES
-  #define LINEAR_AXES XYZ
-#endif
-
-/**
- * Number of Logical Axes (e.g., XYZE)
- * All the logical axes that can be commanded directly by G-code.
- * Delta maps stepper-specific values to ABC steppers.
- */
-#if EXTRUDERS
-  #define LOGICAL_AXES INCREMENT(LINEAR_AXES)
-#else
-  #define LOGICAL_AXES LINEAR_AXES
-#endif
-
-/**
- * DISTINCT_E_FACTORS affects whether Extruders use different settings
- */
-#if ENABLED(DISTINCT_E_FACTORS) && E_STEPPERS > 1
-  #define DISTINCT_E E_STEPPERS
-  #define DISTINCT_AXES (LINEAR_AXES + E_STEPPERS)
-  #define E_INDEX_N(E) (E)
-#else
-  #undef DISTINCT_E_FACTORS
-  #define DISTINCT_E 1
-  #define DISTINCT_AXES LOGICAL_AXES
-  #define E_INDEX_N(E) 0
-#endif
-#define E_AXIS_N(E) AxisEnum(E_AXIS + E_INDEX_N(E))
 
 /**
  * The BLTouch Probe emulates a servo probe

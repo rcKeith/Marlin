@@ -75,7 +75,7 @@
   #define SERVO_DELAY { 50 }
 #endif
 
-#if EXTRUDERS == 0
+#if !HAS_EXTRUDERS
   #define NO_VOLUMETRICS
   #undef TEMP_SENSOR_0
   #undef TEMP_SENSOR_1
@@ -103,6 +103,7 @@
   #undef THERMAL_PROTECTION_PERIOD
   #undef WATCH_TEMP_PERIOD
   #undef SHOW_TEMP_ADC_VALUES
+  #undef LCD_SHOW_E_TOTAL
 #endif
 
 #if TEMP_SENSOR_BED == 0

@@ -164,7 +164,7 @@ float Planner::steps_to_mm[DISTINCT_AXES];      // (mm) Millimeters per step
   xyze_bool_t Planner::last_page_dir{0};
 #endif
 
-#if EXTRUDERS
+#if HAS_EXTRUDERS
   int16_t Planner::flow_percentage[EXTRUDERS] = ARRAY_BY_EXTRUDERS1(100); // Extrusion factor for each extruder
   float Planner::e_factor[EXTRUDERS] = ARRAY_BY_EXTRUDERS1(1.0f); // The flow percentage and volumetric multiplier combine to scale E movement
 #endif
@@ -1850,10 +1850,8 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
     dk = target.k - position.k
   );
 
-  #if EXTRUDERS
+  #if HAS_EXTRUDERS
     int32_t de = target.e - position.e;
-  #else
-    constexpr int32_t de = 0;
   #endif
 
   /* <-- add a slash to enable
@@ -1862,7 +1860,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
       " A:", target.a, " (", da, " steps)"
       " B:", target.b, " (", db, " steps)"
       " C:", target.c, " (", dc, " steps)"
-      #if EXTRUDERS
+      #if HAS_EXTRUDERS
         " E:", target.e, " (", de, " steps)"
       #endif
     );
@@ -1938,9 +1936,11 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
       if (dk < 0) SBI(dm, K_AXIS)
     );
   #endif
-  if (de < 0) SBI(dm, E_AXIS);
+  #if HAS_EXTRUDERS
+    if (de < 0) SBI(dm, E_AXIS);
+  #endif
 
-  #if EXTRUDERS
+  #if HAS_EXTRUDERS
     const float esteps_float = de * e_factor[extruder];
     const uint32_t esteps = ABS(esteps_float) + 0.5f;
   #else
@@ -2027,7 +2027,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
     );
   #endif
 
-  #if EXTRUDERS
+  #if HAS_EXTRUDERS
     steps_dist_mm.e = esteps_float * steps_to_mm[E_AXIS_N(extruder)];
   #else
     steps_dist_mm.e = 0.0f;
@@ -2045,7 +2045,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
     )
   ) {
     block->millimeters = (0
-      #if EXTRUDERS
+      #if HAS_EXTRUDERS
         + ABS(steps_dist_mm.e)
       #endif
     );
@@ -2097,7 +2097,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
     TERN_(BACKLASH_COMPENSATION, backlash.add_correction_steps(da, db, dc, dm, block));
   }
 
-  #if EXTRUDERS
+  #if HAS_EXTRUDERS
     block->steps.e = esteps;
   #endif
 
@@ -2170,7 +2170,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
   #endif
 
   // Enable extruder(s)
-  #if EXTRUDERS
+  #if HAS_EXTRUDERS
     if (esteps) {
       TERN_(AUTO_POWER_CONTROL, powerManager.power_on());
 
@@ -2272,7 +2272,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
   }
 
   // Limit speed on extruders, if any
-  #if EXTRUDERS
+  #if HAS_EXTRUDERS
     {
       current_speed.e = steps_dist_mm.e * inverse_secs;
       #if HAS_MIXER_SYNC_CHANNEL
@@ -2423,13 +2423,17 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
       LIMIT_ACCEL_LONG(A_AXIS, 0);
       LIMIT_ACCEL_LONG(B_AXIS, 0);
       LIMIT_ACCEL_LONG(C_AXIS, 0);
-      LIMIT_ACCEL_LONG(E_AXIS, E_INDEX_N(extruder));
+      #if HAS_EXTRUDERS
+        LIMIT_ACCEL_LONG(E_AXIS, E_INDEX_N(extruder));
+      #endif
     }
     else {
       LIMIT_ACCEL_FLOAT(A_AXIS, 0);
       LIMIT_ACCEL_FLOAT(B_AXIS, 0);
       LIMIT_ACCEL_FLOAT(C_AXIS, 0);
-      LIMIT_ACCEL_FLOAT(E_AXIS, E_INDEX_N(extruder));
+      #if HAS_EXTRUDERS
+        LIMIT_ACCEL_FLOAT(E_AXIS, E_INDEX_N(extruder));
+      #endif
     }
   }
   block->acceleration_steps_per_s2 = accel;
@@ -2868,8 +2872,10 @@ bool Planner::buffer_segment(
       int32_t(LROUND(i * settings.axis_steps_per_mm[I_AXIS])), // FIXME (DerAndere): Multiplication by 4.0 is a work-around for issue with wrong internal steps per mm
       int32_t(LROUND(j * settings.axis_steps_per_mm[J_AXIS])),
       int32_t(LROUND(k * settings.axis_steps_per_mm[K_AXIS]))
-    ),
-    int32_t(LROUND(e * settings.axis_steps_per_mm[E_AXIS_N(extruder)]))
+    )
+    #if HAS_EXTRUDERS
+      , int32_t(LROUND(e * settings.axis_steps_per_mm[E_AXIS_N(extruder)]))
+    #endif
   };
 
   #if HAS_POSITION_FLOAT
@@ -3095,8 +3101,10 @@ void Planner::set_machine_position_mm(
       LROUND(i * settings.axis_steps_per_mm[I_AXIS]),
       LROUND(j * settings.axis_steps_per_mm[J_AXIS]),
       LROUND(k * settings.axis_steps_per_mm[K_AXIS])
-    ),
-    LROUND(e * settings.axis_steps_per_mm[E_AXIS_N(active_extruder)])
+    )
+    #if HAS_EXTRUDERS
+      , LROUND(e * settings.axis_steps_per_mm[E_AXIS_N(active_extruder)])
+    #endif
   );
   if (has_blocks_queued()) {
     //previous_nominal_speed_sqr = 0.0; // Reset planner junction speeds. Assume start from rest.
@@ -3125,23 +3133,27 @@ void Planner::set_position_mm(
   #endif
 }
 
-/**
- * Setters for planner position (also setting stepper position).
- */
-void Planner::set_e_position_mm(const_float_t e) {
-  const uint8_t axis_index = E_AXIS_N(active_extruder);
-  TERN_(DISTINCT_E_FACTORS, last_extruder = active_extruder);
+#if HAS_EXTRUDERS
 
-  const float e_new = DIFF_TERN(FWRETRACT, e, fwretract.current_retract[active_extruder]);
-  position.e = LROUND(settings.axis_steps_per_mm[axis_index] * e_new);
-  TERN_(HAS_POSITION_FLOAT, position_float.e = e_new);
-  TERN_(IS_KINEMATIC, position_cart.e = e);
+  /**
+   * Setters for planner position (also setting stepper position).
+   */
+  void Planner::set_e_position_mm(const_float_t e) {
+    const uint8_t axis_index = E_AXIS_N(active_extruder);
+    TERN_(DISTINCT_E_FACTORS, last_extruder = active_extruder);
 
-  if (has_blocks_queued())
-    buffer_sync_block();
-  else
-    stepper.set_axis_position(E_AXIS, position.e);
-}
+    const float e_new = DIFF_TERN(FWRETRACT, e, fwretract.current_retract[active_extruder]);
+    position.e = LROUND(settings.axis_steps_per_mm[axis_index] * e_new);
+    TERN_(HAS_POSITION_FLOAT, position_float.e = e_new);
+    TERN_(IS_KINEMATIC, position_cart.e = e);
+
+    if (has_blocks_queued())
+      buffer_sync_block();
+    else
+      stepper.set_axis_position(E_AXIS, position.e);
+  }
+
+#endif
 
 // Recalculate the steps/s^2 acceleration rates, based on the mm/s^2
 void Planner::reset_acceleration_rates() {
@@ -3171,7 +3183,7 @@ void Planner::refresh_positioning() {
 
 // Apply limits to a variable and give a warning if the value was out of range
 inline void limit_and_warn(float &val, const uint8_t axis, PGM_P const setting_name, const xyze_float_t &max_limit) {
-  const uint8_t lim_axis = axis > E_AXIS ? E_AXIS : axis;
+  const uint8_t lim_axis = TERN_(HAS_EXTRUDERS, axis > E_AXIS ? E_AXIS :) axis;
   const float before = val;
   LIMIT(val, 0.1, max_limit[lim_axis]);
   if (before != val) {

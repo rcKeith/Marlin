@@ -315,8 +315,10 @@
 #endif
 
 enum AxisRelative : uint8_t {
-  LIST_N(LINEAR_AXES, REL_X, REL_Y, REL_Z, REL_I, REL_J, REL_K),
-  REL_E, E_MODE_ABS, E_MODE_REL
+  LIST_N(LINEAR_AXES, REL_X, REL_Y, REL_Z, REL_I, REL_J, REL_K)
+  #if HAS_EXTRUDERS
+    , REL_E, E_MODE_ABS, E_MODE_REL
+  #endif
 };
 
 extern const char G28_STR[];
@@ -327,23 +329,27 @@ public:
   static uint8_t axis_relative;
 
   static inline bool axis_is_relative(const AxisEnum a) {
-    if (a == E_AXIS) {
-      if (TEST(axis_relative, E_MODE_REL)) return true;
-      if (TEST(axis_relative, E_MODE_ABS)) return false;
-    }
+    #if HAS_EXTRUDERS
+      if (a == E_AXIS) {
+        if (TEST(axis_relative, E_MODE_REL)) return true;
+        if (TEST(axis_relative, E_MODE_ABS)) return false;
+      }
+    #endif
     return TEST(axis_relative, a);
   }
   static inline void set_relative_mode(const bool rel) {
-    axis_relative = rel ? _BV(REL_X) | _BV(REL_Y) | _BV(REL_Z) | _BV(REL_E) : 0;
+    axis_relative = rel ? _BV(REL_X) | _BV(REL_Y) | _BV(REL_Z) | TERN0(EXTRUDERS, _BV(REL_E)) : 0;
   }
-  static inline void set_e_relative() {
-    CBI(axis_relative, E_MODE_ABS);
-    SBI(axis_relative, E_MODE_REL);
-  }
-  static inline void set_e_absolute() {
-    CBI(axis_relative, E_MODE_REL);
-    SBI(axis_relative, E_MODE_ABS);
-  }
+  #if HAS_EXTRUDERS
+    static inline void set_e_relative() {
+      CBI(axis_relative, E_MODE_ABS);
+      SBI(axis_relative, E_MODE_REL);
+    }
+    static inline void set_e_absolute() {
+      CBI(axis_relative, E_MODE_REL);
+      SBI(axis_relative, E_MODE_ABS);
+    }
+  #endif
 
   #if ENABLED(CNC_WORKSPACE_PLANES)
     /**
@@ -636,10 +642,13 @@ private:
   #if ENABLED(PSU_CONTROL)
     static void M80();
   #endif
-
   static void M81();
-  static void M82();
-  static void M83();
+
+  #if HAS_EXTRUDERS
+    static void M82();
+    static void M83();
+  #endif
+
   static void M85();
   static void M92();
 
@@ -647,7 +656,7 @@ private:
     static void M100();
   #endif
 
-  #if EXTRUDERS
+  #if HAS_EXTRUDERS
     static void M104();
     static void M109();
   #endif
@@ -779,7 +788,7 @@ private:
 
   static void M220();
 
-  #if EXTRUDERS
+  #if HAS_EXTRUDERS
     static void M221();
   #endif
 
