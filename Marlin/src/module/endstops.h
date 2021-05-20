@@ -72,6 +72,9 @@ enum EndstopEnum : char {
 #define Y_ENDSTOP TERN(Y_HOME_TO_MAX, Y_MAX, Y_MIN)
 #define Z_ENDSTOP TERN(Z_HOME_TO_MAX, Z_MAX, TERN(HOMING_Z_WITH_PROBE, Z_MIN, Z_MIN_PROBE))
 
+#undef __ES_ITEM
+#undef _ES_ITEM
+
 class Endstops {
   public:
 
