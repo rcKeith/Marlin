@@ -538,7 +538,7 @@ void _O2 Endstops::report_states() {
   #if HAS_Z4_MAX
     ES_REPORT(Z4_MAX);
   #endif
-    #if HAS_I_MIN
+  #if HAS_I_MIN
     ES_REPORT(I_MIN);
   #endif
   #if HAS_I_MAX
