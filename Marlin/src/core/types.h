@@ -47,24 +47,39 @@ struct IF<true, L, R> { typedef L type; };
 //  - X_HEAD, Y_HEAD, and Z_HEAD should be used for Steppers on Core kinematics
 //
 enum AxisEnum : uint8_t {
-  X_AXIS = 0, A_AXIS = X_AXIS,
-  Y_AXIS = 1, B_AXIS = Y_AXIS,
-  Z_AXIS = 2, C_AXIS = Z_AXIS,
-  #if LINEAR_AXES >= 4
-    I_AXIS,
+
+  // Linear axes may be controlled directly or indirectly
+  LIST_N(LINEAR_AXES, X_AXIS, Y_AXIS, Z_AXIS, I_AXIS, J_AXIS, K_AXIS),
+
+  // Extruder axes may be considered distinctly
+  #define _EN_ITEM(N) E##N##_AXIS,
+  REPEAT(EXTRUDERS, _EN_ITEM)
+  #undef _EN_ITEM
+
+  // Core consides toolhead directions
+  #if IS_CORE
+    X_HEAD, Y_HEAD, Z_HEAD,
   #endif
-  #if LINEAR_AXES >= 5
-    J_AXIS,
-  #endif
-  #if LINEAR_AXES >= 6
-    K_AXIS,
-  #endif
-  E_AXIS,
-  E0_AXIS = E_AXIS,
-  E1_AXIS, E2_AXIS, E3_AXIS, E4_AXIS, E5_AXIS, E6_AXIS, E7_AXIS,
-  X_HEAD, Y_HEAD, Z_HEAD,
+
+  // Distinct axes, including all E and Core
   NUM_AXIS_ENUMS,
-  ALL_AXES_MASK = 0xFE, NO_AXIS_MASK = 0xFF
+
+  // Most of the time we refer only to the single E_AXIS
+  #if EXTRUDERS
+    E_AXIS = E0_AXIS,
+  #endif
+
+  // A, B, and C are for DELTA, SCARA, etc.
+  A_AXIS = X_AXIS,
+  #if LINEAR_AXES >= 2
+    B_AXIS = Y_AXIS,
+  #endif
+  #if LINEAR_AXES >= 3
+    C_AXIS = Z_AXIS,
+  #endif
+
+  // To refer to all or none
+  ALL_AXES_ENUM = 0xFE, NO_AXIS_ENUM = 0xFF
 };
 
 typedef IF<(NUM_AXIS_ENUMS > 8), uint16_t, uint8_t>::type axis_bits_t;
