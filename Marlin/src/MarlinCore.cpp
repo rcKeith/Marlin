@@ -304,7 +304,7 @@ void enable_all_steppers() {
   ENABLE_AXIS_X();
   ENABLE_AXIS_Y();
   ENABLE_AXIS_Z();
-  ENABLE_AXIS_I(); // Marlin 6-axis support: 2019 - 2020 DerAndere (https://github.com/DerAndere1/Marlin/wiki)
+  ENABLE_AXIS_I(); // Marlin 6-axis support by DerAndere (https://github.com/DerAndere1/Marlin/wiki)
   ENABLE_AXIS_J();
   ENABLE_AXIS_K();
   enable_e_steppers();
