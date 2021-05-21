@@ -121,7 +121,6 @@ void plan_arc(
               part_per_circle = RADIANS(360) / total_angular,             // Each circle's part of the total
                  l_per_circle = linear_travel * part_per_circle;          // L movement per circle
 
-
     #if HAS_EXTRUDERS
       const float e_per_circle = extruder_travel * part_per_circle;       // E movement per circle
     #endif
