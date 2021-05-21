@@ -537,12 +537,12 @@
  *  E_STEPPERS   - Number of actual E stepper motors
  *  E_MANUAL     - Number of E steppers for LCD move options
  */
+
 #if EXTRUDERS
   #define HAS_EXTRUDERS 1
   #if EXTRUDERS > 1
     #define HAS_MULTI_EXTRUDER 1
   #endif
-  #define E_AXIS_N(E) AxisEnum(E_AXIS + E_INDEX_N(E))
 #else
   #undef EXTRUDERS
   #define EXTRUDERS 0
@@ -648,6 +648,7 @@
   #define DISTINCT_E 1
   #define E_INDEX_N(E) 0
 #endif
+#define E_AXIS_N(E) AxisEnum(E_AXIS + E_INDEX_N(E))
 
 #if HOTENDS
   #define HAS_HOTEND 1
