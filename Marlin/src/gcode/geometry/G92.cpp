@@ -75,10 +75,11 @@ void GcodeSuite::G92() {
       case 9:                                                         // G92.9 - Set Current Position directly (like Marlin 1.0)
         LOOP_LOGICAL_AXES(i) {
           if (parser.seenval(axis_codes[i])) {
-            #if HAS_EXTRUDERS
-              if (i == E_AXIS) sync_E = true; else
-            #endif
-                sync_XYZE = true;
+            if (TERN1(HAS_EXTRUDERS, i != E_AXIS))
+              sync_XYZE = true;
+            else {
+              TERN_(HAS_EXTRUDERS, sync_E = true);
+            }
             current_position[i] = parser.value_axis_units((AxisEnum)i);
           }
         }
@@ -93,22 +94,22 @@ void GcodeSuite::G92() {
                       d = v - current_position[i];                    // How much is the current axis position altered by?
           if (!NEAR_ZERO(d)) {
             #if HAS_POSITION_SHIFT && !IS_SCARA                       // When using workspaces...
-              #if HAS_EXTRUDERS
-                if (i == E_AXIS) {
+              if (TERN1(HAS_EXTRUDERS, i != E_AXIS)) {
+                position_shift[i] += d;                               // ...most axes offset the workspace...
+                update_workspace_offset((AxisEnum)i);
+              }
+              else {
+                #if HAS_EXTRUDERS
                   sync_E = true;
-                  current_position.e = v;                             // ...E is still set directly
-                }
-                else
-              #endif
-                {
-                  position_shift[i] += d;                             // ...but other axes offset the workspace.
-                  update_workspace_offset((AxisEnum)i);
-                }
+                  current_position.e = v;                             // ...but E is set directly
+                #endif
+              }
             #else                                                     // Without workspaces...
-              #if HAS_EXTRUDERS
-                if (i == E_AXIS) sync_E = true; else
-              #endif
-                  sync_XYZE = true;
+              if (TERN1(HAS_EXTRUDERS, i != E_AXIS))
+                sync_XYZE = true;
+              else {
+                TERN_(HAS_EXTRUDERS, sync_E = true);
+              }
               current_position[i] = v;                                // ...set Current Position directly (like Marlin 1.0)
             #endif
           }
@@ -123,7 +124,7 @@ void GcodeSuite::G92() {
       coordinate_system[active_coordinate_system] = position_shift;
   #endif
 
-  if   (sync_XYZE) sync_plan_position();
+  if (sync_XYZE) sync_plan_position();
   #if HAS_EXTRUDERS
     else if (sync_E) sync_plan_position_e();
   #endif

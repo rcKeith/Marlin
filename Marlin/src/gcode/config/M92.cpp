@@ -76,8 +76,10 @@ void GcodeSuite::M92() {
 
   LOOP_LOGICAL_AXES(i) {
     if (parser.seenval(axis_codes[i])) {
-      #if HAS_EXTRUDERS
-        if (i == E_AXIS) {
+      if (TERN1(HAS_EXTRUDERS, i != E_AXIS))
+        planner.settings.axis_steps_per_mm[i] = parser.value_per_axis_units((AxisEnum)i);
+      else {
+        #if HAS_EXTRUDERS
           const float value = parser.value_per_axis_units((AxisEnum)(E_AXIS_N(target_extruder)));
           if (value < 20) {
             float factor = planner.settings.axis_steps_per_mm[E_AXIS_N(target_extruder)] / value; // increase e constants if M92 E14 is given for netfab.
@@ -88,10 +90,8 @@ void GcodeSuite::M92() {
             planner.max_acceleration_steps_per_s2[E_AXIS_N(target_extruder)] *= factor;
           }
           planner.settings.axis_steps_per_mm[E_AXIS_N(target_extruder)] = value;
-        }
-        else
-      #endif
-          planner.settings.axis_steps_per_mm[i] = parser.value_per_axis_units((AxisEnum)i);
+        #endif
+      }
     }
   }
   planner.refresh_positioning();
