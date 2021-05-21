@@ -2156,7 +2156,7 @@ uint32_t Stepper::block_phase_isr() {
       #endif
 
       uint8_t axis_bits = 0;
-      CODE_N(LINEAR_AXES,
+      LINEAR_AXIS_CODE(
         if (X_MOVE_TEST)            SBI(axis_bits, A_AXIS),
         if (Y_MOVE_TEST)            SBI(axis_bits, B_AXIS),
         if (Z_MOVE_TEST)            SBI(axis_bits, C_AXIS),
@@ -2694,7 +2694,7 @@ void Stepper::init() {
 
   // Init direction bits for first moves
   set_directions(0
-    GANG_N(LINEAR_AXES,
+    LINEAR_AXIS_GANG(
       | TERN0(INVERT_X_DIR, _BV(X_AXIS)),
       | TERN0(INVERT_Y_DIR, _BV(Y_AXIS)),
       | TERN0(INVERT_Z_DIR, _BV(Z_AXIS)),
@@ -2719,12 +2719,9 @@ void Stepper::init() {
  * This allows get_axis_position_mm to correctly derive
  * the current XYZ position later on.
  */
-void Stepper::_set_position(
-  LIST_N(LINEAR_AXES, const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &i, const int32_t &j, const int32_t &k)
-  #if HAS_EXTRUDERS
-    , const int32_t &e
-  #endif
-) {
+void Stepper::_set_position(LOGICAL_AXIS_LIST(
+  const int32_t &e, const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &i, const int32_t &j, const int32_t &k
+)) {
   #if CORE_IS_XY
     // corexy positioning
     // these equations follow the form of the dA and dB equations on https://www.corexy.com/theory.html
@@ -2739,9 +2736,9 @@ void Stepper::_set_position(
     count_position.set(a - b, b, c);
   #else
     // default non-h-bot planning
-    count_position.set(LIST_N(LINEAR_AXES, a, b, c, i, j, k));
+    count_position.set(LINEAR_AXIS_LIST(a, b, c, i, j, k));
   #endif
-  count_position.e = e;
+  TERN_(HAS_EXTRUDERS, count_position.e = e);
 }
 
 /**
@@ -2765,19 +2762,12 @@ int32_t Stepper::position(const AxisEnum axis) {
 
 // Set the current position in steps
 //TODO: Test for LINEAR_AXES >= 4
-void Stepper::set_position(
-  LIST_N(LINEAR_AXES, const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &i, const int32_t &j, const int32_t &k)
-  #if HAS_EXTRUDERS
-    , const int32_t &e
-  #endif
-) {
+void Stepper::set_position(LOGICAL_AXIS_LIST(
+  const int32_t &e, const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &i, const int32_t &j, const int32_t &k
+)) {
   planner.synchronize();
   const bool was_enabled = suspend();
-  _set_position(LIST_N(LINEAR_AXES, a, b, c, i, j, k)
-    #if HAS_EXTRUDERS
-      , e
-    #endif
-  );
+  _set_position(LOGICAL_AXIS_LIST(e, a, b, c, i, j, k));
   if (was_enabled) wake_up();
 }
 
@@ -3026,7 +3016,7 @@ void Stepper::report_positions() {
 
           DIR_WAIT_BEFORE();
 
-          const xyz_byte_t old_dir = ARRAY_N(LINEAR_AXES, X_DIR_READ(), Y_DIR_READ(), Z_DIR_READ(), I_DIR_READ(), J_DIR_READ(), K_DIR_READ());
+          const xyz_byte_t old_dir = LINEAR_AXIS_ARRAY(X_DIR_READ(), Y_DIR_READ(), Z_DIR_READ(), I_DIR_READ(), J_DIR_READ(), K_DIR_READ());
 
           X_DIR_WRITE(INVERT_X_DIR ^ z_direction);
           Y_DIR_WRITE(INVERT_Y_DIR ^ z_direction);

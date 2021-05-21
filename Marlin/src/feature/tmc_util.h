@@ -342,8 +342,7 @@ void tmc_print_current(TMC &st) {
 
 void monitor_tmc_drivers();
 void test_tmc_connection(
-  LIST_N(LINEAR_AXES, const bool test_x=true, const bool test_y=true, const bool test_z=true, const bool test_i=true, const bool test_j=true, const bool test_k=true),
-  const bool test_e=true
+  LOGICAL_AXIS_LIST(const bool test_e=true, const bool test_x=true, const bool test_y=true, const bool test_z=true, const bool test_i=true, const bool test_j=true, const bool test_k=true)
 );
 
 #if ENABLED(TMC_DEBUG)
@@ -351,12 +350,10 @@ void test_tmc_connection(
     void tmc_set_report_interval(const uint16_t update_interval);
   #endif
   void tmc_report_all(
-    LIST_N(LINEAR_AXES, const bool print_x=true, const bool print_y=true, const bool print_z=true, const bool print_i=true, const bool print_j=true, const bool print_k=true),
-    const bool print_e=true
+    LOGICAL_AXIS_LIST(const bool print_e=true, const bool print_x=true, const bool print_y=true, const bool print_z=true, const bool print_i=true, const bool print_j=true, const bool print_k=true)
   );
   void tmc_get_registers(
-    LIST_N(LINEAR_AXES, const bool print_x, const bool print_y, const bool print_z, const bool print_i, const bool print_j, const bool print_k),
-    const bool print_e
+    LOGICAL_AXIS_LIST(const bool print_e, const bool print_x, const bool print_y, const bool print_z, const bool print_i, const bool print_j, const bool print_k)
   );
 #endif
 
@@ -370,7 +367,7 @@ void test_tmc_connection(
 #if USE_SENSORLESS
 
   // Track enabled status of stealthChop and only re-enable where applicable
-  struct sensorless_t { bool LIST_N(LINEAR_AXES, x, y, z, i, j, k), x2, y2, z2, z3, z4; };
+  struct sensorless_t { bool LINEAR_AXIS_LIST(x, y, z, i, j, k), x2, y2, z2, z3, z4; };
 
   #if ENABLED(IMPROVE_HOMING_RELIABILITY)
     extern millis_t sg_guard_period;

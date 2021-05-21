@@ -106,7 +106,7 @@ void print_bin(uint16_t val) {
 }
 
 void print_pos(
-  LIST_N(LINEAR_AXES, const_float_t x, const_float_t y, const_float_t z, const_float_t i, const_float_t j, const_float_t k),
+  LINEAR_AXIS_LIST(const_float_t x, const_float_t y, const_float_t z, const_float_t i, const_float_t j, const_float_t k),
   PGM_P const prefix/*=nullptr*/, PGM_P const suffix/*=nullptr*/
 ) {
   if (prefix) serialprintPGM(prefix);

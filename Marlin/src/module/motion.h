@@ -133,7 +133,7 @@ inline int8_t pgm_read_any(const int8_t *p) { return TERN(__IMXRT1062__, *p, pgm
 
 #define XYZ_DEFS(T, NAME, OPT) \
   inline T NAME(const AxisEnum axis) { \
-    static const XYZval<T> NAME##_P DEFS_PROGMEM = ARRAY_N(LINEAR_AXES, X_##OPT, Y_##OPT, Z_##OPT, I_##OPT, J_##OPT, K_##OPT); \
+    static const XYZval<T> NAME##_P DEFS_PROGMEM = LINEAR_AXIS_ARRAY(X_##OPT, Y_##OPT, Z_##OPT, I_##OPT, J_##OPT, K_##OPT); \
     return pgm_read_any(&NAME##_P[axis]); \
   }
 XYZ_DEFS(float, base_min_pos,   MIN_POS);
@@ -330,7 +330,7 @@ inline void prepare_internal_move_to_destination(const_feedRate_t fr_mm_s=0.0f) 
  * Blocking movement and shorthand functions
  */
 void do_blocking_move_to(
-  LIST_N(LINEAR_AXES, const float rx, const float ry, const float rz, const float ri, const float rj, const float rk),
+  LINEAR_AXIS_LIST(const float rx, const float ry, const float rz, const float ri, const float rj, const float rk),
   const_feedRate_t fr_mm_s=0.0f
 );
 void do_blocking_move_to(const xy_pos_t &raw, const_feedRate_t fr_mm_s=0.0f);

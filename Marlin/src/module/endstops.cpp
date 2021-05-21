@@ -421,7 +421,7 @@ void Endstops::event_handler() {
   prev_hit_state = hit_state;
   if (hit_state) {
     #if HAS_STATUS_MESSAGE
-      char LIST_N(LINEAR_AXES, chrX = ' ', chrY = ' ', chrZ = ' ', chrI = ' ', chrJ = ' ', chrK = ' '),
+      char LINEAR_AXIS_LIST(chrX = ' ', chrY = ' ', chrZ = ' ', chrI = ' ', chrJ = ' ', chrK = ' '),
            chrP = ' ';
       #define _SET_STOP_CHAR(A,C) (chr## A = C)
     #else
@@ -465,7 +465,7 @@ void Endstops::event_handler() {
       ui.status_printf_P(0,
         PSTR(S_FMT GANG_N_1(LINEAR_AXES, " %c") " %c"),
         GET_TEXT(MSG_LCD_ENDSTOPS),
-        LIST_N(LINEAR_AXES, chrX, chrY, chrZ, chrI, chrJ, chrK), chrP
+        LINEAR_AXIS_LIST(chrX, chrY, chrZ, chrI, chrJ, chrK), chrP
       )
     );
 

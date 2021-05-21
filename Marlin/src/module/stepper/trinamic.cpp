@@ -399,7 +399,7 @@ enum StealthIndex : uint8_t {
     #endif
   #endif
 
-  enum TMCAxis : uint8_t { LIST_N(LINEAR_AXES, X, Y, Z, I, J, K), X2, Y2, Z2, Z3, Z4, E0, E1, E2, E3, E4, E5, E6, E7, TOTAL };
+  enum TMCAxis : uint8_t { LINEAR_AXIS_LIST(X, Y, Z, I, J, K), X2, Y2, Z2, Z3, Z4, E0, E1, E2, E3, E4, E5, E6, E7, TOTAL };
 
   void tmc_serial_begin() {
     #if HAS_TMC_HW_SERIAL

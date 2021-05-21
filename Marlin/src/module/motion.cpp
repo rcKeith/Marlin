@@ -89,12 +89,7 @@ bool relative_mode; // = false;
   #define Z_INIT_POS Z_HOME_POS
 #endif
 
-xyze_pos_t current_position = {
-  LIST_N(LINEAR_AXES, X_HOME_POS, Y_HOME_POS, Z_INIT_POS, I_HOME_POS, J_HOME_POS, K_HOME_POS)
-  #if HAS_EXTRUDERS
-    , 0
-  #endif
-};
+xyze_pos_t current_position = LOGICAL_AXIS_ARRAY(0, X_HOME_POS, Y_HOME_POS, Z_INIT_POS, I_HOME_POS, J_HOME_POS, K_HOME_POS);
 
 /**
  * Cartesian Destination
@@ -219,15 +214,13 @@ inline void report_logical_position(const xyze_pos_t &rpos) {
 // Forward kinematics and un-leveling are applied.
 void report_real_position() {
   get_cartesian_from_steppers();
-  xyze_pos_t npos = ARRAY_N(LINEAR_AXES,
+  xyze_pos_t npos = LOGICAL_AXIS_ARRAY(
+    planner.get_axis_position_mm(E_AXIS),
     cartes.x, cartes.y, cartes.z,
     planner.get_axis_position_mm(I_AXIS),
     planner.get_axis_position_mm(J_AXIS),
     planner.get_axis_position_mm(K_AXIS)
   );
-  #if HAS_EXTRUDERS
-    npos.e = planner.get_axis_position_mm(E_AXIS);
-  #endif
 
   TERN_(HAS_POSITION_MODIFIERS, planner.unapply_modifiers(npos, true));
 
@@ -479,11 +472,11 @@ void _internal_move_to_destination(const_feedRate_t fr_mm_s/*=0.0f*/
  * - Before returning, wait for the planner buffer to empty.
  */
 void do_blocking_move_to(
-  LIST_N(LINEAR_AXES, const float rx, const float ry, const float rz, const float ri, const float rj, const float rk),
+  LINEAR_AXIS_LIST(const float rx, const float ry, const float rz, const float ri, const float rj, const float rk),
   const_feedRate_t fr_mm_s/*=0.0f*/
 ) {
   DEBUG_SECTION(log_move, "do_blocking_move_to", DEBUGGING(LEVELING));
-  if (DEBUGGING(LEVELING)) DEBUG_XYZ("> ", LIST_N(LINEAR_AXES, rx, ry, rz, ri, rj, rk));
+  if (DEBUGGING(LEVELING)) DEBUG_XYZ("> ", LINEAR_AXIS_LIST(rx, ry, rz, ri, rj, rk));
 
   const feedRate_t z_feedrate = fr_mm_s ?: homing_feedrate(Z_AXIS),
                   xy_feedrate = fr_mm_s ?: feedRate_t(XY_PROBE_FEEDRATE_MM_S);
@@ -568,13 +561,13 @@ void do_blocking_move_to(
 }
 
 void do_blocking_move_to(const xy_pos_t &raw, const_feedRate_t fr_mm_s/*=0.0f*/) {
-  do_blocking_move_to(LIST_N(LINEAR_AXES, raw.x, raw.y, current_position.z, current_position.i, current_position.j, current_position.k), fr_mm_s);
+  do_blocking_move_to(LINEAR_AXIS_LIST(raw.x, raw.y, current_position.z, current_position.i, current_position.j, current_position.k), fr_mm_s);
 }
 void do_blocking_move_to(const xyz_pos_t &raw, const_feedRate_t fr_mm_s/*=0.0f*/) {
-  do_blocking_move_to(LIST_N(LINEAR_AXES, raw.x, raw.y, raw.z, raw.i, raw.j, raw.k), fr_mm_s);
+  do_blocking_move_to(LINEAR_AXIS_LIST(raw.x, raw.y, raw.z, raw.i, raw.j, raw.k), fr_mm_s);
 }
 void do_blocking_move_to(const xyze_pos_t &raw, const_feedRate_t fr_mm_s/*=0.0f*/) {
-  do_blocking_move_to(LIST_N(LINEAR_AXES, raw.x, raw.y, raw.z, raw.i, raw.j, raw.k), fr_mm_s);
+  do_blocking_move_to(LINEAR_AXIS_LIST(raw.x, raw.y, raw.z, raw.i, raw.j, raw.k), fr_mm_s);
 }
 
 //#if LINEAR_AXES >= 4
@@ -595,13 +588,15 @@ void do_blocking_move_to(const xyze_pos_t &raw, const_feedRate_t fr_mm_s/*=0.0f*
 //
 void do_blocking_move_to_x(const_float_t rx, const_feedRate_t fr_mm_s/*=0.0*/) {
   do_blocking_move_to(
-    LIST_N(LINEAR_AXES, rx, current_position.y, current_position.z, current_position.i, current_position.j, current_position.k),
-  fr_mm_s);
+    LINEAR_AXIS_LIST(rx, current_position.y, current_position.z, current_position.i, current_position.j, current_position.k).
+    fr_mm_s
+  );
 }
 void do_blocking_move_to_y(const_float_t ry, const_feedRate_t fr_mm_s/*=0.0*/) {
   do_blocking_move_to(
-    LIST_N(LINEAR_AXES, current_position.x, ry, current_position.z, current_position.i, current_position.j, current_position.k),
-    fr_mm_s);
+    LINEAR_AXIS_LIST(current_position.x, ry, current_position.z, current_position.i, current_position.j, current_position.k),
+    fr_mm_s
+  );
 }
 void do_blocking_move_to_z(const_float_t rz, const_feedRate_t fr_mm_s/*=0.0*/) {
   do_blocking_move_to_xy_z(current_position, rz, fr_mm_s);
@@ -642,7 +637,7 @@ void do_blocking_move_to_z(const_float_t rz, const_feedRate_t fr_mm_s/*=0.0*/) {
 
 void do_blocking_move_to_xy(const_float_t rx, const_float_t ry, const_feedRate_t fr_mm_s/*=0.0*/) {
   do_blocking_move_to(
-    LIST_N(LINEAR_AXES, rx, ry, current_position.z, current_position.i, current_position.j, current_position.k),
+    LINEAR_AXIS_LIST(rx, ry, current_position.z, current_position.i, current_position.j, current_position.k),
     fr_mm_s
   );
 }
@@ -652,7 +647,7 @@ void do_blocking_move_to_xy(const xy_pos_t &raw, const_feedRate_t fr_mm_s/*=0.0f
 
 void do_blocking_move_to_xy_z(const xy_pos_t &raw, const_float_t z, const_feedRate_t fr_mm_s/*=0.0f*/) {
   do_blocking_move_to(
-    LIST_N(LINEAR_AXES, raw.x, raw.y, z, current_position.i, current_position.j, current_position.k),
+    LINEAR_AXIS_LIST(raw.x, raw.y, z, current_position.i, current_position.j, current_position.k),
     fr_mm_s
   );
 }
@@ -687,8 +682,8 @@ void restore_feedrate_and_scaling() {
   // Software Endstops are based on the configured limits.
   soft_endstops_t soft_endstop = {
     true, false,
-    ARRAY_N(LINEAR_AXES, X_MIN_POS, Y_MIN_POS, Z_MIN_POS, I_MIN_POS, J_MIN_POS, K_MIN_POS),
-    ARRAY_N(LINEAR_AXES, X_MAX_BED, Y_MAX_BED, Z_MAX_POS, I_MAX_POS, J_MAX_POS, K_MAX_POS)
+    LINEAR_AXIS_ARRAY(X_MIN_POS, Y_MIN_POS, Z_MIN_POS, I_MIN_POS, J_MIN_POS, K_MIN_POS),
+    LINEAR_AXIS_ARRAY(X_MAX_BED, Y_MAX_BED, Z_MAX_POS, I_MAX_POS, J_MAX_POS, K_MAX_POS)
   };
 
   /**
@@ -1283,7 +1278,7 @@ void prepare_line_to_destination() {
         CBI(b, a);
     };
     // Clear test bits that are trusted
-    CODE_N(LINEAR_AXES,
+    LINEAR_AXIS_CODE(
       set_should(axis_bits, X_AXIS), set_should(axis_bits, Y_AXIS), set_should(axis_bits, Z_AXIS),
       set_should(axis_bits, I_AXIS), set_should(axis_bits, J_AXIS), set_should(axis_bits, K_AXIS)
     );
@@ -1295,7 +1290,7 @@ void prepare_line_to_destination() {
       PGM_P home_first = GET_TEXT(MSG_HOME_FIRST);  // TODO: (DerAndere) Set this up for extra axes
       char msg[strlen_P(home_first)+1];
       sprintf_P(msg, home_first,
-        LIST_N(LINEAR_AXES,
+        LINEAR_AXIS_LIST(
           TEST(axis_bits, X_AXIS) ? "X" : "",
           TEST(axis_bits, Y_AXIS) ? "Y" : "",
           TEST(axis_bits, Z_AXIS) ? "Z" : "",

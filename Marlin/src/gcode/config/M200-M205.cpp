@@ -169,7 +169,7 @@ void GcodeSuite::M205() {
   #endif
   #if HAS_CLASSIC_JERK
     bool seenZ = false;
-    CODE_N(LINEAR_AXES,
+    LINEAR_AXIS_CODE(
       if (parser.seenval('X')) planner.set_max_jerk(X_AXIS, parser.value_linear_units()),
       if (parser.seenval('Y')) planner.set_max_jerk(Y_AXIS, parser.value_linear_units()),
       if ((seenZ = parser.seenval('Z'))) planner.set_max_jerk(Z_AXIS, parser.value_linear_units()),

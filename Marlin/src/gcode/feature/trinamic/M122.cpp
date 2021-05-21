@@ -51,21 +51,18 @@ void GcodeSuite::M122() {
 
     if (parser.seen_test('V')) {
       tmc_get_registers(
-        LIST_N(LINEAR_AXES, print_axis.x, print_axis.y, print_axis.z, print_axis.i, print_axis.j, print_axis.k),
-        print_axis.e
+        LOGICAL_AXIS_LIST(print_axis.e, print_axis.x, print_axis.y, print_axis.z, print_axis.i, print_axis.j, print_axis.k)
       );
     }
     else {
       tmc_report_all(
-        LIST_N(LINEAR_AXES, print_axis.x, print_axis.y, print_axis.z, print_axis.i, print_axis.j, print_axis.k),
-        print_axis.e
+        LOGICAL_AXIS_LIST(print_axis.e, print_axis.x, print_axis.y, print_axis.z, print_axis.i, print_axis.j, print_axis.k)
       );
     }
   #endif
 
   test_tmc_connection(
-    LIST_N(LINEAR_AXES, print_axis.x, print_axis.y, print_axis.z, print_axis.i, print_axis.j, print_axis.k),
-    print_axis.e
+    LOGICAL_AXIS_LIST(print_axis.e, print_axis.x, print_axis.y, print_axis.z, print_axis.i, print_axis.j, print_axis.k)
   );
 }
 

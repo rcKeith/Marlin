@@ -74,16 +74,14 @@ millis_t GcodeSuite::previous_move_ms = 0,
 
 // Relative motion mode for each logical axis
 static constexpr xyze_bool_t ar_init = AXIS_RELATIVE_MODES;
-uint8_t GcodeSuite::axis_relative = (
-  TERN0(HAS_EXTRUDERS, ar_init.e << REL_E)
-  GANG_N(LINEAR_AXES,
-    | (ar_init.x << REL_X),
-    | (ar_init.y << REL_Y),
-    | (ar_init.z << REL_Z),
-    | (ar_init.i << REL_I),
-    | (ar_init.j << REL_J),
-    | (ar_init.k << REL_K)
-  )
+uint8_t GcodeSuite::axis_relative = 0 LOGICAL_AXIS_GANG(
+  | (ar_init.e << REL_E),
+  | (ar_init.x << REL_X),
+  | (ar_init.y << REL_Y),
+  | (ar_init.z << REL_Z),
+  | (ar_init.i << REL_I),
+  | (ar_init.j << REL_J),
+  | (ar_init.k << REL_K)
 );
 
 #if EITHER(HAS_AUTO_REPORTING, HOST_KEEPALIVE_FEATURE)
