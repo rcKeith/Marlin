@@ -931,7 +931,7 @@
    */
 
   void tmc_report_all(
-    LOGICAL_AXIS_LIST(const bool print_e/*=true*/, const bool print_x/*=true*/, const bool print_y/*=true*/, const bool print_z/*=true*/, const bool print_i/*=true*/, const bool print_j/*=true*/, const bool print_k/*=true*/),
+    LOGICAL_AXIS_LIST(const bool print_e/*=true*/, const bool print_x/*=true*/, const bool print_y/*=true*/, const bool print_z/*=true*/, const bool print_i/*=true*/, const bool print_j/*=true*/, const bool print_k/*=true*/)
   ) {
     #define TMC_REPORT(LABEL, ITEM) do{ SERIAL_ECHOPGM(LABEL);  tmc_debug_loop(ITEM, LOGICAL_AXIS_LIST(print_e, print_x, print_y, print_z, print_i, print_j, print_k)); }while(0)
     #define DRV_REPORT(LABEL, ITEM) do{ SERIAL_ECHOPGM(LABEL); drv_status_loop(ITEM, LOGICAL_AXIS_LIST(print_e, print_x, print_y, print_z, print_i, print_j, print_k)); }while(0)

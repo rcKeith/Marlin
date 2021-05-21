@@ -537,21 +537,21 @@
  *  E_STEPPERS   - Number of actual E stepper motors
  *  E_MANUAL     - Number of E steppers for LCD move options
  */
-#if !EXTRUDERS
-  #undef EXTRUDERS
-  #define EXTRUDERS 0
-  #undef DISABLE_E
-  #undef MIXING_EXTRUDER
-  #undef SINGLENOZZLE
-  #undef SWITCHING_EXTRUDER
-  #undef SWITCHING_NOZZLE
-  #undef HOTEND_IDLE_TIMEOUT
-#else
+#if EXTRUDERS
   #define HAS_EXTRUDERS 1
   #if EXTRUDERS > 1
     #define HAS_MULTI_EXTRUDER 1
   #endif
   #define E_AXIS_N(E) AxisEnum(E_AXIS + E_INDEX_N(E))
+#else
+  #undef EXTRUDERS
+  #define EXTRUDERS 0
+  #undef SINGLENOZZLE
+  #undef SWITCHING_EXTRUDER
+  #undef SWITCHING_NOZZLE
+  #undef MIXING_EXTRUDER
+  #undef HOTEND_IDLE_TIMEOUT
+  #undef DISABLE_E
 #endif
 
 #if ENABLED(SWITCHING_EXTRUDER)   // One stepper for every two EXTRUDERS

@@ -110,11 +110,3 @@ bool pin_is_protected(const pin_t pin);
 #endif
 
 extern const char M112_KILL_STR[];
-
-const xyze_char_t axis_codes ARRAY_N(LOGICAL_AXES, 'X', 'Y', 'Z', AXIS4_NAME, AXIS5_NAME, AXIS6_NAME, 'E');
-
-#if LINEAR_AXES < 4
-  #define AXIS_CHAR(A) ((char)('X' + A))
-#else
-  #define AXIS_CHAR(A) axis_codes[A]
-#endif

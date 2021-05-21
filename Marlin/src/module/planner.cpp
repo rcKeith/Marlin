@@ -1940,6 +1940,8 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
   #if HAS_EXTRUDERS
     const float esteps_float = de * e_factor[extruder];
     const uint32_t esteps = ABS(esteps_float) + 0.5f;
+  #else
+    constexpr uint32_t esteps = 0;
   #endif
 
   // Clear all flags, including the "busy" bit
@@ -2849,7 +2851,8 @@ bool Planner::buffer_segment(
   // The target position of the tool in absolute steps
   // Calculate target position in absolute steps
   const abce_long_t target = {
-     LINEAR_AXIS_LIST(
+     LOGICAL_AXIS_LIST(
+      int32_t(LROUND(e * settings.axis_steps_per_mm[E_AXIS_N(extruder)])),
       int32_t(LROUND(a * settings.axis_steps_per_mm[A_AXIS])),
       int32_t(LROUND(b * settings.axis_steps_per_mm[B_AXIS])),
       int32_t(LROUND(c * settings.axis_steps_per_mm[C_AXIS])),
@@ -2857,9 +2860,6 @@ bool Planner::buffer_segment(
       int32_t(LROUND(j * settings.axis_steps_per_mm[J_AXIS])),
       int32_t(LROUND(k * settings.axis_steps_per_mm[K_AXIS]))
     )
-    #if HAS_EXTRUDERS
-      , int32_t(LROUND(e * settings.axis_steps_per_mm[E_AXIS_N(extruder)]))
-    #endif
   };
 
   #if HAS_POSITION_FLOAT
@@ -3166,7 +3166,7 @@ inline void limit_and_warn(float &val, const uint8_t axis, PGM_P const setting_n
   const float before = val;
   LIMIT(val, 0.1, max_limit[lim_axis]);
   if (before != val) {
-    SERIAL_CHAR(axis_codes[lim_axis]);
+    SERIAL_CHAR(AXIS_CHAR(lim_axis));
     SERIAL_ECHOPGM(" Max ");
     SERIAL_ECHOPGM_P(setting_name);
     SERIAL_ECHOLNPAIR(" limited to ", val);

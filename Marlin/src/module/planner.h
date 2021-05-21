@@ -885,19 +885,11 @@ class Planner {
     static float get_axis_position_mm(const AxisEnum axis);
 
     static inline abce_pos_t get_axis_positions_mm() {
-      const abce_pos_t out = {
-        LINEAR_AXIS_LIST(
-          get_axis_position_mm(A_AXIS),
-          get_axis_position_mm(B_AXIS),
-          get_axis_position_mm(C_AXIS),
-          get_axis_position_mm(I_AXIS),
-          get_axis_position_mm(J_AXIS),
-          get_axis_position_mm(K_AXIS)
-        )
-        #if HAS_EXTRUDERS
-          , get_axis_position_mm(E_AXIS)
-        #endif
-      };
+      const abce_pos_t out = LOGICAL_AXIS_ARRAY(
+        get_axis_position_mm(E_AXIS),
+        get_axis_position_mm(A_AXIS), get_axis_position_mm(B_AXIS), get_axis_position_mm(C_AXIS),
+        get_axis_position_mm(I_AXIS), get_axis_position_mm(J_AXIS), get_axis_position_mm(K_AXIS)
+      );
       return out;
     }
 

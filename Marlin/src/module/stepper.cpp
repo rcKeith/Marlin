@@ -2661,6 +2661,7 @@ void Stepper::init() {
   #if HAS_K_STEP
     AXIS_INIT(K, K);
   #endif
+
   #if E_STEPPERS && HAS_E0_STEP
     E_AXIS_INIT(0);
   #endif
@@ -2716,8 +2717,8 @@ void Stepper::init() {
  * The input is based on the typical per-axis XYZ steps.
  * For CORE machines XYZ needs to be translated to ABC.
  *
- * This allows get_axis_position_mm to correctly derive
- * the current XYZ position later on.
+ * This allows get_axis_position_mm to correctly
+ * derive the current XYZ position later on.
  */
 void Stepper::_set_position(LOGICAL_AXIS_LIST(
   const int32_t &e, const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &i, const int32_t &j, const int32_t &k
