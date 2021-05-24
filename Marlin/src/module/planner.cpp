@@ -1767,12 +1767,8 @@ void Planner::synchronize() {
  * Returns true if movement was properly queued, false otherwise (if cleaning)
  */
 bool Planner::_buffer_steps(const xyze_long_t &target
-  #if HAS_POSITION_FLOAT
-    , const xyze_pos_t &target_float
-  #endif
-  #if HAS_DIST_MM_ARG
-    , const xyze_float_t &cart_dist_mm
-  #endif
+  OPTARG(HAS_POSITION_FLOAT, const xyze_pos_t &target_float)
+  OPTARG(HAS_DIST_MM_ARG, const xyze_float_t &cart_dist_mm)
   , feedRate_t fr_mm_s, const uint8_t extruder, const_float_t millimeters
 ) {
 
@@ -1833,12 +1829,8 @@ bool Planner::_buffer_steps(const xyze_long_t &target
  */
 bool Planner::_populate_block(block_t * const block, bool split_move,
   const abce_long_t &target
-  #if HAS_POSITION_FLOAT
-    , const xyze_pos_t &target_float
-  #endif
-  #if HAS_DIST_MM_ARG
-    , const xyze_float_t &cart_dist_mm
-  #endif
+  OPTARG(HAS_POSITION_FLOAT, const xyze_pos_t &target_float)
+  OPTARG(HAS_DIST_MM_ARG, const xyze_float_t &cart_dist_mm)
   , feedRate_t fr_mm_s, const uint8_t extruder, const_float_t millimeters/*=0.0*/
 ) {
   int32_t LOGICAL_AXIS_LIST(
@@ -2076,6 +2068,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
         #endif
       );
     }
+
     /**
      * At this point at least one of the axes has more steps than
      * MIN_STEPS_PER_SEGMENT, ensuring the segment won't get dropped as
@@ -2831,9 +2824,7 @@ bool Planner::buffer_segment(
   LOGICAL_AXIS_LIST(const_float_t e,
                     const_float_t a, const_float_t b, const_float_t c,
                     const_float_t i, const_float_t j, const_float_t k)
-  #if HAS_DIST_MM_ARG
-    , const xyze_float_t &cart_dist_mm
-  #endif
+  OPTARG(HAS_DIST_MM_ARG, const xyze_float_t &cart_dist_mm)
   , const_feedRate_t fr_mm_s, const uint8_t extruder, const_float_t millimeters/*=0.0*/
 ) {
 

@@ -494,7 +494,7 @@ class Planner {
     #if HAS_CLASSIC_JERK
       static void set_max_jerk(const AxisEnum axis, float inMaxJerkMMS);
     #else
-      static inline void set_max_jerk(const AxisEnum, const_float_t ) {}
+      static inline void set_max_jerk(const AxisEnum, const_float_t) {}
     #endif
 
     #if HAS_EXTRUDERS
@@ -595,9 +595,9 @@ class Planner {
 
     #else
 
-      FORCE_INLINE static float fade_scaling_factor_for_z(const_float_t ) { return 1; }
+      FORCE_INLINE static float fade_scaling_factor_for_z(const_float_t) { return 1; }
 
-      FORCE_INLINE static bool leveling_active_at_z(const_float_t ) { return true; }
+      FORCE_INLINE static bool leveling_active_at_z(const_float_t) { return true; }
 
     #endif
 
@@ -710,12 +710,8 @@ class Planner {
      * Returns true if movement was buffered, false otherwise
      */
     static bool _buffer_steps(const xyze_long_t &target
-      #if HAS_POSITION_FLOAT
-        , const xyze_pos_t &target_float
-      #endif
-      #if HAS_DIST_MM_ARG
-        , const xyze_float_t &cart_dist_mm
-      #endif
+      OPTARG(HAS_POSITION_FLOAT, const xyze_pos_t &target_float)
+      OPTARG(HAS_DIST_MM_ARG, const xyze_float_t &cart_dist_mm)
       , feedRate_t fr_mm_s, const uint8_t extruder, const_float_t millimeters=0.0
     );
 
@@ -731,14 +727,9 @@ class Planner {
      *
      * Returns true is movement is acceptable, false otherwise
      */
-    static bool _populate_block(block_t * const block, bool split_move,
-        const xyze_long_t &target
-      #if HAS_POSITION_FLOAT
-        , const xyze_pos_t &target_float
-      #endif
-      #if HAS_DIST_MM_ARG
-        , const xyze_float_t &cart_dist_mm
-      #endif
+    static bool _populate_block(block_t * const block, bool split_move, const xyze_long_t &target
+      OPTARG(HAS_POSITION_FLOAT, const xyze_pos_t &target_float)
+      OPTARG(HAS_DIST_MM_ARG, const xyze_float_t &cart_dist_mm)
       , feedRate_t fr_mm_s, const uint8_t extruder, const_float_t millimeters=0.0
     );
 
@@ -773,23 +764,17 @@ class Planner {
     static bool buffer_segment(
       LOGICAL_AXIS_LIST(const_float_t e, const_float_t a, const_float_t b, const_float_t c,
                         const_float_t i, const_float_t j, const_float_t k)
-      #if HAS_DIST_MM_ARG
-        , const xyze_float_t &cart_dist_mm
-      #endif
+      OPTARG(HAS_DIST_MM_ARG, const xyze_float_t &cart_dist_mm)
       , const_feedRate_t fr_mm_s, const uint8_t extruder, const_float_t millimeters=0.0
     );
 
     FORCE_INLINE static bool buffer_segment(abce_pos_t &abce
-      #if HAS_DIST_MM_ARG
-        , const xyze_float_t &cart_dist_mm
-      #endif
+      OPTARG(HAS_DIST_MM_ARG, const xyze_float_t &cart_dist_mm)
       , const_feedRate_t fr_mm_s, const uint8_t extruder, const_float_t millimeters=0.0
     ) {
       return buffer_segment(
         LOGICAL_AXIS_LIST(abce.e, abce.a, abce.b, abce.c, abce.i, abce.j, abce.k)
-        #if HAS_DIST_MM_ARG
-          , cart_dist_mm
-        #endif
+        OPTARG(HAS_DIST_MM_ARG, cart_dist_mm)
         , fr_mm_s, extruder, millimeters
       );
     }
@@ -812,22 +797,16 @@ class Planner {
                         const_float_t rx, const_float_t ry, const_float_t rz,
                         const_float_t ri, const_float_t rj, const_float_t rk)
       , const feedRate_t &fr_mm_s, const uint8_t extruder, const float millimeters=0.0
-      #if ENABLED(SCARA_FEEDRATE_SCALING)
-        , const_float_t inv_duration=0.0
-      #endif
+      OPTARG(SCARA_FEEDRATE_SCALING, const_float_t inv_duration=0.0)
     );
 
     FORCE_INLINE static bool buffer_line(const xyze_pos_t &cart, const_feedRate_t fr_mm_s, const uint8_t extruder, const float millimeters=0.0
-      #if ENABLED(SCARA_FEEDRATE_SCALING)
-        , const_float_t inv_duration=0.0
-      #endif
+      OPTARG(SCARA_FEEDRATE_SCALING, const_float_t inv_duration=0.0)
     ) {
       return buffer_line(
         LOGICAL_AXIS_LIST(cart.e, cart.x, cart.y, cart.z, cart.i, cart.j, cart.k)
         , fr_mm_s, extruder, millimeters
-        #if ENABLED(SCARA_FEEDRATE_SCALING)
-          , inv_duration
-        #endif
+        OPTARG(SCARA_FEEDRATE_SCALING, inv_duration)
       );
     }
 

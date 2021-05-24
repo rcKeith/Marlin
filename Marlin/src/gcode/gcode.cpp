@@ -571,7 +571,7 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
       #endif
 
       #if ENABLED(AUTO_REPORT_POSITION)
-        case 154: M154(); break;                                  // M155: Set position auto-report interval
+        case 154: M154(); break;                                  // M154: Set position auto-report interval
       #endif
 
       #if BOTH(AUTO_REPORT_TEMPERATURES, HAS_TEMP_SENSOR)
@@ -610,7 +610,9 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
       case 92: M92(); break;                                      // M92: Set the steps-per-unit for one or more axes
       case 114: M114(); break;                                    // M114: Report current position
       case 115: M115(); break;                                    // M115: Report capabilities
-      case 117: M117(); break;                                    // M117: Set LCD message text, if possible
+
+      case 117: TERN_(HAS_STATUS_MESSAGE, M117()); break;         // M117: Set LCD message text, if possible
+
       case 118: M118(); break;                                    // M118: Display a message in the host console
       case 119: M119(); break;                                    // M119: Report endstop states
       case 120: M120(); break;                                    // M120: Enable endstops

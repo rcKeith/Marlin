@@ -35,7 +35,7 @@
 #define dSPIN_STEP_CLOCK_REV dSPIN_STEP_CLOCK+1
 #define HAS_L64XX_EXTRUDER (AXIS_IS_L64XX(E0) || AXIS_IS_L64XX(E1) || AXIS_IS_L64XX(E2) || AXIS_IS_L64XX(E3) || AXIS_IS_L64XX(E4) || AXIS_IS_L64XX(E5) || AXIS_IS_L64XX(E6) || AXIS_IS_L64XX(E7))
 
-enum L64XX_axis_t : uint8_t { X, Y, Z, X2, Y2, Z2, Z3, Z4, E0, E1, E2, E3, E4, E5, E6, E7, MAX_L64XX };
+enum L64XX_axis_t : uint8_t { LINEAR_AXIS_LIST(X, Y, Z, I, J, K), X2, Y2, Z2, Z3, Z4, LIST_N(E_STEPPERS, E0, E1, E2, E3, E4, E5, E6, E7), MAX_L64XX };
 
 class L64XX_Marlin : public L64XXHelper {
 public:
