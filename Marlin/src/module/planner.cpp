@@ -3066,11 +3066,11 @@ bool Planner::buffer_line(
  *
  * The provided ABC position is in machine units.
  */
-void Planner::set_machine_position_mm(LOGICAL_AXIS_LIST(
-  const_float_t e,
-  const_float_t a, const_float_t b, const_float_t c,
-  const_float_t i, const_float_t j, const_float_t k
-)) {
+void Planner::set_machine_position_mm(
+  LOGICAL_AXIS_LIST(const_float_t e,
+                    const_float_t a, const_float_t b, const_float_t c,
+                    const_float_t i, const_float_t j, const_float_t k)
+) {
   TERN_(DISTINCT_E_FACTORS, last_extruder = active_extruder);
   TERN_(HAS_POSITION_FLOAT, position_float.set(LOGICAL_AXIS_LIST(e, a, b, c, i, j, k)));
   position.set(
@@ -3093,11 +3093,11 @@ void Planner::set_machine_position_mm(LOGICAL_AXIS_LIST(
     stepper.set_position(position);
 }
 
-void Planner::set_position_mm(LOGICAL_AXIS_LIST(
-  const_float_t e,
-  const_float_t rx, const_float_t ry, const_float_t rz,
-  const_float_t ri, const_float_t rj, const_float_t rk
-)) {
+void Planner::set_position_mm(
+  LOGICAL_AXIS_LIST(const_float_t e,
+                    const_float_t rx, const_float_t ry, const_float_t rz,
+                    const_float_t ri, const_float_t rj, const_float_t rk)
+) {
   xyze_pos_t machine = LOGICAL_AXIS_ARRAY(e, rx, ry, rz, ri, rj, rk);
   TERN_(HAS_POSITION_MODIFIERS, apply_modifiers(machine, true));
   #if IS_KINEMATIC

@@ -930,9 +930,11 @@
    * M122 report functions
    */
 
-  void tmc_report_all(
-    LOGICAL_AXIS_LIST(const bool print_e/*=true*/, const bool print_x/*=true*/, const bool print_y/*=true*/, const bool print_z/*=true*/, const bool print_i/*=true*/, const bool print_j/*=true*/, const bool print_k/*=true*/)
-  ) {
+  void tmc_report_all(LOGICAL_AXIS_LIST(
+    const bool print_e/*=true*/,
+    const bool print_x/*=true*/, const bool print_y/*=true*/, const bool print_z/*=true*/,
+    const bool print_i/*=true*/, const bool print_j/*=true*/, const bool print_k/*=true*/
+  )) {
     #define TMC_REPORT(LABEL, ITEM) do{ SERIAL_ECHOPGM(LABEL);  tmc_debug_loop(ITEM, LOGICAL_AXIS_LIST(print_e, print_x, print_y, print_z, print_i, print_j, print_k)); }while(0)
     #define DRV_REPORT(LABEL, ITEM) do{ SERIAL_ECHOPGM(LABEL); drv_status_loop(ITEM, LOGICAL_AXIS_LIST(print_e, print_x, print_y, print_z, print_i, print_j, print_k)); }while(0)
 
@@ -1282,9 +1284,11 @@ static bool test_connection(TMC &st) {
   return test_result;
 }
 
-void test_tmc_connection(
-  LOGICAL_AXIS_LIST(const bool test_e/*=true*/, const bool test_x/*=true*/, const bool test_y/*=true*/, const bool test_z/*=true*/, const bool test_i/*=true*/, const bool test_j/*=true*/, const bool test_k/*=true*/)
-) {
+void test_tmc_connection(LOGICAL_AXIS_LIST(
+  const bool test_e/*=true*/,
+  const bool test_x/*=true*/, const bool test_y/*=true*/, const bool test_z/*=true*/,
+  const bool test_i/*=true*/, const bool test_j/*=true*/, const bool test_k/*=true*/
+)) {
   uint8_t axis_connection = 0;
 
   if (test_x) {

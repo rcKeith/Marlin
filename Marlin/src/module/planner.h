@@ -76,10 +76,9 @@
 // Feedrate for manual moves
 #ifdef MANUAL_FEEDRATE
   constexpr xyze_feedrate_t _mf = MANUAL_FEEDRATE,
-           manual_feedrate_mm_s = LOGICAL_AXIS_ARRAY(
-                                    _mf.e / 60.0f,
-                                    _mf.x / 60.0f, _mf.y / 60.0f, _mf.z / 60.0f,
-                                    _mf.i / 60.0f, _mf.j / 60.0f, _mf.k / 60.0f);
+           manual_feedrate_mm_s = LOGICAL_AXIS_ARRAY(_mf.e / 60.0f,
+                                                     _mf.x / 60.0f, _mf.y / 60.0f, _mf.z / 60.0f,
+                                                     _mf.i / 60.0f, _mf.j / 60.0f, _mf.k / 60.0f);
 #endif
 
 #if IS_KINEMATIC && HAS_JUNCTION_DEVIATION
@@ -852,9 +851,7 @@ class Planner {
       const_float_t i, const_float_t j, const_float_t k
     ));
     FORCE_INLINE static void set_machine_position_mm(const abce_pos_t &abce) {
-      set_machine_position_mm(LOGICAL_AXIS_LIST(
-        abce.e, abce.a, abce.b, abce.c, abce.i, abce.j, abce.k
-      ));
+      set_machine_position_mm(LOGICAL_AXIS_LIST(abce.e, abce.a, abce.b, abce.c, abce.i, abce.j, abce.k));
     }
 
     /**
