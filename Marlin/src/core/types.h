@@ -69,37 +69,37 @@ struct IF<true, L, R> { typedef L type; };
 enum AxisEnum : uint8_t {
 
   // Linear axes may be controlled directly or indirectly
-  LINEAR_AXIS_LIST(X_AXIS, Y_AXIS, Z_AXIS, I_AXIS, J_AXIS, K_AXIS),
+  LINEAR_AXIS_LIST(X_AXIS, Y_AXIS, Z_AXIS, I_AXIS, J_AXIS, K_AXIS)
 
   // Extruder axes may be considered distinctly
-  #define _EN_ITEM(N) E##N##_AXIS,
+  #define _EN_ITEM(N) , E##N##_AXIS
   REPEAT(EXTRUDERS, _EN_ITEM)
   #undef _EN_ITEM
 
   // Core also keeps toolhead directions
   #if IS_CORE
-    X_HEAD, Y_HEAD, Z_HEAD,
+    , X_HEAD, Y_HEAD, Z_HEAD
   #endif
 
   // Distinct axes, including all E and Core
-  NUM_AXIS_ENUMS,
+  , NUM_AXIS_ENUMS
 
   // Most of the time we refer only to the single E_AXIS
   #if HAS_EXTRUDERS
-    E_AXIS = E0_AXIS,
+    , E_AXIS = E0_AXIS
   #endif
 
   // A, B, and C are for DELTA, SCARA, etc.
-  A_AXIS = X_AXIS,
+  , A_AXIS = X_AXIS
   #if LINEAR_AXES >= 2
-    B_AXIS = Y_AXIS,
+    , B_AXIS = Y_AXIS
   #endif
   #if LINEAR_AXES >= 3
-    C_AXIS = Z_AXIS,
+    , C_AXIS = Z_AXIS
   #endif
 
   // To refer to all or none
-  ALL_AXES_ENUM = 0xFE, NO_AXIS_ENUM = 0xFF
+  , ALL_AXES_ENUM = 0xFE, NO_AXIS_ENUM = 0xFF
 };
 
 typedef IF<(NUM_AXIS_ENUMS > 8), uint16_t, uint8_t>::type axis_bits_t;

@@ -539,7 +539,7 @@ void GcodeSuite::G28() {
     // Set L6470 absolute position registers to counts
     // constexpr *might* move this to PROGMEM.
     // If not, this will need a PROGMEM directive and an accessor.
-    #define _EN_ITEM(N) E_AXIS,
+    #define _EN_ITEM(N) , E_AXIS
     static constexpr AxisEnum L64XX_axis_xref[MAX_L64XX] = {
       LINEAR_AXIS_LIST(X_AXIS, Y_AXIS, Z_AXIS, I_AXIS, J_AXIS, K_AXIS),
       X_AXIS, Y_AXIS, Z_AXIS, Z_AXIS, Z_AXIS, Z_AXIS
