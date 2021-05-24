@@ -54,7 +54,7 @@ static const char LINEAR_AXIS_LIST(
 PGM_P const L64XX_Marlin::index_to_axis[] PROGMEM = {
   LINEAR_AXIS_LIST(str_X, str_Y, str_Z, str_I, str_J, str_K)
   , str_X2, str_Y2, str_Z2, str_Z3, str_Z4,
-  , LIST_N(EXTRUDERS, str_E0, str_E1, str_E2, str_E3, str_E4, str_E5, str_E6, str_E7)
+  , LIST_N(E_STEPPERS, str_E0, str_E1, str_E2, str_E3, str_E4, str_E5, str_E6, str_E7)
 };
 
 #define DEBUG_OUT ENABLED(L6470_CHITCHAT)
