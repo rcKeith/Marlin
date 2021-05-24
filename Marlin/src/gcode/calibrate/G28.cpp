@@ -541,7 +541,10 @@ void GcodeSuite::G28() {
     // If not, this will need a PROGMEM directive and an accessor.
     static constexpr AxisEnum L64XX_axis_xref[MAX_L64XX] = {
       LINEAR_AXIS_LIST(X_AXIS, Y_AXIS, Z_AXIS, I_AXIS, J_AXIS, K_AXIS),
-      X_AXIS, Y_AXIS, Z_AXIS, Z_AXIS, Z_AXIS, Z_AXIS,
+      X_AXIS, Y_AXIS, Z_AXIS, Z_AXIS, Z_AXIS, Z_AXIS
+      #if E_STEPPERS >= 1
+        ,
+      #endif
       LIST_N(E_STEPPERS, E_AXIS, E_AXIS, E_AXIS, E_AXIS, E_AXIS, E_AXIS, E_AXIS, E_AXIS)
     };
     for (uint8_t j = 1; j <= L64XX::chain[0]; j++) {

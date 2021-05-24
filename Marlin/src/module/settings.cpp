@@ -168,10 +168,22 @@
   void M554_report();
 #endif
 
-typedef struct { uint16_t LINEAR_AXIS_LIST(X, Y, Z, I, J, K), X2, Y2, Z2, Z3, Z4, LIST_N(E_STEPPERS, E0, E1, E2, E3, E4, E5, E6, E7); } tmc_stepper_current_t;
-typedef struct { uint32_t LINEAR_AXIS_LIST(X, Y, Z, I, J, K), X2, Y2, Z2, Z3, Z4, LIST_N(E_STEPPERS, E0, E1, E2, E3, E4, E5, E6, E7); } tmc_hybrid_threshold_t;
+typedef struct { uint16_t LINEAR_AXIS_LIST(X, Y, Z, I, J, K), X2, Y2, Z2, Z3, Z4
+    #if E_STEPPERS >= 1
+      , 
+    #endif
+    LIST_N(E_STEPPERS, E0, E1, E2, E3, E4, E5, E6, E7); } tmc_stepper_current_t;
+typedef struct { uint32_t LINEAR_AXIS_LIST(X, Y, Z, I, J, K), X2, Y2, Z2, Z3, Z4
+    #if E_STEPPERS >= 1
+      , 
+    #endif
+    LIST_N(E_STEPPERS, E0, E1, E2, E3, E4, E5, E6, E7); } tmc_hybrid_threshold_t;
 typedef struct {  int16_t LINEAR_AXIS_LIST(X, Y, Z, I, J, K), X2, Y2, Z2, Z3, Z4;                                                     } tmc_sgt_t;
-typedef struct {     bool LINEAR_AXIS_LIST(X, Y, Z, I, J, K), X2, Y2, Z2, Z3, Z4, LIST_N(E_STEPPERS, E0, E1, E2, E3, E4, E5, E6, E7); } tmc_stealth_enabled_t;
+typedef struct {     bool LINEAR_AXIS_LIST(X, Y, Z, I, J, K), X2, Y2, Z2, Z3, Z4
+    #if E_STEPPERS >= 1
+      , 
+    #endif
+    LIST_N(E_STEPPERS, E0, E1, E2, E3, E4, E5, E6, E7); } tmc_stealth_enabled_t;
 
 // Limit an index to an array size
 #define ALIM(I,ARR) _MIN(I, (signed)COUNT(ARR) - 1)
@@ -1208,7 +1220,10 @@ void MarlinSettings::postprocess() {
         const tmc_hybrid_threshold_t tmc_hybrid_threshold = {
           LINEAR_AXIS_LIST(.X = 100, .Y = 100, .Z = 3, .I = 3, .J = 3, .K = 3)
           , .X2 = 100, .Y2 = 100, .Z2 =   3, .Z3 =   3, .Z4 = 3
-          , LIST_N(E_STEPPERS, .E0 =  30, .E1 =  30, .E2 =  30, .E3 =  30, .E4 =  30, .E5 =  30, .E6 =  30, .E7 =  30)
+          #if E_STEPPERS >= 1
+            , 
+          #endif
+          LIST_N(E_STEPPERS, .E0 =  30, .E1 =  30, .E2 =  30, .E3 =  30, .E4 =  30, .E5 =  30, .E6 =  30, .E7 =  30)
         };
       #endif
       EEPROM_WRITE(tmc_hybrid_threshold);
@@ -2776,12 +2791,12 @@ void MarlinSettings::reset() {
   TERN_(HAS_LEVELING, reset_bed_level());
 
   #if HAS_BED_PROBE
-    constexpr float dpo[] = NOZZLE_TO_PROBE_OFFSET;
-    static_assert(COUNT(dpo) == 3, "NOZZLE_TO_PROBE_OFFSET must contain offsets for X, Y, and Z.");
+    constexpr float dpo[] = LINEAR_AXIS_ARRAY(NOZZLE_TO_PROBE_OFFSET[0], NOZZLE_TO_PROBE_OFFSET[1], NOZZLE_TO_PROBE_OFFSET[2], 0, 0, 0);
+    static_assert(COUNT(dpo) == LINEAR_AXES, "NOZZLE_TO_PROBE_OFFSET must contain offsets for X, Y, and Z.");
     #if HAS_PROBE_XY_OFFSET
       LOOP_LINEAR_AXES(a) probe.offset[a] = dpo[a];
     #else
-      probe.offset.set(0, 0, dpo[Z_AXIS]);
+      probe.offset.set(LINEAR_AXIS_LIST(0, 0, dpo[Z_AXIS], 0, 0, 0));
     #endif
   #endif
 
@@ -3907,17 +3922,17 @@ void MarlinSettings::reset() {
         );
         const bool chop_i = (false
           #if AXIS_HAS_STEALTHCHOP(I)
-            || stepperI.get_stealthChop_status();
+            || stepperI.get_stored_stealthChop();
           #endif
         );
         const bool chop_j = (false
           #if AXIS_HAS_STEALTHCHOP(J)
-            || stepperJ.get_stealthChop_status();
+            || stepperJ.get_stored_stealthChop();
           #endif
         );
         const bool chop_j = (false
           #if AXIS_HAS_STEALTHCHOP(K)
-            || stepperK.get_stealthChop_status();
+            || stepperK.get_stored_stealthChop();
           #endif
         );
 
@@ -3963,6 +3978,16 @@ void MarlinSettings::reset() {
         #endif
         #if AXIS_HAS_STEALTHCHOP(Z4)
           if (stepperZ4.get_stored_stealthChop()) { say_M569(forReplay, PSTR("I3 Z"), true); }
+        #endif
+
+        #if AXIS_HAS_STEALTHCHOP(I)
+          if (stepperI.get_stored_stealthChop()) { say_M569(forReplay, SP_I_STR, true); }
+        #endif
+        #if AXIS_HAS_STEALTHCHOP(J)
+          if (stepperJ.get_stored_stealthChop()) { say_M569(forReplay, SP_J_STR, true); }
+        #endif
+        #if AXIS_HAS_STEALTHCHOP(K)
+          if (stepperK.get_stored_stealthChop()) { say_M569(forReplay, SP_K_STR, true); }
         #endif
 
         #if AXIS_HAS_STEALTHCHOP(E0)

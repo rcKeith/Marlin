@@ -825,6 +825,37 @@ void restore_feedrate_and_scaling() {
         NOMORE(target.z, soft_endstop.max.z);
       #endif
     }
+
+    #if LINEAR_AXES >= 4  // TODO (DerAndere): Find out why this was missing / removed
+      if (axis_was_homed(I_AXIS)) {
+        #if !HAS_SOFTWARE_ENDSTOPS || ENABLED(MIN_SOFTWARE_ENDSTOP_I)
+          NOLESS(target.i, soft_endstop.min.i);
+        #endif
+        #if !HAS_SOFTWARE_ENDSTOPS || ENABLED(MAX_SOFTWARE_ENDSTOP_I)
+          NOMORE(target.i, soft_endstop.max.i);
+        #endif
+      }
+    #endif
+    #if LINEAR_AXES >= 5
+      if (axis_was_homed(J_AXIS)) {
+        #if !HAS_SOFTWARE_ENDSTOPS || ENABLED(MIN_SOFTWARE_ENDSTOP_J)
+          NOLESS(target.j, soft_endstop.min.j);
+        #endif
+        #if !HAS_SOFTWARE_ENDSTOPS || ENABLED(MAX_SOFTWARE_ENDSTOP_J)
+          NOMORE(target.j, soft_endstop.max.j);
+        #endif
+      }
+    #endif
+    #if LINEAR_AXES >= 6
+      if (axis_was_homed(K_AXIS)) {
+        #if !HAS_SOFTWARE_ENDSTOPS || ENABLED(MIN_SOFTWARE_ENDSTOP_K)
+          NOLESS(target.k, soft_endstop.min.k);
+        #endif
+        #if !HAS_SOFTWARE_ENDSTOPS || ENABLED(MAX_SOFTWARE_ENDSTOP_K)
+          NOMORE(target.k, soft_endstop.max.k);
+        #endif
+      }
+    #endif
   }
 
 #else // !HAS_SOFTWARE_ENDSTOPS
@@ -1676,7 +1707,14 @@ void prepare_line_to_destination() {
         || TERN0(A##_HOME_TO_MIN, A##_MIN_PIN > -1) \
         || TERN0(A##_HOME_TO_MAX, A##_MAX_PIN > -1) \
       ))
-      if (!_CAN_HOME(X) && !_CAN_HOME(Y) && !_CAN_HOME(Z)) return;
+      if (LINEAR_AXIS_GANG(
+           !_CAN_HOME(X),
+        && !_CAN_HOME(Y),
+        && !_CAN_HOME(Z),
+        && !_CAN_HOME(I),
+        && !_CAN_HOME(J),
+        && !_CAN_HOME(K))
+      ) return;
     #endif
 
     if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPAIR(">>> homeaxis(", AS_CHAR(AXIS_CHAR(axis)), ")");
