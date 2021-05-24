@@ -2791,8 +2791,8 @@ void MarlinSettings::reset() {
   TERN_(HAS_LEVELING, reset_bed_level());
 
   #if HAS_BED_PROBE
-    constexpr float dpo[] = LINEAR_AXIS_ARRAY(NOZZLE_TO_PROBE_OFFSET[0], NOZZLE_TO_PROBE_OFFSET[1], NOZZLE_TO_PROBE_OFFSET[2], 0, 0, 0);
-    static_assert(COUNT(dpo) == LINEAR_AXES, "NOZZLE_TO_PROBE_OFFSET must contain offsets for X, Y, and Z.");
+    constexpr float dpo[] = NOZZLE_TO_PROBE_OFFSET;
+    static_assert(COUNT(dpo) == LINEAR_AXES, "NOZZLE_TO_PROBE_OFFSET must contain offsets for each linear axis X, Y, Z....");
     #if HAS_PROBE_XY_OFFSET
       LOOP_LINEAR_AXES(a) probe.offset[a] = dpo[a];
     #else
@@ -3907,32 +3907,32 @@ void MarlinSettings::reset() {
         CONFIG_ECHO_HEADING("Driver stepping mode:");
         const bool chop_x = (false
           #if AXIS_HAS_STEALTHCHOP(X)
-            || stepperX.get_stored_stealthChop();
+            || stepperX.get_stored_stealthChop()
           #endif
         );
         const bool chop_y = (false
           #if AXIS_HAS_STEALTHCHOP(Y)
-            || stepperY.get_stored_stealthChop();
+            || stepperY.get_stored_stealthChop()
           #endif
         );
         const bool chop_z = (false
           #if AXIS_HAS_STEALTHCHOP(Z)
-            || stepperZ.get_stored_stealthChop();
+            || stepperZ.get_stored_stealthChop()
           #endif
         );
         const bool chop_i = (false
           #if AXIS_HAS_STEALTHCHOP(I)
-            || stepperI.get_stored_stealthChop();
+            || stepperI.get_stored_stealthChop()
           #endif
         );
         const bool chop_j = (false
           #if AXIS_HAS_STEALTHCHOP(J)
-            || stepperJ.get_stored_stealthChop();
+            || stepperJ.get_stored_stealthChop()
           #endif
         );
-        const bool chop_j = (false
+        const bool chop_k = (false
           #if AXIS_HAS_STEALTHCHOP(K)
-            || stepperK.get_stored_stealthChop();
+            || stepperK.get_stored_stealthChop()
           #endif
         );
 

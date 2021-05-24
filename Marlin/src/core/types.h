@@ -367,15 +367,12 @@ struct XYZval {
   #endif
   #if LINEAR_AXES >= 4
     FI void set(const T px, const T py, const T pz)                         { x = px; y = py; z = pz; }
-    FI void set(const XYval<T> pxy, const T pz, const T pi)                 { x = pxy.x; y = pxy.y; z = pz; }
   #endif
   #if LINEAR_AXES >= 5
     FI void set(const T px, const T py, const T pz, const T pi)             { x = px;    y = py;    z = pz; i = pi; }
-    FI void set(const XYval<T> pxy, const T pz, const T pi)                 { x = pxy.x; y = pxy.y; z = pz; i = pi; }
   #endif
   #if LINEAR_AXES >= 6
     FI void set(const T px, const T py, const T pz, const T pi, const T pj) { x = px;    y = py;    z = pz; i = pi; j = pj; }
-    FI void set(const XYval<T> pxy, const T pz, const T pi, const T pj)     { x = pxy.x; y = pxy.y; z = pz; i = pi; j = pj; }
   #endif
   #if LOGICAL_AXES > LINEAR_AXES
     FI void set(const T (&arr)[LOGICAL_AXES])          { LINEAR_AXIS_CODE(x = arr[0], y = arr[1], z = arr[2], i = arr[3], j = arr[4], k = arr[5]); }
@@ -498,15 +495,12 @@ struct XYZEval {
   #endif
     #if LINEAR_AXES >= 4
     FI void set(const T px, const T py, const T pz)                         { x = px; y = py; z = pz; }
-    FI void set(const XYval<T> pxy, const T pz, const T pi)                 { x = pxy.x; y = pxy.y; z = pz; }
   #endif
   #if LINEAR_AXES >= 5
     FI void set(const T px, const T py, const T pz, const T pi)             { x = px;    y = py;    z = pz; i = pi; }
-    FI void set(const XYval<T> pxy, const T pz, const T pi)                 { x = pxy.x; y = pxy.y; z = pz; i = pi; }
   #endif
   #if LINEAR_AXES >= 6
     FI void set(const T px, const T py, const T pz, const T pi, const T pj) { x = px;    y = py;    z = pz; i = pi; j = pj; }
-    FI void set(const XYval<T> pxy, const T pz, const T pi, const T pj)     { x = pxy.x; y = pxy.y; z = pz; i = pi; j = pj; }
   #endif
   #if LOGICAL_AXES > LINEAR_AXES
     FI void set(const XYval<T> pxy, const T pe)               { set(pxy); e = pe; }
