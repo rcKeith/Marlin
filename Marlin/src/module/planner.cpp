@@ -2401,20 +2401,26 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
 
     // Limit acceleration per axis
     if (block->step_event_count <= acceleration_long_cutoff) {
-      LIMIT_ACCEL_LONG(A_AXIS, 0);
-      LIMIT_ACCEL_LONG(B_AXIS, 0);
-      LIMIT_ACCEL_LONG(C_AXIS, 0);
-      #if HAS_EXTRUDERS
-        LIMIT_ACCEL_LONG(E_AXIS, E_INDEX_N(extruder));
-      #endif
+      LOGICAL_AXIS_CODE(
+        LIMIT_ACCEL_LONG(E_AXIS, E_INDEX_N(extruder)),
+        LIMIT_ACCEL_LONG(A_AXIS, 0),
+        LIMIT_ACCEL_LONG(B_AXIS, 0),
+        LIMIT_ACCEL_LONG(C_AXIS, 0),
+        LIMIT_ACCEL_LONG(I_AXIS, 0),
+        LIMIT_ACCEL_LONG(J_AXIS, 0),
+        LIMIT_ACCEL_LONG(K_AXIS, 0)
+      );
     }
     else {
-      LIMIT_ACCEL_FLOAT(A_AXIS, 0);
-      LIMIT_ACCEL_FLOAT(B_AXIS, 0);
-      LIMIT_ACCEL_FLOAT(C_AXIS, 0);
-      #if HAS_EXTRUDERS
-        LIMIT_ACCEL_FLOAT(E_AXIS, E_INDEX_N(extruder));
-      #endif
+      LOGICAL_AXIS_CODE(
+        LIMIT_ACCEL_FLOAT(E_AXIS, E_INDEX_N(extruder)),
+        LIMIT_ACCEL_FLOAT(A_AXIS, 0),
+        LIMIT_ACCEL_FLOAT(B_AXIS, 0),
+        LIMIT_ACCEL_FLOAT(C_AXIS, 0),
+        LIMIT_ACCEL_FLOAT(I_AXIS, 0),
+        LIMIT_ACCEL_FLOAT(J_AXIS, 0),
+        LIMIT_ACCEL_FLOAT(K_AXIS, 0)
+      );
     }
   }
   block->acceleration_steps_per_s2 = accel;

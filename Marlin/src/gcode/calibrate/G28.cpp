@@ -542,8 +542,8 @@ void GcodeSuite::G28() {
     static constexpr AxisEnum L64XX_axis_xref[MAX_L64XX] = {
       LINEAR_AXIS_LIST(X_AXIS, Y_AXIS, Z_AXIS, I_AXIS, J_AXIS, K_AXIS),
       X_AXIS, Y_AXIS, Z_AXIS, Z_AXIS, Z_AXIS, Z_AXIS,
-      E_AXIS, E_AXIS, E_AXIS, E_AXIS, E_AXIS, E_AXIS, E_AXIS, E_AXIS
-    }; // TODO: Add support for LINEAR_AXES >= 4
+      LIST_N(E_STEPPERS, E_AXIS, E_AXIS, E_AXIS, E_AXIS, E_AXIS, E_AXIS, E_AXIS, E_AXIS)
+    };
     for (uint8_t j = 1; j <= L64XX::chain[0]; j++) {
       const uint8_t cv = L64XX::chain[j];
       L64xxManager.set_param((L64XX_axis_t)cv, L6470_ABS_POS, stepper.position(L64XX_axis_xref[cv]));
