@@ -542,7 +542,7 @@ void GcodeSuite::G28() {
     #define _EN_ITEM(N) , E_AXIS
     static constexpr AxisEnum L64XX_axis_xref[MAX_L64XX] = {
       LINEAR_AXIS_LIST(X_AXIS, Y_AXIS, Z_AXIS, I_AXIS, J_AXIS, K_AXIS),
-      X_AXIS, Y_AXIS, Z_AXIS, Z_AXIS, Z_AXIS, Z_AXIS
+      X_AXIS, Y_AXIS, Z_AXIS, Z_AXIS, Z_AXIS
       REPEAT(E_STEPPERS, _EN_ITEM)
     };
     #undef _EN_ITEM
