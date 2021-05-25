@@ -370,26 +370,26 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
     #endif
     #if LINEAR_AXES >= 4
       #if ENABLED(CALIBRATION_MEASURE_IMIN)
-        SERIAL_ECHOLNPAIR("  Imin: ", m.obj_side[IMINIMUM]);
+        SERIAL_ECHOLNPAIR("  " STR_I_MIN ": ", m.obj_side[IMINIMUM]);
       #endif
       #if ENABLED(CALIBRATION_MEASURE_IMAX)
-        SERIAL_ECHOLNPAIR("  Imax: ", m.obj_side[IMAXIMUM]);
+        SERIAL_ECHOLNPAIR("  " STR_I_MAX ": ", m.obj_side[IMAXIMUM]);
       #endif
     #endif
     #if LINEAR_AXES >= 5
       #if ENABLED(CALIBRATION_MEASURE_JMIN)
-        SERIAL_ECHOLNPAIR("  Jmin: ", m.obj_side[JMINIMUM]);
+        SERIAL_ECHOLNPAIR("  " STR_J_MIN ": ", m.obj_side[JMINIMUM]);
       #endif
       #if ENABLED(CALIBRATION_MEASURE_JMAX)
-        SERIAL_ECHOLNPAIR("  Jmax: ", m.obj_side[JMAXIMUM]);
+        SERIAL_ECHOLNPAIR("  " STR_J_MAX ": ", m.obj_side[JMAXIMUM]);
       #endif
     #endif
     #if LINEAR_AXES >= 6
       #if ENABLED(CALIBRATION_MEASURE_KMIN)
-        SERIAL_ECHOLNPAIR("  Kmin: ", m.obj_side[KMINIMUM]);
+        SERIAL_ECHOLNPAIR("  " STR_K_MIN ": ", m.obj_side[KMINIMUM]);
       #endif
       #if ENABLED(CALIBRATION_MEASURE_KMAX)
-        SERIAL_ECHOLNPAIR("  Kmax: ", m.obj_side[KMAXIMUM]);
+        SERIAL_ECHOLNPAIR("  " STR_K_MAX ": ", m.obj_side[KMAXIMUM]);
       #endif
     #endif
     SERIAL_EOL();
@@ -439,26 +439,26 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
     #endif
     #if LINEAR_AXES >= 4
       #if ENABLED(CALIBRATION_MEASURE_IMIN)
-        SERIAL_ECHOLNPAIR("  " AXIS4_STR "min: ", m.backlash[IMINIMUM]);
+        SERIAL_ECHOLNPAIR("  " STR_I_MIN ": ", m.backlash[IMINIMUM]);
       #endif
       #if ENABLED(CALIBRATION_MEASURE_IMAX)
-        SERIAL_ECHOLNPAIR("  " AXIS4_STR "max: ", m.backlash[IMAXIMUM]);
+        SERIAL_ECHOLNPAIR("  " STR_I_MAX ": ", m.backlash[IMAXIMUM]);
       #endif
     #endif
     #if LINEAR_AXES >= 5
       #if ENABLED(CALIBRATION_MEASURE_JMIN)
-        SERIAL_ECHOLNPAIR("  " AXIS5_STR "min: ", m.backlash[JMINIMUM]);
+        SERIAL_ECHOLNPAIR("  " STR_J_MIN ": ", m.backlash[JMINIMUM]);
       #endif
       #if ENABLED(CALIBRATION_MEASURE_JMAX)
-        SERIAL_ECHOLNPAIR("  " AXIS5_STR "max: ", m.backlash[JMAXIMUM]);
+        SERIAL_ECHOLNPAIR("  " STR_J_MAX ": ", m.backlash[JMAXIMUM]);
       #endif
     #endif
     #if LINEAR_AXES >= 6
       #if ENABLED(CALIBRATION_MEASURE_KMIN)
-        SERIAL_ECHOLNPAIR("  " AXIS6_STR "min: ", m.backlash[KMINIMUM]);
+        SERIAL_ECHOLNPAIR("  " STR_K_MIN ": ", m.backlash[KMINIMUM]);
       #endif
       #if ENABLED(CALIBRATION_MEASURE_KMAX)
-        SERIAL_ECHOLNPAIR("  " AXIS6_STR "max: ", m.backlash[KMAXIMUM]);
+        SERIAL_ECHOLNPAIR("  " STR_K_MAX ": ", m.backlash[KMAXIMUM]);
       #endif
     #endif
     SERIAL_EOL();
