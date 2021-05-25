@@ -1890,6 +1890,65 @@
   #if defined(Z4_STALL_SENSITIVITY) && AXIS_HAS_STALLGUARD(Z4)
     #define Z4_SENSORLESS 1
   #endif
+
+  #if AXIS_HAS_STEALTHCHOP(X)
+    #define X_HAS_STEALTHCHOP 1
+  #endif
+  #if AXIS_HAS_STEALTHCHOP(X2)
+    #define X2_HAS_STEALTHCHOP 1
+  #endif
+  #if AXIS_HAS_STEALTHCHOP(Y)
+    #define Y_HAS_STEALTHCHOP 1
+  #endif
+  #if AXIS_HAS_STEALTHCHOP(Y2)
+    #define Y2_HAS_STEALTHCHOP 1
+  #endif
+  #if AXIS_HAS_STEALTHCHOP(Z)
+    #define Z_HAS_STEALTHCHOP 1
+  #endif
+  #if AXIS_HAS_STEALTHCHOP(Z2)
+    #define Z2_HAS_STEALTHCHOP 1
+  #endif
+  #if AXIS_HAS_STEALTHCHOP(Z3)
+    #define Z3_HAS_STEALTHCHOP 1
+  #endif
+  #if AXIS_HAS_STEALTHCHOP(Z4)
+    #define Z4_HAS_STEALTHCHOP 1
+  #endif
+  #if AXIS_HAS_STEALTHCHOP(I)
+    #define I_HAS_STEALTHCHOP 1
+  #endif
+  #if AXIS_HAS_STEALTHCHOP(J)
+    #define J_HAS_STEALTHCHOP 1
+  #endif
+  #if AXIS_HAS_STEALTHCHOP(K)
+    #define K_HAS_STEALTHCHOP 1
+  #endif
+  #if E_STEPPERS > 0 && AXIS_HAS_STEALTHCHOP(E0)
+    #define E0_HAS_STEALTHCHOP 1
+  #endif
+  #if E_STEPPERS > 1 && AXIS_HAS_STEALTHCHOP(E1)
+    #define E1_HAS_STEALTHCHOP 1
+  #endif
+  #if E_STEPPERS > 2 && AXIS_HAS_STEALTHCHOP(E2)
+    #define E2_HAS_STEALTHCHOP 1
+  #endif
+  #if E_STEPPERS > 3 && AXIS_HAS_STEALTHCHOP(E3)
+    #define E3_HAS_STEALTHCHOP 1
+  #endif
+  #if E_STEPPERS > 4 && AXIS_HAS_STEALTHCHOP(E4)
+    #define E4_HAS_STEALTHCHOP 1
+  #endif
+  #if E_STEPPERS > 5 && AXIS_HAS_STEALTHCHOP(E5)
+    #define E5_HAS_STEALTHCHOP 1
+  #endif
+  #if E_STEPPERS > 6 && AXIS_HAS_STEALTHCHOP(E6)
+    #define E6_HAS_STEALTHCHOP 1
+  #endif
+  #if E_STEPPERS > 7 && AXIS_HAS_STEALTHCHOP(E7)
+    #define E7_HAS_STEALTHCHOP 1
+  #endif
+
   #if ENABLED(SPI_ENDSTOPS)
     #define X_SPI_SENSORLESS X_SENSORLESS
     #define Y_SPI_SENSORLESS Y_SENSORLESS

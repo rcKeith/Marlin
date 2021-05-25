@@ -241,141 +241,69 @@
       report = false;
       switch (i) {
         case X_AXIS:
-          #if AXIS_HAS_STEALTHCHOP(X)
-            if (index < 2) TMC_SET_PWMTHRS(X,X);
-          #endif
-          #if AXIS_HAS_STEALTHCHOP(X2)
-            if (!(index & 1)) TMC_SET_PWMTHRS(X,X2);
-          #endif
+          TERN_(X_HAS_STEALTHCHOP,  if (index < 2) TMC_SET_PWMTHRS(X,X));
+          TERN_(X2_HAS_STEALTHCHOP, if (!(index & 1)) TMC_SET_PWMTHRS(X,X2));
           break;
         case Y_AXIS:
-          #if AXIS_HAS_STEALTHCHOP(Y)
-            if (index < 2) TMC_SET_PWMTHRS(Y,Y);
-          #endif
-          #if AXIS_HAS_STEALTHCHOP(Y2)
-            if (!(index & 1)) TMC_SET_PWMTHRS(Y,Y2);
-          #endif
+          TERN_(Y_HAS_STEALTHCHOP,  if (index < 2) TMC_SET_PWMTHRS(Y,Y));
+          TERN_(Y2_HAS_STEALTHCHOP, if (!(index & 1)) TMC_SET_PWMTHRS(Y,Y2));
           break;
 
-        #if AXIS_HAS_STEALTHCHOP(I)
+        #if I_HAS_STEALTHCHOP
           case I_AXIS: TMC_SET_PWMTHRS(I,I); break;
         #endif
-        #if AXIS_HAS_STEALTHCHOP(J)
+        #if J_HAS_STEALTHCHOP
           case J_AXIS: TMC_SET_PWMTHRS(J,J); break;
         #endif
-        #if AXIS_HAS_STEALTHCHOP(K)
+        #if K_HAS_STEALTHCHOP
           case K_AXIS: TMC_SET_PWMTHRS(K,K); break;
         #endif
 
         case Z_AXIS:
-          #if AXIS_HAS_STEALTHCHOP(Z)
-            if (index < 2) TMC_SET_PWMTHRS(Z,Z);
-          #endif
-          #if AXIS_HAS_STEALTHCHOP(Z2)
-            if (index == 0 || index == 2) TMC_SET_PWMTHRS(Z,Z2);
-          #endif
-          #if AXIS_HAS_STEALTHCHOP(Z3)
-            if (index == 0 || index == 3) TMC_SET_PWMTHRS(Z,Z3);
-          #endif
-          #if AXIS_HAS_STEALTHCHOP(Z4)
-            if (index == 0 || index == 4) TMC_SET_PWMTHRS(Z,Z4);
-          #endif
+          TERN_(Z_HAS_STEALTCHOP, if (index < 2) TMC_SET_PWMTHRS(Z,Z));
+          TERN_(Z2_HAS_STEALTCHOP, if (index == 0 || index == 2) TMC_SET_PWMTHRS(Z,Z2));
+          TERN_(Z3_HAS_STEALTCHOP, if (index == 0 || index == 3) TMC_SET_PWMTHRS(Z,Z3));
+          TERN_(Z4_HAS_STEALTCHOP, if (index == 0 || index == 4) TMC_SET_PWMTHRS(Z,Z4));
           break;
         case E_AXIS: {
           #if E_STEPPERS
             const int8_t target_extruder = get_target_extruder_from_command();
             if (target_extruder < 0) return;
-            switch (target_extruder) {
-              #if AXIS_HAS_STEALTHCHOP(E0)
-                case 0: TMC_SET_PWMTHRS_E(0); break;
-              #endif
-              #if E_STEPPERS > 1 && AXIS_HAS_STEALTHCHOP(E1)
-                case 1: TMC_SET_PWMTHRS_E(1); break;
-              #endif
-              #if E_STEPPERS > 2 && AXIS_HAS_STEALTHCHOP(E2)
-                case 2: TMC_SET_PWMTHRS_E(2); break;
-              #endif
-              #if E_STEPPERS > 3 && AXIS_HAS_STEALTHCHOP(E3)
-                case 3: TMC_SET_PWMTHRS_E(3); break;
-              #endif
-              #if E_STEPPERS > 4 && AXIS_HAS_STEALTHCHOP(E4)
-                case 4: TMC_SET_PWMTHRS_E(4); break;
-              #endif
-              #if E_STEPPERS > 5 && AXIS_HAS_STEALTHCHOP(E5)
-                case 5: TMC_SET_PWMTHRS_E(5); break;
-              #endif
-              #if E_STEPPERS > 6 && AXIS_HAS_STEALTHCHOP(E6)
-                case 6: TMC_SET_PWMTHRS_E(6); break;
-              #endif
-              #if E_STEPPERS > 7 && AXIS_HAS_STEALTHCHOP(E7)
-                case 7: TMC_SET_PWMTHRS_E(7); break;
-              #endif
-            }
+            TERN_(E0_HAS_STEALTHCHOP, else if (target_extruder == 0) TMC_SET_PWMTHRS_E(0));
+            TERN_(E1_HAS_STEALTHCHOP, else if (target_extruder == 1) TMC_SET_PWMTHRS_E(1));
+            TERN_(E2_HAS_STEALTHCHOP, else if (target_extruder == 2) TMC_SET_PWMTHRS_E(2));
+            TERN_(E3_HAS_STEALTHCHOP, else if (target_extruder == 3) TMC_SET_PWMTHRS_E(3));
+            TERN_(E4_HAS_STEALTHCHOP, else if (target_extruder == 4) TMC_SET_PWMTHRS_E(4));
+            TERN_(E5_HAS_STEALTHCHOP, else if (target_extruder == 5) TMC_SET_PWMTHRS_E(5));
+            TERN_(E6_HAS_STEALTHCHOP, else if (target_extruder == 6) TMC_SET_PWMTHRS_E(6));
+            TERN_(E7_HAS_STEALTHCHOP, else if (target_extruder == 7) TMC_SET_PWMTHRS_E(7));
           #endif // E_STEPPERS
         } break;
       }
     }
 
     if (report) {
-      #if AXIS_HAS_STEALTHCHOP(X)
-        TMC_SAY_PWMTHRS(X,X);
-      #endif
-      #if AXIS_HAS_STEALTHCHOP(X2)
-        TMC_SAY_PWMTHRS(X,X2);
-      #endif
-      #if AXIS_HAS_STEALTHCHOP(Y)
-        TMC_SAY_PWMTHRS(Y,Y);
-      #endif
-      #if AXIS_HAS_STEALTHCHOP(Y2)
-        TMC_SAY_PWMTHRS(Y,Y2);
-      #endif
-      #if AXIS_HAS_STEALTHCHOP(Z)
-        TMC_SAY_PWMTHRS(Z,Z);
-      #endif
-      #if AXIS_HAS_STEALTHCHOP(Z2)
-        TMC_SAY_PWMTHRS(Z,Z2);
-      #endif
-      #if AXIS_HAS_STEALTHCHOP(Z3)
-        TMC_SAY_PWMTHRS(Z,Z3);
-      #endif
-      #if AXIS_HAS_STEALTHCHOP(Z4)
-        TMC_SAY_PWMTHRS(Z,Z4);
-      #endif
+      TERN_( X_HAS_STEALTHCHOP, TMC_SAY_PWMTHRS(X,X));
+      TERN_(X2_HAS_STEALTHCHOP, TMC_SAY_PWMTHRS(X,X2));
+      TERN_( Y_HAS_STEALTHCHOP, TMC_SAY_PWMTHRS(Y,Y));
+      TERN_(Y2_HAS_STEALTHCHOP, TMC_SAY_PWMTHRS(Y,Y2));
+      TERN_( Z_HAS_STEALTHCHOP, TMC_SAY_PWMTHRS(Z,Z));
+      TERN_(Z2_HAS_STEALTHCHOP, TMC_SAY_PWMTHRS(Z,Z2));
+      TERN_(Z3_HAS_STEALTHCHOP, TMC_SAY_PWMTHRS(Z,Z3));
+      TERN_(Z4_HAS_STEALTHCHOP, TMC_SAY_PWMTHRS(Z,Z4));
 
-      #if AXIS_HAS_STEALTHCHOP(I)
-        TMC_SAY_PWMTHRS(I,I);
-      #endif
-      #if AXIS_HAS_STEALTHCHOP(J)
-        TMC_SAY_PWMTHRS(J,J);
-      #endif
-      #if AXIS_HAS_STEALTHCHOP(K)
-        TMC_SAY_PWMTHRS(K,K);
-      #endif
+      TERN_( I_HAS_STEALTHCHOP, TMC_SAY_PWMTHRS(I,I));
+      TERN_( J_HAS_STEALTHCHOP, TMC_SAY_PWMTHRS(J,J));
+      TERN_( K_HAS_STEALTHCHOP, TMC_SAY_PWMTHRS(K,K));
 
-      #if E_STEPPERS && AXIS_HAS_STEALTHCHOP(E0)
-        TMC_SAY_PWMTHRS_E(0);
-      #endif
-      #if E_STEPPERS > 1 && AXIS_HAS_STEALTHCHOP(E1)
-        TMC_SAY_PWMTHRS_E(1);
-      #endif
-      #if E_STEPPERS > 2 && AXIS_HAS_STEALTHCHOP(E2)
-        TMC_SAY_PWMTHRS_E(2);
-      #endif
-      #if E_STEPPERS > 3 && AXIS_HAS_STEALTHCHOP(E3)
-        TMC_SAY_PWMTHRS_E(3);
-      #endif
-      #if E_STEPPERS > 4 && AXIS_HAS_STEALTHCHOP(E4)
-        TMC_SAY_PWMTHRS_E(4);
-      #endif
-      #if E_STEPPERS > 5 && AXIS_HAS_STEALTHCHOP(E5)
-        TMC_SAY_PWMTHRS_E(5);
-      #endif
-      #if E_STEPPERS > 6 && AXIS_HAS_STEALTHCHOP(E6)
-        TMC_SAY_PWMTHRS_E(6);
-      #endif
-      #if E_STEPPERS > 7 && AXIS_HAS_STEALTHCHOP(E7)
-        TMC_SAY_PWMTHRS_E(7);
-      #endif
+      TERN_(E0_HAS_STEALTHCHOP, TMC_SAY_PWMTHRS_E(0));
+      TERN_(E1_HAS_STEALTHCHOP, TMC_SAY_PWMTHRS_E(1));
+      TERN_(E2_HAS_STEALTHCHOP, TMC_SAY_PWMTHRS_E(2));
+      TERN_(E3_HAS_STEALTHCHOP, TMC_SAY_PWMTHRS_E(3));
+      TERN_(E4_HAS_STEALTHCHOP, TMC_SAY_PWMTHRS_E(4));
+      TERN_(E5_HAS_STEALTHCHOP, TMC_SAY_PWMTHRS_E(5));
+      TERN_(E6_HAS_STEALTHCHOP, TMC_SAY_PWMTHRS_E(6));
+      TERN_(E7_HAS_STEALTHCHOP, TMC_SAY_PWMTHRS_E(7));
     }
   }
 #endif // HYBRID_THRESHOLD
