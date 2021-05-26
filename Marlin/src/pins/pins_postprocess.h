@@ -402,40 +402,44 @@
   #define X_STOP_PIN X_MAX_PIN
 #endif
 
-#ifdef Y_STOP_PIN
-  #if Y_HOME_TO_MIN
-    #define Y_MIN_PIN Y_STOP_PIN
-    #ifndef Y_MAX_PIN
-      #define Y_MAX_PIN -1
+#if LINEAR_AXES >= XY
+  #ifdef Y_STOP_PIN
+    #if Y_HOME_TO_MIN
+      #define Y_MIN_PIN Y_STOP_PIN
+      #ifndef Y_MAX_PIN
+        #define Y_MAX_PIN -1
+      #endif
+    #else
+      #define Y_MAX_PIN Y_STOP_PIN
+      #ifndef Y_MIN_PIN
+        #define Y_MIN_PIN -1
+      #endif
     #endif
+  #elif Y_HOME_TO_MIN
+    #define Y_STOP_PIN Y_MIN_PIN
   #else
-    #define Y_MAX_PIN Y_STOP_PIN
-    #ifndef Y_MIN_PIN
-      #define Y_MIN_PIN -1
-    #endif
+    #define Y_STOP_PIN Y_MAX_PIN
   #endif
-#elif Y_HOME_TO_MIN
-  #define Y_STOP_PIN Y_MIN_PIN
-#else
-  #define Y_STOP_PIN Y_MAX_PIN
 #endif
 
-#ifdef Z_STOP_PIN
-  #if Z_HOME_TO_MIN
-    #define Z_MIN_PIN Z_STOP_PIN
-    #ifndef Z_MAX_PIN
-      #define Z_MAX_PIN -1
+#if LINEAR_AXES >= XYZ
+  #ifdef Z_STOP_PIN
+    #if Z_HOME_TO_MIN
+      #define Z_MIN_PIN Z_STOP_PIN
+      #ifndef Z_MAX_PIN
+        #define Z_MAX_PIN -1
+      #endif
+    #else
+      #define Z_MAX_PIN Z_STOP_PIN
+      #ifndef Z_MIN_PIN
+        #define Z_MIN_PIN -1
+      #endif
     #endif
+  #elif Z_HOME_TO_MIN
+    #define Z_STOP_PIN Z_MIN_PIN
   #else
-    #define Z_MAX_PIN Z_STOP_PIN
-    #ifndef Z_MIN_PIN
-      #define Z_MIN_PIN -1
-    #endif
+    #define Z_STOP_PIN Z_MAX_PIN
   #endif
-#elif Z_HOME_TO_MIN
-  #define Z_STOP_PIN Z_MIN_PIN
-#else
-  #define Z_STOP_PIN Z_MAX_PIN
 #endif
 
 #if LINEAR_AXES >= 4
@@ -451,10 +455,6 @@
 #else
   #undef I_MIN_PIN
   #undef I_MAX_PIN
-  #undef J_MIN_PIN
-  #undef J_MAX_PIN
-  #undef K_MIN_PIN
-  #undef K_MAX_PIN
 #endif
 
 #if LINEAR_AXES >= 5
@@ -467,6 +467,9 @@
       #define J_MAX_PIN J_STOP_PIN
     #endif
   #endif
+#else
+  #undef J_MIN_PIN
+  #undef J_MAX_PIN
 #endif
 
 #if LINEAR_AXES >= 6
@@ -479,6 +482,9 @@
       #define K_MAX_PIN K_STOP_PIN
     #endif
   #endif
+#else
+  #undef K_MIN_PIN
+  #undef K_MAX_PIN
 #endif
 
 //

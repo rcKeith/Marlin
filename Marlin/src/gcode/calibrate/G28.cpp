@@ -323,49 +323,33 @@ void GcodeSuite::G28() {
 
     #define _UNSAFE(A) (homeZ && TERN0(Z_SAFE_HOMING, axes_should_home(_BV(A##_AXIS))))
 
-    const bool homeZ = parser.seen_test('Z'),
-               LINEAR_AXIS_LIST(// Other axes should be homed before Z safe-homing
-                 needX = _UNSAFE(X),
-                 needY = _UNSAFE(Y),
-                 needZ = false, // UNUSED
-                 needI = _UNSAFE(I),
-                 needJ = _UNSAFE(J),
-                 needK = _UNSAFE(K)
+    const bool homeZ = TERN0(HAS_Z_AXIS, parser.seen_test('Z')),
+               LINEAR_AXIS_LIST(              // Other axes should be homed before Z safe-homing
+                 needX = _UNSAFE(X), needY = _UNSAFE(Y), needZ = false, // UNUSED
+                 needI = _UNSAFE(I), needJ = _UNSAFE(J), needK = _UNSAFE(K)
                ),
-               LINEAR_AXIS_LIST(// Home each axis if needed or flagged
+               LINEAR_AXIS_LIST(              // Home each axis if needed or flagged
                  homeX = needX || parser.seen_test('X'),
                  homeY = needY || parser.seen_test('Y'),
                  homeZZ = homeZ,
-                 homeI = needI || parser.seen_test(AXIS4_NAME),
-                 homeJ = needJ || parser.seen_test(AXIS5_NAME),
-                 homeK = needK || parser.seen_test(AXIS6_NAME),
+                 homeI = needI || parser.seen_test(AXIS4_NAME), homeJ = needJ || parser.seen_test(AXIS5_NAME), homeK = needK || parser.seen_test(AXIS6_NAME),
                ),
-               // Home-all if all or none are flagged
-               home_all = true LINEAR_AXIS_GANG(
-                 && homeX == homeX,
-                 && homeX == homeY,
-                 && homeX == homeZ,
-                 && homeX == homeI,
-                 && homeX == homeJ,
-                 && homeX == homeK
+               home_all = LINEAR_AXIS_GANG(   // Home-all if all or none are flagged
+                    homeX == homeX, && homeY == homeX, && homeZ == homeX,
+                 && homeI == homeX, && homeJ == homeX, && homeK == homeX
                ),
                LINEAR_AXIS_LIST(
-                 doX = home_all || homeX,
-                 doY = home_all || homeY,
-                 doZ = home_all || homeZ,
-                 doI = home_all || homeI,
-                 doJ = home_all || homeJ,
-                 doK = home_all || homeK
+                 doX = home_all || homeX, doY = home_all || homeY, doZ = home_all || homeZ,
+                 doI = home_all || homeI, doJ = home_all || homeJ, doK = home_all || homeK
                );
 
-    UNUSED(needZ);
-    UNUSED(homeZZ);
-
-    #if ENABLED(HOME_Z_FIRST)
-
-      if (doZ) homeaxis(Z_AXIS);
-
+    #if HAS_Z_AXIS
+      UNUSED(needZ); UNUSED(homeZZ);
+    #else
+      constexpr bool doZ = false;
     #endif
+
+    TERN_(HOME_Z_FIRST, if (doZ) homeaxis(Z_AXIS));
 
     const float z_homing_height = parser.seenval('R') ? parser.value_linear_units() : Z_HOMING_HEIGHT;
 
@@ -376,11 +360,7 @@ void GcodeSuite::G28() {
       TERN_(BLTOUCH, bltouch.init());
     }
 
-    #if ENABLED(QUICK_HOME)
-
-      if (doX && doY) quick_home_xy();
-
-    #endif
+    TERN_(QUICK_HOME, if (doX && doY) quick_home_xy());
 
     // Home Y (before X)
     if (ENABLED(HOME_Y_BEFORE_X) && (doY || TERN0(CODEPENDENT_XY_HOMING, doX)))
@@ -419,7 +399,7 @@ void GcodeSuite::G28() {
     TERN_(IMPROVE_HOMING_RELIABILITY, end_slow_homing(slow_homing));
 
     // Home Z last if homing towards the bed
-    #if DISABLED(HOME_Z_FIRST)
+    #if HAS_Z_AXIS && DISABLED(HOME_Z_FIRST)
       if (doZ) {
         #if EITHER(Z_MULTI_ENDSTOPS, Z_STEPPER_AUTO_ALIGN)
           stepper.set_all_z_lock(false);

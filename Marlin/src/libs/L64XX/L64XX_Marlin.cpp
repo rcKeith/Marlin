@@ -473,7 +473,7 @@ uint8_t L64XX_Marlin::get_user_input(uint8_t &driver_count, L64XX_axis_t axis_in
       }
     } break;
 
-    #if LINEAR_AXES >= 2
+    #if LINEAR_AXES >= XY
       case 'Y': {
         position_min = Y_center - displacement;
         position_max = Y_center + displacement;
@@ -485,7 +485,7 @@ uint8_t L64XX_Marlin::get_user_input(uint8_t &driver_count, L64XX_axis_t axis_in
       } break;
     #endif
 
-    #if LINEAR_AXES >= 3
+    #if LINEAR_AXES >= XYZ
       case 'Z': {
         position_min = Z_center - displacement;
         position_max = Z_center + displacement;

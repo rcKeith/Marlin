@@ -1618,56 +1618,64 @@
   #define HAS_Y2_MS_PINS 1
 #endif
 
-#if PIN_EXISTS(Z_ENABLE) || (ENABLED(SOFTWARE_DRIVER_ENABLE) && AXIS_IS_TMC(Z))
-  #define HAS_Z_ENABLE 1
-#endif
-#if PIN_EXISTS(Z_DIR)
-  #define HAS_Z_DIR 1
-#endif
-#if PIN_EXISTS(Z_STEP)
-  #define HAS_Z_STEP 1
-#endif
-#if PIN_EXISTS(Z_MS1)
-  #define HAS_Z_MS_PINS 1
-#endif
-
-#if PIN_EXISTS(Z2_ENABLE) || (ENABLED(SOFTWARE_DRIVER_ENABLE) && AXIS_IS_TMC(Z2))
-  #define HAS_Z2_ENABLE 1
-#endif
-#if PIN_EXISTS(Z2_DIR)
-  #define HAS_Z2_DIR 1
-#endif
-#if PIN_EXISTS(Z2_STEP)
-  #define HAS_Z2_STEP 1
-#endif
-#if PIN_EXISTS(Z2_MS1)
-  #define HAS_Z2_MS_PINS 1
+#if LINEAR_AXES >= XYZ
+  #if PIN_EXISTS(Z_ENABLE) || (ENABLED(SOFTWARE_DRIVER_ENABLE) && AXIS_IS_TMC(Z))
+    #define HAS_Z_ENABLE 1
+  #endif
+  #if PIN_EXISTS(Z_DIR)
+    #define HAS_Z_DIR 1
+  #endif
+  #if PIN_EXISTS(Z_STEP)
+    #define HAS_Z_STEP 1
+  #endif
+  #if PIN_EXISTS(Z_MS1)
+    #define HAS_Z_MS_PINS 1
+  #endif
 #endif
 
-#if PIN_EXISTS(Z3_ENABLE) || (ENABLED(SOFTWARE_DRIVER_ENABLE) && AXIS_IS_TMC(Z3))
-  #define HAS_Z3_ENABLE 1
-#endif
-#if PIN_EXISTS(Z3_DIR)
-  #define HAS_Z3_DIR 1
-#endif
-#if PIN_EXISTS(Z3_STEP)
-  #define HAS_Z3_STEP 1
-#endif
-#if PIN_EXISTS(Z3_MS1)
-  #define HAS_Z3_MS_PINS 1
+#if NUM_Z_STEPPER_DRIVERS >= 2
+  #if PIN_EXISTS(Z2_ENABLE) || (ENABLED(SOFTWARE_DRIVER_ENABLE) && AXIS_IS_TMC(Z2))
+    #define HAS_Z2_ENABLE 1
+  #endif
+  #if PIN_EXISTS(Z2_DIR)
+    #define HAS_Z2_DIR 1
+  #endif
+  #if PIN_EXISTS(Z2_STEP)
+    #define HAS_Z2_STEP 1
+  #endif
+  #if PIN_EXISTS(Z2_MS1)
+    #define HAS_Z2_MS_PINS 1
+  #endif
 #endif
 
-#if PIN_EXISTS(Z4_ENABLE) || (ENABLED(SOFTWARE_DRIVER_ENABLE) && AXIS_IS_TMC(Z4))
-  #define HAS_Z4_ENABLE 1
+#if NUM_Z_STEPPER_DRIVERS >= 3
+  #if PIN_EXISTS(Z3_ENABLE) || (ENABLED(SOFTWARE_DRIVER_ENABLE) && AXIS_IS_TMC(Z3))
+    #define HAS_Z3_ENABLE 1
+  #endif
+  #if PIN_EXISTS(Z3_DIR)
+    #define HAS_Z3_DIR 1
+  #endif
+  #if PIN_EXISTS(Z3_STEP)
+    #define HAS_Z3_STEP 1
+  #endif
+  #if PIN_EXISTS(Z3_MS1)
+    #define HAS_Z3_MS_PINS 1
+  #endif
 #endif
-#if PIN_EXISTS(Z4_DIR)
-  #define HAS_Z4_DIR 1
-#endif
-#if PIN_EXISTS(Z4_STEP)
-  #define HAS_Z4_STEP 1
-#endif
-#if PIN_EXISTS(Z4_MS1)
-  #define HAS_Z4_MS_PINS 1
+
+#if NUM_Z_STEPPER_DRIVERS >= 4
+  #if PIN_EXISTS(Z4_ENABLE) || (ENABLED(SOFTWARE_DRIVER_ENABLE) && AXIS_IS_TMC(Z4))
+    #define HAS_Z4_ENABLE 1
+  #endif
+  #if PIN_EXISTS(Z4_DIR)
+    #define HAS_Z4_DIR 1
+  #endif
+  #if PIN_EXISTS(Z4_STEP)
+    #define HAS_Z4_STEP 1
+  #endif
+  #if PIN_EXISTS(Z4_MS1)
+    #define HAS_Z4_MS_PINS 1
+  #endif
 #endif
 
 #if LINEAR_AXES >= 4
@@ -2089,6 +2097,10 @@
   #define HAS_TMC_SW_SERIAL 1
 #endif
 
+#if !USE_SENSORLESS
+  #undef SENSORLESS_BACKOFF_MM
+#endif
+
 //
 // Set USING_HW_SERIALn flags for used Serial Ports
 //
@@ -2208,16 +2220,16 @@
 #if _HAS_STOP(X,MAX)
   #define HAS_X_MAX 1
 #endif
-#if _HAS_STOP(Y,MIN)
+#if LINEAR_AXES >= XY && _HAS_STOP(Y,MIN)
   #define HAS_Y_MIN 1
 #endif
-#if _HAS_STOP(Y,MAX)
+#if LINEAR_AXES >= XY && _HAS_STOP(Y,MAX)
   #define HAS_Y_MAX 1
 #endif
-#if _HAS_STOP(Z,MIN)
+#if BOTH(HAS_Z_AXIS, USE_ZMIN_PLUG) && _HAS_STOP(Z,MIN)
   #define HAS_Z_MIN 1
 #endif
-#if _HAS_STOP(Z,MAX)
+#if BOTH(HAS_Z_AXIS, USE_ZMAX_PLUG) && _HAS_STOP(Z,MAX)
   #define HAS_Z_MAX 1
 #endif
 #if _HAS_STOP(I,MIN)

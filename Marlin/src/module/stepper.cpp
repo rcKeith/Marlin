@@ -378,7 +378,7 @@ xyze_int8_t Stepper::count_direction{0};
   #else
     #define Y_APPLY_STEP(v,Q) do{ Y_STEP_WRITE(v); Y2_STEP_WRITE(v); }while(0)
   #endif
-#else
+#elif LINEAR_AXES >= XY
   #define Y_APPLY_DIR(v,Q) Y_DIR_WRITE(v)
   #define Y_APPLY_STEP(v,Q) Y_STEP_WRITE(v)
 #endif
@@ -415,7 +415,7 @@ xyze_int8_t Stepper::count_direction{0};
   #else
     #define Z_APPLY_STEP(v,Q) do{ Z_STEP_WRITE(v); Z2_STEP_WRITE(v); }while(0)
   #endif
-#else
+#elif HAS_Z_AXIS
   #define Z_APPLY_DIR(v,Q) Z_DIR_WRITE(v)
   #define Z_APPLY_STEP(v,Q) Z_STEP_WRITE(v)
 #endif
@@ -2762,7 +2762,6 @@ int32_t Stepper::position(const AxisEnum axis) {
 }
 
 // Set the current position in steps
-//TODO: Test for LINEAR_AXES >= 4
 void Stepper::set_position(LOGICAL_AXIS_LIST(
   const int32_t &e, const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &i, const int32_t &j, const int32_t &k
 )) {
@@ -2836,27 +2835,24 @@ int32_t Stepper::triggered_position(const AxisEnum axis) {
   return v;
 }
 
+#if ANY(CORE_IS_XZ, CORE_IS_YZ, DELTA)
+  #define USES_ABC 1
+#endif
+#if ANY(USES_ABC, MARKFORGED_XY, IS_SCARA)
+  #define USES_AB 1
+#endif
+
 void Stepper::report_a_position(const xyz_long_t &pos) {
-  #if ANY(CORE_IS_XY, CORE_IS_XZ, MARKFORGED_XY, DELTA, IS_SCARA)
-    SERIAL_ECHOPAIR(STR_COUNT_A, pos.x, " B:", pos.y);
-  #else
-    SERIAL_ECHOPAIR_P(PSTR(STR_COUNT_X), pos.x, SP_Y_LBL, pos.y);
-  #endif
-  #if ANY(CORE_IS_XZ, CORE_IS_YZ, DELTA)
-    SERIAL_ECHOLNPAIR(" C:", pos.z);
-  #else
-    SERIAL_ECHOPAIR_P(SP_Z_LBL, pos.z);
-  #endif
-  #if LINEAR_AXES >= 4
-    SERIAL_ECHOPAIR_P(SP_I_LBL, pos.i);
-  #endif
-  #if LINEAR_AXES >= 5
-    SERIAL_ECHOPAIR_P(SP_J_LBL, pos.j);
-  #endif
-  #if LINEAR_AXES >= 6
-    SERIAL_ECHOPAIR_P(SP_K_LBL, pos.k);
-  #endif
-  SERIAL_EOL();
+  SERIAL_ECHOLNPAIR_P(
+    LIST_N(DOUBLE(LINEAR_AXES),
+      TERN(USES_AB,  PSTR(STR_COUNT_A), PSTR(STR_COUNT_X)), pos.x,
+      TERN(USES_AB,  PSTR("B:"), SP_Y_LBL), pos.y,
+      TERN(USES_ABC, PSTR("C:"), SP_Z_LBL), pos.z,
+      SP_I_LBL, pos.i,
+      SP_J_LBL, pos.j,
+      SP_K_LBL, pos.k
+    )
+  );
 }
 
 void Stepper::report_positions() {

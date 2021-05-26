@@ -65,38 +65,42 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
 #define X_STEP_READ() bool(READ(X_STEP_PIN))
 
 // Y Stepper
-#ifndef Y_ENABLE_INIT
-  #define Y_ENABLE_INIT() SET_OUTPUT(Y_ENABLE_PIN)
-  #define Y_ENABLE_WRITE(STATE) WRITE(Y_ENABLE_PIN,STATE)
-  #define Y_ENABLE_READ() bool(READ(Y_ENABLE_PIN))
+#if LINEAR_AXES >= XY
+  #ifndef Y_ENABLE_INIT
+    #define Y_ENABLE_INIT() SET_OUTPUT(Y_ENABLE_PIN)
+    #define Y_ENABLE_WRITE(STATE) WRITE(Y_ENABLE_PIN,STATE)
+    #define Y_ENABLE_READ() bool(READ(Y_ENABLE_PIN))
+  #endif
+  #ifndef Y_DIR_INIT
+    #define Y_DIR_INIT() SET_OUTPUT(Y_DIR_PIN)
+    #define Y_DIR_WRITE(STATE) WRITE(Y_DIR_PIN,STATE)
+    #define Y_DIR_READ() bool(READ(Y_DIR_PIN))
+  #endif
+  #define Y_STEP_INIT() SET_OUTPUT(Y_STEP_PIN)
+  #ifndef Y_STEP_WRITE
+    #define Y_STEP_WRITE(STATE) WRITE(Y_STEP_PIN,STATE)
+  #endif
+  #define Y_STEP_READ() bool(READ(Y_STEP_PIN))
 #endif
-#ifndef Y_DIR_INIT
-  #define Y_DIR_INIT() SET_OUTPUT(Y_DIR_PIN)
-  #define Y_DIR_WRITE(STATE) WRITE(Y_DIR_PIN,STATE)
-  #define Y_DIR_READ() bool(READ(Y_DIR_PIN))
-#endif
-#define Y_STEP_INIT() SET_OUTPUT(Y_STEP_PIN)
-#ifndef Y_STEP_WRITE
-  #define Y_STEP_WRITE(STATE) WRITE(Y_STEP_PIN,STATE)
-#endif
-#define Y_STEP_READ() bool(READ(Y_STEP_PIN))
 
 // Z Stepper
-#ifndef Z_ENABLE_INIT
-  #define Z_ENABLE_INIT() SET_OUTPUT(Z_ENABLE_PIN)
-  #define Z_ENABLE_WRITE(STATE) WRITE(Z_ENABLE_PIN,STATE)
-  #define Z_ENABLE_READ() bool(READ(Z_ENABLE_PIN))
+#if LINEAR_AXES >= XYZ
+  #ifndef Z_ENABLE_INIT
+    #define Z_ENABLE_INIT() SET_OUTPUT(Z_ENABLE_PIN)
+    #define Z_ENABLE_WRITE(STATE) WRITE(Z_ENABLE_PIN,STATE)
+    #define Z_ENABLE_READ() bool(READ(Z_ENABLE_PIN))
+  #endif
+  #ifndef Z_DIR_INIT
+    #define Z_DIR_INIT() SET_OUTPUT(Z_DIR_PIN)
+    #define Z_DIR_WRITE(STATE) WRITE(Z_DIR_PIN,STATE)
+    #define Z_DIR_READ() bool(READ(Z_DIR_PIN))
+  #endif
+  #define Z_STEP_INIT() SET_OUTPUT(Z_STEP_PIN)
+  #ifndef Z_STEP_WRITE
+    #define Z_STEP_WRITE(STATE) WRITE(Z_STEP_PIN,STATE)
+  #endif
+  #define Z_STEP_READ() bool(READ(Z_STEP_PIN))
 #endif
-#ifndef Z_DIR_INIT
-  #define Z_DIR_INIT() SET_OUTPUT(Z_DIR_PIN)
-  #define Z_DIR_WRITE(STATE) WRITE(Z_DIR_PIN,STATE)
-  #define Z_DIR_READ() bool(READ(Z_DIR_PIN))
-#endif
-#define Z_STEP_INIT() SET_OUTPUT(Z_STEP_PIN)
-#ifndef Z_STEP_WRITE
-  #define Z_STEP_WRITE(STATE) WRITE(Z_STEP_PIN,STATE)
-#endif
-#define Z_STEP_READ() bool(READ(Z_STEP_PIN))
 
 // X2 Stepper
 #if HAS_X2_ENABLE
@@ -959,10 +963,22 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
 
 #define  ENABLE_AXIS_X() if (SHOULD_ENABLE(x))  {  ENABLE_STEPPER_X();  ENABLE_STEPPER_X2(); AFTER_CHANGE(x, true); }
 #define DISABLE_AXIS_X() if (SHOULD_DISABLE(x)) { DISABLE_STEPPER_X(); DISABLE_STEPPER_X2(); AFTER_CHANGE(x, false); set_axis_untrusted(X_AXIS); }
-#define  ENABLE_AXIS_Y() if (SHOULD_ENABLE(y))  {  ENABLE_STEPPER_Y();  ENABLE_STEPPER_Y2(); AFTER_CHANGE(y, true); }
-#define DISABLE_AXIS_Y() if (SHOULD_DISABLE(y)) { DISABLE_STEPPER_Y(); DISABLE_STEPPER_Y2(); AFTER_CHANGE(y, false); set_axis_untrusted(Y_AXIS); }
-#define  ENABLE_AXIS_Z() if (SHOULD_ENABLE(z))  {  ENABLE_STEPPER_Z();  ENABLE_STEPPER_Z2();  ENABLE_STEPPER_Z3();  ENABLE_STEPPER_Z4(); AFTER_CHANGE(z, true); }
-#define DISABLE_AXIS_Z() if (SHOULD_DISABLE(z)) { DISABLE_STEPPER_Z(); DISABLE_STEPPER_Z2(); DISABLE_STEPPER_Z3(); DISABLE_STEPPER_Z4(); AFTER_CHANGE(z, false); set_axis_untrusted(Z_AXIS); Z_RESET(); }
+
+#if LINEAR_AXES >= XY
+  #define  ENABLE_AXIS_Y() if (SHOULD_ENABLE(y))  {  ENABLE_STEPPER_Y();  ENABLE_STEPPER_Y2(); AFTER_CHANGE(y, true); }
+  #define DISABLE_AXIS_Y() if (SHOULD_DISABLE(y)) { DISABLE_STEPPER_Y(); DISABLE_STEPPER_Y2(); AFTER_CHANGE(y, false); set_axis_untrusted(Y_AXIS); }
+#else
+  #define  ENABLE_AXIS_Y() NOOP
+  #define DISABLE_AXIS_Y() NOOP
+#endif
+
+#if LINEAR_AXES >= XYZ
+  #define  ENABLE_AXIS_Z() if (SHOULD_ENABLE(z))  {  ENABLE_STEPPER_Z();  ENABLE_STEPPER_Z2();  ENABLE_STEPPER_Z3();  ENABLE_STEPPER_Z4(); AFTER_CHANGE(z, true); }
+  #define DISABLE_AXIS_Z() if (SHOULD_DISABLE(z)) { DISABLE_STEPPER_Z(); DISABLE_STEPPER_Z2(); DISABLE_STEPPER_Z3(); DISABLE_STEPPER_Z4(); AFTER_CHANGE(z, false); set_axis_untrusted(Z_AXIS); Z_RESET(); }
+#else
+  #define  ENABLE_AXIS_Z() NOOP
+  #define DISABLE_AXIS_Z() NOOP
+#endif
 
 #ifdef Z_IDLE_HEIGHT
   #define Z_RESET() do{ current_position.z = Z_IDLE_HEIGHT; sync_plan_position(); }while(0)

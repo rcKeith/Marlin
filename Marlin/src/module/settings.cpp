@@ -2515,10 +2515,10 @@ void MarlinSettings::reset() {
     #ifndef DEFAULT_XJERK
       #define DEFAULT_XJERK 0
     #endif
-    #ifndef DEFAULT_YJERK
+    #if LINEAR_AXES >= XY && !defined(DEFAULT_YJERK)
       #define DEFAULT_YJERK 0
     #endif
-    #ifndef DEFAULT_ZJERK
+    #if LINEAR_AXES >= XYZ && !defined(DEFAULT_ZJERK)
       #define DEFAULT_ZJERK 0
     #endif
     #if LINEAR_AXES >= 4 && !defined(DEFAULT_IJERK)
@@ -2533,7 +2533,7 @@ void MarlinSettings::reset() {
     planner.max_jerk.set(
       LINEAR_AXIS_LIST(DEFAULT_XJERK, DEFAULT_YJERK, DEFAULT_ZJERK, DEFAULT_IJERK, DEFAULT_JJERK, DEFAULT_KJERK)
     );
-    TERN_(HAS_CLASSIC_E_JERK, planner.max_jerk.e = DEFAULT_EJERK;);
+    TERN_(HAS_CLASSIC_E_JERK, planner.max_jerk.e = DEFAULT_EJERK);
   #endif
 
   #if HAS_JUNCTION_DEVIATION
@@ -3144,18 +3144,14 @@ void MarlinSettings::reset() {
         , PSTR(" J"), LINEAR_UNIT(planner.junction_deviation_mm)
       #endif
       #if HAS_CLASSIC_JERK
-        , SP_X_STR, LINEAR_UNIT(planner.max_jerk.x)
-        , SP_Y_STR, LINEAR_UNIT(planner.max_jerk.y)
-        , SP_Z_STR, LINEAR_UNIT(planner.max_jerk.z)
-        #if LINEAR_AXES >= 4
-          , SP_I_STR, LINEAR_UNIT(planner.max_jerk.i)
-        #endif
-        #if LINEAR_AXES >= 5
-          , SP_J_STR, LINEAR_UNIT(planner.max_jerk.j)
-        #endif
-        #if LINEAR_AXES >= 6
-          , SP_K_STR, LINEAR_UNIT(planner.max_jerk.k)
-        #endif
+        , LIST_N(DOUBLE(LINEAR_AXES),
+          SP_X_STR, LINEAR_UNIT(planner.max_jerk.x),
+          SP_Y_STR, LINEAR_UNIT(planner.max_jerk.y),
+          SP_Z_STR, LINEAR_UNIT(planner.max_jerk.z),
+          SP_I_STR, LINEAR_UNIT(planner.max_jerk.i),
+          SP_J_STR, LINEAR_UNIT(planner.max_jerk.j),
+          SP_K_STR, LINEAR_UNIT(planner.max_jerk.k)
+        )
         #if HAS_CLASSIC_E_JERK
           , SP_E_STR, LINEAR_UNIT(planner.max_jerk.e)
         #endif
@@ -3167,21 +3163,16 @@ void MarlinSettings::reset() {
       CONFIG_ECHO_START();
       SERIAL_ECHOLNPAIR_P(
         #if IS_CARTESIAN
-            PSTR("  M206 X"), LINEAR_UNIT(home_offset.x)
-          , SP_Y_STR, LINEAR_UNIT(home_offset.y)
-          , SP_Z_STR
+          LIST_N(LINEAR_AXES,
+            PSTR("  M206 X"), LINEAR_UNIT(home_offset.x),
+            SP_Y_STR, LINEAR_UNIT(home_offset.y),
+            SP_Z_STR, LINEAR_UNIT(home_offset.z),
+            SP_I_STR, LINEAR_UNIT(home_offset.i),
+            SP_J_STR, LINEAR_UNIT(home_offset.j),
+            SP_K_STR, LINEAR_UNIT(home_offset.k)
+          )
         #else
-          PSTR("  M206 Z")
-        #endif
-        , LINEAR_UNIT(home_offset.z)
-        #if LINEAR_AXES >= 4
-          , SP_I_STR, LINEAR_UNIT(home_offset.i)
-        #endif
-        #if LINEAR_AXES >= 5
-          , SP_J_STR, LINEAR_UNIT(home_offset.j)
-        #endif
-        #if LINEAR_AXES >= 6
-          , SP_K_STR, LINEAR_UNIT(home_offset.k)
+          PSTR("  M206 Z"), LINEAR_UNIT(home_offset.z)
         #endif
       );
     #endif

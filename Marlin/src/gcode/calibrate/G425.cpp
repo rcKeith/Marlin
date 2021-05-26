@@ -242,7 +242,7 @@ inline void probe_side(measurements_t &m, const float uncertainty, const side_t 
   park_above_object(m, uncertainty);
 
   switch (side) {
-    #if AXIS_CAN_CALIBRATE(Z)
+    #if HAS_Z_AXIS && AXIS_CAN_CALIBRATE(Z)
       case TOP: {
         const float measurement = measure(Z_AXIS, -1, true, &m.backlash[TOP], uncertainty);
         m.obj_center.z = measurement - dimensions.z / 2;
@@ -353,7 +353,7 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
 #if ENABLED(CALIBRATION_REPORTING)
   inline void report_measured_faces(const measurements_t &m) {
     SERIAL_ECHOLNPGM("Sides:");
-    #if AXIS_CAN_CALIBRATE(Z)
+    #if HAS_Z_AXIS && AXIS_CAN_CALIBRATE(Z)
       SERIAL_ECHOLNPAIR("  Top: ", m.obj_side[TOP]);
     #endif
     #if ENABLED(CALIBRATION_MEASURE_LEFT)
@@ -434,7 +434,7 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
         SERIAL_ECHOLNPAIR("  Back: ", m.backlash[BACK]);
       #endif
     #endif
-    #if AXIS_CAN_CALIBRATE(Z)
+    #if HAS_Z_AXIS && AXIS_CAN_CALIBRATE(Z)
       SERIAL_ECHOLNPAIR("  Top: ", m.backlash[TOP]);
     #endif
     #if LINEAR_AXES >= 4
@@ -474,7 +474,9 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
     #if HAS_Y_CENTER
       SERIAL_ECHOLNPAIR_P(SP_Y_STR, m.pos_error.y);
     #endif
-    if (AXIS_CAN_CALIBRATE(Z)) SERIAL_ECHOLNPAIR_P(SP_Z_STR, m.pos_error.z);
+    #if HAS_Z_AXIS && AXIS_CAN_CALIBRATE(Z)
+      SERIAL_ECHOLNPAIR_P(SP_Z_STR, m.pos_error.z);
+    #endif
     SERIAL_EOL();
   }
 
@@ -539,7 +541,7 @@ inline void calibrate_backlash(measurements_t &m, const float uncertainty) {
         backlash.distance_mm.y = m.backlash[BACK];
       #endif
 
-      if (AXIS_CAN_CALIBRATE(Z)) backlash.distance_mm.z = m.backlash[TOP];
+      TERN_(HAS_Z_AXIS, if (AXIS_CAN_CALIBRATE(Z)) backlash.distance_mm.z = m.backlash[TOP]);
 
       #if HAS_I_CENTER
         backlash.distance_mm.i = (m.backlash[IMINIMUM] + m.backlash[IMAXIMUM]) / 2;

@@ -1451,7 +1451,7 @@ void Planner::check_axes_activity() {
     float high = 0.0;
     for (uint8_t b = block_buffer_tail; b != block_buffer_head; b = next_block_index(b)) {
       block_t *block = &block_buffer[b];
-      if (block->steps.x || block->steps.y || block->steps.z) {
+      if (LINEAR_AXIS_GANG(block->steps.x, || block->steps.y, || block->steps.z, block->steps.i, || block->steps.j, || block->steps.k)) {
         const float se = (float)block->steps.e / block->step_event_count * SQRT(block->nominal_speed_sqr); // mm/sec;
         NOLESS(high, se);
       }
@@ -2874,50 +2874,45 @@ bool Planner::buffer_segment(
   /* <-- add a slash to enable
     SERIAL_ECHOPAIR("  buffer_segment FR:", fr_mm_s);
     #if IS_KINEMATIC
-      SERIAL_ECHOPAIR(" A:", a);
-      SERIAL_ECHOPAIR(" (", position.a);
-      SERIAL_ECHOPAIR("->", target.a);
-      SERIAL_ECHOPAIR(") B:", b);
+      SERIAL_ECHOPAIR(" A:", a, " (", position.a, "->", target.a, ") B:", b);
     #else
       SERIAL_ECHOPAIR_P(SP_X_LBL, a);
-      SERIAL_ECHOPAIR(" (", position.x);
-      SERIAL_ECHOPAIR("->", target.x);
+      SERIAL_ECHOPAIR(" (", position.x, "->", target.x);
       SERIAL_CHAR(')');
       SERIAL_ECHOPAIR_P(SP_Y_LBL, b);
     #endif
-    SERIAL_ECHOPAIR(" (", position.y);
-    SERIAL_ECHOPAIR("->", target.y);
-    #if ENABLED(DELTA)
-      SERIAL_ECHOPAIR(") C:", c);
-    #else
+    SERIAL_ECHOPAIR(" (", position.y, "->", target.y);
+    #if LINEAR_AXES >= ABC
+      #if ENABLED(DELTA)
+        SERIAL_ECHOPAIR(") C:", c);
+      #else
+        SERIAL_CHAR(')');
+        SERIAL_ECHOPAIR_P(SP_Z_LBL, c);
+      #endif
+      SERIAL_ECHOPAIR(" (", position.z, "->", target.z);
       SERIAL_CHAR(')');
-      SERIAL_ECHOPAIR_P(SP_Z_LBL, c);
     #endif
-    SERIAL_ECHOPAIR(" (", position.z);
-    SERIAL_ECHOPAIR("->", target.z);
-    SERIAL_CHAR(')');
     #if LINEAR_AXES >= 4
       SERIAL_ECHOPAIR_P(SP_I_LBL, i);
-      SERIAL_ECHOPAIR(" (", position.i);
-      SERIAL_ECHOPAIR("->", target.i); // FIXME (DerAndere): Introduce work-around for issue with wrong internal steps per mm and feedrate for I_AXIS
+      SERIAL_ECHOPAIR(" (", position.i, "->", target.i); // FIXME (DerAndere): Introduce work-around for issue with wrong internal steps per mm and feedrate for I_AXIS
       SERIAL_CHAR(')');
     #endif
     #if LINEAR_AXES >= 5
       SERIAL_ECHOPAIR_P(SP_J_LBL, j);
-      SERIAL_ECHOPAIR(" (", position.j);
-      SERIAL_ECHOPAIR("->", target.j);
+      SERIAL_ECHOPAIR(" (", position.j, "->", target.j);
       SERIAL_CHAR(')');
     #endif
     #if LINEAR_AXES >= 6
       SERIAL_ECHOPAIR_P(SP_K_LBL, k);
-      SERIAL_ECHOPAIR(" (", position.k);
-      SERIAL_ECHOPAIR("->", target.k);
+      SERIAL_ECHOPAIR(" (", position.k, "->", target.k);
       SERIAL_CHAR(')');
     #endif
-    SERIAL_ECHOPAIR_P(SP_E_LBL, e);
-    SERIAL_ECHOPAIR(" (", position.e);
-    SERIAL_ECHOPAIR("->", target.e);
-    SERIAL_ECHOLNPGM(")");
+    #if HAS_EXTRUDERS
+      SERIAL_ECHOPAIR_P(SP_E_LBL, e);
+      SERIAL_ECHOLNPAIR(" (", position.e, "->", target.e, ")");
+    #else
+      SERIAL_EOL();
+    #endif
   //*/
 
   // Queue the movement. Return 'false' if the move was not queued.
@@ -2940,20 +2935,18 @@ bool Planner::buffer_segment(
  * The target is cartesian. It's translated to
  * delta/scara if needed.
  *
- *  rx,ry,rz,e   - target position in mm or degrees
- *  fr_mm_s      - (target) speed of the move (mm/s)
- *  extruder     - target extruder
- *  millimeters  - the length of the movement, if known
- *  inv_duration - the reciprocal if the duration of the movement, if known (kinematic only if feeedrate scaling is enabled)
+ *  rx,ry,rz,...,e  - target position in mm or degrees
+ *  fr_mm_s         - (target) speed of the move (mm/s)
+ *  extruder        - target extruder
+ *  millimeters     - the length of the movement, if known
+ *  inv_duration    - the reciprocal if the duration of the movement, if known (kinematic only if feeedrate scaling is enabled)
  */
 bool Planner::buffer_line(
   LOGICAL_AXIS_LIST(const_float_t e,
                     const_float_t rx, const_float_t ry, const_float_t rz,
                     const_float_t ri, const_float_t rj, const_float_t rk)
   , const feedRate_t &fr_mm_s, const uint8_t extruder, const float millimeters
-  #if ENABLED(SCARA_FEEDRATE_SCALING)
-    , const_float_t inv_duration
-  #endif
+  OPTARG(SCARA_FEEDRATE_SCALING, const_float_t inv_duration)
 ) {
   xyze_pos_t machine = LOGICAL_AXIS_ARRAY(e, rx, ry, rz, ri, rj, rk);
   TERN_(HAS_POSITION_MODIFIERS, apply_modifiers(machine));
@@ -2961,17 +2954,19 @@ bool Planner::buffer_line(
   #if IS_KINEMATIC
 
     #if HAS_JUNCTION_DEVIATION
-      const xyze_pos_t cart_dist_mm = {
-        rx - position_cart.x, ry - position_cart.y,
-        rz - position_cart.z, e  - position_cart.e
-      };
+      const xyze_pos_t cart_dist_mm = LOGICAL_AXIS_ARRAY(
+        e  - position_cart.e,
+        rx - position_cart.x, ry - position_cart.y, rz - position_cart.z,
+        ri - position_cart.i, rj - position_cart.j, rj - position_cart.k
+      );
     #else
-      const xyz_pos_t cart_dist_mm = { rx - position_cart.x, ry - position_cart.y, rz - position_cart.z };
+      const xyz_pos_t cart_dist_mm = LINEAR_AXIS_ARRAY(
+        rx - position_cart.x, ry - position_cart.y, rz - position_cart.z,
+        ri - position_cart.i, rj - position_cart.j, rj - position_cart.k
+      );
     #endif
 
-    float mm = millimeters;
-    if (mm == 0.0)
-      mm = (cart_dist_mm.x != 0.0 || cart_dist_mm.y != 0.0) ? cart_dist_mm.magnitude() : ABS(cart_dist_mm.z);
+    const float mm = millimeters ?: (cart_dist_mm.x || cart_dist_mm.y) ? cart_dist_mm.magnitude() : TERN0(HAS_Z_AXIS, ABS(cart_dist_mm.z));
 
     // Cartesian XYZ to kinematic ABC, stored in global 'delta'
     inverse_kinematics(machine);
@@ -2985,12 +2980,7 @@ bool Planner::buffer_line(
     #else
       const feedRate_t feedrate = fr_mm_s;
     #endif
-    if (buffer_segment(delta.a, delta.b, delta.c, machine.e
-      #if HAS_JUNCTION_DEVIATION
-        , cart_dist_mm
-      #endif
-      , feedrate, extruder, mm
-    )) {
+    if (buffer_segment(delta.a, delta.b, delta.c, machine.e OPTARG(HAS_JUNCTION_DEVIATION, cart_dist_mm), feedrate, extruder, mm)) {
       position_cart.set(rx, ry, rz, e);
       return true;
     }

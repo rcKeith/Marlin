@@ -38,10 +38,10 @@
   #if M91x_USE(X) || M91x_USE(X2)
     #define M91x_SOME_X 1
   #endif
-  #if M91x_USE(Y) || M91x_USE(Y2)
+  #if LINEAR_AXES >= 2 && (M91x_USE(Y) || M91x_USE(Y2))
     #define M91x_SOME_Y 1
   #endif
-  #if M91x_USE(Z) || M91x_USE(Z2) || M91x_USE(Z3) || M91x_USE(Z4)
+  #if HAS_Z_AXIS && (M91x_USE(Z) || M91x_USE(Z2) || M91x_USE(Z3) || M91x_USE(Z4))
     #define M91x_SOME_Z 1
   #endif
   #if LINEAR_AXES >= 4 && M91x_USE(I)

@@ -26,6 +26,10 @@
  * Defines that depend on advanced configuration.
  */
 
+#ifndef AXIS_RELATIVE_MODES
+  #define AXIS_RELATIVE_MODES {}
+#endif
+
 #ifdef SWITCHING_NOZZLE_E1_SERVO_NR
   #define SWITCHING_NOZZLE_TWO_SERVOS 1
 #endif
@@ -493,7 +497,14 @@
     #if LINEAR_AXES < 4
       #undef STEALTHCHOP_I
       #if LINEAR_AXES < 3
+        #undef Z_IDLE_HEIGHT
         #undef STEALTHCHOP_Z
+        #undef Z_PROBE_SLED
+        #undef Z_SAFE_HOMING
+        #undef HOME_Z_FIRST
+        #undef HOMING_Z_WITH_PROBE
+        #undef ENABLE_LEVELING_FADE_HEIGHT
+        #undef NUM_Z_STEPPER_DRIVERS
         #if LINEAR_AXES < 2
           #undef STEALTHCHOP_Y
         #endif

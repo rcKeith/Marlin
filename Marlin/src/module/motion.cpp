@@ -344,20 +344,21 @@ void sync_plan_position() {
 void get_cartesian_from_steppers() {
   #if ENABLED(DELTA)
     forward_kinematics(planner.get_axis_positions_mm());
-  #else
-    #if IS_SCARA
-      forward_kinematics(
-          planner.get_axis_position_degrees(A_AXIS)
-        , planner.get_axis_position_degrees(B_AXIS)
-        #if ENABLED(AXEL_TPARA)
-          , planner.get_axis_position_degrees(C_AXIS)
-        #endif
-      );
-    #else
-      cartes.x = planner.get_axis_position_mm(X_AXIS);
-      cartes.y = planner.get_axis_position_mm(Y_AXIS);
-    #endif
+  #elif IS_SCARA
+    forward_kinematics(
+      planner.get_axis_position_degrees(A_AXIS), planner.get_axis_position_degrees(B_AXIS)
+      OPTARG(AXEL_TPARA, planner.get_axis_position_degrees(C_AXIS))
+    );
     cartes.z = planner.get_axis_position_mm(Z_AXIS);
+  #else
+    LINEAR_AXIS_CODE(
+      cartes.x = planner.get_axis_position_mm(X_AXIS),
+      cartes.y = planner.get_axis_position_mm(Y_AXIS),
+      cartes.z = planner.get_axis_position_mm(Z_AXIS),
+      cartes.i = planner.get_axis_position_mm(I_AXIS),
+      cartes.j = planner.get_axis_position_mm(J_AXIS),
+      cartes.k = planner.get_axis_position_mm(K_AXIS)
+    );
   #endif
 }
 
@@ -376,13 +377,9 @@ void set_current_from_steppers_for_axis(const AxisEnum axis) {
   get_cartesian_from_steppers();
   xyze_pos_t pos = cartes;
 
-  #if HAS_EXTRUDERS
-    pos.e = planner.get_axis_position_mm(E_AXIS);
-  #endif
+  TERN_(HAS_EXTRUDERS, pos.e = planner.get_axis_position_mm(E_AXIS));
 
-  #if HAS_POSITION_MODIFIERS
-    planner.unapply_modifiers(pos, true);
-  #endif
+  TERN_(HAS_POSITION_MODIFIERS, planner.unapply_modifiers(pos, true));
 
   if (axis == ALL_AXES_ENUM)
     current_position = pos;
@@ -474,8 +471,11 @@ void do_blocking_move_to(
   DEBUG_SECTION(log_move, "do_blocking_move_to", DEBUGGING(LEVELING));
   if (DEBUGGING(LEVELING)) DEBUG_XYZ("> ", LINEAR_AXIS_LIST(rx, ry, rz, ri, rj, rk));
 
-  const feedRate_t z_feedrate = fr_mm_s ?: homing_feedrate(Z_AXIS),
-                  xy_feedrate = fr_mm_s ?: feedRate_t(XY_PROBE_FEEDRATE_MM_S);
+  const feedRate_t xy_feedrate = fr_mm_s ?: feedRate_t(XY_PROBE_FEEDRATE_MM_S);
+
+  #if HAS_Z_AXIS
+    const feedRate_t z_feedrate = fr_mm_s ?: homing_feedrate(Z_AXIS);
+  #endif
 
   #if EITHER(DELTA, IS_SCARA)
     if (!position_is_reachable(rx, ry)) return;
@@ -536,20 +536,24 @@ void do_blocking_move_to(
 
   #else
 
-    // If Z needs to raise, do it before moving XY
-    if (current_position.z < rz) {
-      current_position.z = rz;
-      line_to_current_position(z_feedrate);
-    }
+    #if HAS_Z_AXIS
+      // If Z needs to raise, do it before moving XY
+      if (current_position.z < rz) {
+        current_position.z = rz;
+        line_to_current_position(z_feedrate);
+      }
+    #endif
 
     current_position.set(rx, ry);
     line_to_current_position(xy_feedrate);
 
-    // If Z needs to lower, do it after moving XY
-    if (current_position.z > rz) {
-      current_position.z = rz;
-      line_to_current_position(z_feedrate);
-    }
+    #if HAS_Z_AXIS
+      // If Z needs to lower, do it after moving XY
+      if (current_position.z > rz) {
+        current_position.z = rz;
+        line_to_current_position(z_feedrate);
+      }
+    #endif
 
   #endif
 
@@ -594,9 +598,12 @@ void do_blocking_move_to_y(const_float_t ry, const_feedRate_t fr_mm_s/*=0.0*/) {
     fr_mm_s
   );
 }
-void do_blocking_move_to_z(const_float_t rz, const_feedRate_t fr_mm_s/*=0.0*/) {
-  do_blocking_move_to_xy_z(current_position, rz, fr_mm_s);
-}
+
+#if HAS_Z_AXIS
+  void do_blocking_move_to_z(const_float_t rz, const_feedRate_t fr_mm_s/*=0.0*/) {
+    do_blocking_move_to_xy_z(current_position, rz, fr_mm_s);
+  }
+#endif
 
 #if LINEAR_AXES == 4
   void do_blocking_move_to_i(const_float_t ri, const_feedRate_t fr_mm_s/*=0.0*/) {
@@ -641,18 +648,19 @@ void do_blocking_move_to_xy(const xy_pos_t &raw, const_feedRate_t fr_mm_s/*=0.0f
   do_blocking_move_to_xy(raw.x, raw.y, fr_mm_s);
 }
 
-void do_blocking_move_to_xy_z(const xy_pos_t &raw, const_float_t z, const_feedRate_t fr_mm_s/*=0.0f*/) {
-  do_blocking_move_to(
-    LINEAR_AXIS_LIST(raw.x, raw.y, z, current_position.i, current_position.j, current_position.k),
-    fr_mm_s
-  );
-}
-
-void do_z_clearance(const_float_t zclear, const bool lower_allowed/*=false*/) {
-  float zdest = zclear;
-  if (!lower_allowed) NOLESS(zdest, current_position.z);
-  do_blocking_move_to_z(_MIN(zdest, Z_MAX_POS), TERN(HAS_BED_PROBE, z_probe_fast_mm_s, homing_feedrate(Z_AXIS)));
-}
+#if HAS_Z_AXIS
+  void do_blocking_move_to_xy_z(const xy_pos_t &raw, const_float_t z, const_feedRate_t fr_mm_s/*=0.0f*/) {
+    do_blocking_move_to(
+      LINEAR_AXIS_LIST(raw.x, raw.y, z, current_position.i, current_position.j, current_position.k),
+      fr_mm_s
+    );
+  }
+  void do_z_clearance(const_float_t zclear, const bool lower_allowed/*=false*/) {
+    float zdest = zclear;
+    if (!lower_allowed) NOLESS(zdest, current_position.z);
+    do_blocking_move_to_z(_MIN(zdest, Z_MAX_POS), TERN(HAS_BED_PROBE, z_probe_fast_mm_s, homing_feedrate(Z_AXIS)));
+  }
+#endif
 
 //
 // Prepare to do endstop or probe moves with custom feedrates.
@@ -806,26 +814,29 @@ void restore_feedrate_and_scaling() {
         #endif
       }
 
-      if (axis_was_homed(Y_AXIS)) {
-        #if !HAS_SOFTWARE_ENDSTOPS || ENABLED(MIN_SOFTWARE_ENDSTOP_Y)
-          NOLESS(target.y, soft_endstop.min.y);
-        #endif
-        #if !HAS_SOFTWARE_ENDSTOPS || ENABLED(MAX_SOFTWARE_ENDSTOP_Y)
-          NOMORE(target.y, soft_endstop.max.y);
-        #endif
-      }
+      #if LINEAR_AXES >= XY
+        if (axis_was_homed(Y_AXIS)) {
+          #if !HAS_SOFTWARE_ENDSTOPS || ENABLED(MIN_SOFTWARE_ENDSTOP_Y)
+            NOLESS(target.y, soft_endstop.min.y);
+          #endif
+          #if !HAS_SOFTWARE_ENDSTOPS || ENABLED(MAX_SOFTWARE_ENDSTOP_Y)
+            NOMORE(target.y, soft_endstop.max.y);
+          #endif
+        }
+      #endif
 
     #endif
 
-    if (axis_was_homed(Z_AXIS)) {
-      #if !HAS_SOFTWARE_ENDSTOPS || ENABLED(MIN_SOFTWARE_ENDSTOP_Z)
-        NOLESS(target.z, soft_endstop.min.z);
-      #endif
-      #if !HAS_SOFTWARE_ENDSTOPS || ENABLED(MAX_SOFTWARE_ENDSTOP_Z)
-        NOMORE(target.z, soft_endstop.max.z);
-      #endif
-    }
-
+    #if HAS_Z_AXIS
+      if (axis_was_homed(Z_AXIS)) {
+        #if !HAS_SOFTWARE_ENDSTOPS || ENABLED(MIN_SOFTWARE_ENDSTOP_Z)
+          NOLESS(target.z, soft_endstop.min.z);
+        #endif
+        #if !HAS_SOFTWARE_ENDSTOPS || ENABLED(MAX_SOFTWARE_ENDSTOP_Z)
+          NOMORE(target.z, soft_endstop.max.z);
+        #endif
+      }
+    #endif
     #if LINEAR_AXES >= 4  // TODO (DerAndere): Find out why this was missing / removed
       if (axis_was_homed(I_AXIS)) {
         #if !HAS_SOFTWARE_ENDSTOPS || ENABLED(MIN_SOFTWARE_ENDSTOP_I)
@@ -1703,7 +1714,7 @@ void prepare_line_to_destination() {
     #else
       #define _CAN_HOME(A) (axis == _AXIS(A) && ( \
            ENABLED(A##_SPI_SENSORLESS) \
-        || (_AXIS(A) == Z_AXIS && ENABLED(HOMING_Z_WITH_PROBE)) \
+        || TERN0(HAS_Z_AXIS, TERN0(HOMING_Z_WITH_PROBE, _AXIS(A) == Z_AXIS)) \
         || TERN0(A##_HOME_TO_MIN, A##_MIN_PIN > -1) \
         || TERN0(A##_HOME_TO_MAX, A##_MAX_PIN > -1) \
       ))
@@ -1763,9 +1774,9 @@ void prepare_line_to_destination() {
 
     // Determine if a homing bump will be done and the bumps distance
     // When homing Z with probe respect probe clearance
-    const bool use_probe_bump = TERN0(HOMING_Z_WITH_PROBE, axis == Z_AXIS && home_bump_mm(Z_AXIS));
+    const bool use_probe_bump = TERN0(HOMING_Z_WITH_PROBE, axis == Z_AXIS && home_bump_mm(axis));
     const float bump = axis_home_dir * (
-      use_probe_bump ? _MAX(TERN0(HOMING_Z_WITH_PROBE, Z_CLEARANCE_BETWEEN_PROBES), home_bump_mm(Z_AXIS)) : home_bump_mm(axis)
+      use_probe_bump ? _MAX(TERN0(HOMING_Z_WITH_PROBE, Z_CLEARANCE_BETWEEN_PROBES), home_bump_mm(axis)) : home_bump_mm(axis)
     );
 
     //

@@ -83,28 +83,22 @@ typedef struct {
 #ifndef CHOPPER_TIMING_X
   #define CHOPPER_TIMING_X CHOPPER_TIMING
 #endif
-#ifndef CHOPPER_TIMING_Y
+#if LINEAR_AXES >= XY && !defined(CHOPPER_TIMING_Y)
   #define CHOPPER_TIMING_Y CHOPPER_TIMING
 #endif
-#ifndef CHOPPER_TIMING_Z
+#if HAS_Z_AXIS && !defined(CHOPPER_TIMING_Z)
   #define CHOPPER_TIMING_Z CHOPPER_TIMING
 #endif
-#if LINEAR_AXES >= 4
-  #ifndef CHOPPER_TIMING_I
-    #define CHOPPER_TIMING_I CHOPPER_TIMING
-  #endif
+#if LINEAR_AXES >= 4 && !defined(CHOPPER_TIMING_I)
+  #define CHOPPER_TIMING_I CHOPPER_TIMING
 #endif
-#if LINEAR_AXES >= 5
-  #ifndef CHOPPER_TIMING_J
-    #define CHOPPER_TIMING_J CHOPPER_TIMING
-  #endif
+#if LINEAR_AXES >= 5 && !defined(CHOPPER_TIMING_J)
+  #define CHOPPER_TIMING_J CHOPPER_TIMING
 #endif
-#if LINEAR_AXES >= 6
-  #ifndef CHOPPER_TIMING_K
-    #define CHOPPER_TIMING_K CHOPPER_TIMING
-  #endif
+#if LINEAR_AXES >= 6 && !defined(CHOPPER_TIMING_K)
+  #define CHOPPER_TIMING_K CHOPPER_TIMING
 #endif
-#ifndef CHOPPER_TIMING_E
+#if HAS_EXTRUDERS && !defined(CHOPPER_TIMING_E)
   #define CHOPPER_TIMING_E CHOPPER_TIMING
 #endif
 

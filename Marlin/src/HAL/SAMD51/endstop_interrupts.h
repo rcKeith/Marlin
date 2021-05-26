@@ -47,124 +47,38 @@
 
 #include "../../module/endstops.h"
 
-#define MATCH_EILINE(P1,P2)     (P1 != P2 && PIN_TO_EILINE(P1) == PIN_TO_EILINE(P2))
-#if HAS_X_MAX
-  #define MATCH_X_MAX_EILINE(P) MATCH_EILINE(P, X_MAX_PIN)
-#else
-  #define MATCH_X_MAX_EILINE(P) false
-#endif
-#if HAS_X_MIN
-  #define MATCH_X_MIN_EILINE(P) MATCH_EILINE(P, X_MIN_PIN)
-#else
-  #define MATCH_X_MIN_EILINE(P) false
-#endif
-#if HAS_Y_MAX
-   #define MATCH_Y_MAX_EILINE(P) MATCH_EILINE(P, Y_MAX_PIN)
-#else
-   #define MATCH_Y_MAX_EILINE(P) false
-#endif
-#if HAS_Y_MIN
-  #define MATCH_Y_MIN_EILINE(P) MATCH_EILINE(P, Y_MIN_PIN)
-#else
-  #define MATCH_Y_MIN_EILINE(P) false
-#endif
-#if HAS_Z_MAX
-   #define MATCH_Z_MAX_EILINE(P) MATCH_EILINE(P, Z_MAX_PIN)
-#else
-  #define MATCH_Z_MAX_EILINE(P) false
-#endif
-#if HAS_Z_MIN
-  #define MATCH_Z_MIN_EILINE(P) MATCH_EILINE(P, Z_MIN_PIN)
-#else
-  #define MATCH_Z_MIN_EILINE(P) false
-#endif
-#if HAS_Z2_MAX
-  #define MATCH_Z2_MAX_EILINE(P) MATCH_EILINE(P, Z2_MAX_PIN)
-#else
-  #define MATCH_Z2_MAX_EILINE(P) false
-#endif
-#if HAS_Z2_MIN
-  #define MATCH_Z2_MIN_EILINE(P) MATCH_EILINE(P, Z2_MIN_PIN)
-#else
-  #define MATCH_Z2_MIN_EILINE(P) false
-#endif
-#if HAS_Z3_MAX
-  #define MATCH_Z3_MAX_EILINE(P) MATCH_EILINE(P, Z3_MAX_PIN)
-#else
-  #define MATCH_Z3_MAX_EILINE(P) false
-#endif
-#if HAS_Z3_MIN
-  #define MATCH_Z3_MIN_EILINE(P) MATCH_EILINE(P, Z3_MIN_PIN)
-#else
-  #define MATCH_Z3_MIN_EILINE(P) false
-#endif
-#if HAS_Z4_MAX
-  #define MATCH_Z4_MAX_EILINE(P) MATCH_EILINE(P, Z4_MAX_PIN)
-#else
-  #define MATCH_Z4_MAX_EILINE(P) false
-#endif
-#if HAS_Z4_MIN
-  #define MATCH_Z4_MIN_EILINE(P) MATCH_EILINE(P, Z4_MIN_PIN)
-#else
-  #define MATCH_Z4_MIN_EILINE(P) false
-#endif
-#if HAS_Z_MIN_PROBE_PIN
-  #define MATCH_Z_MIN_PROBE_EILINE(P)   MATCH_EILINE(P, Z_MIN_PROBE_PIN)
-#else
-  #define MATCH_Z_MIN_PROBE_EILINE(P) false
-#endif
-#if LINEAR_AXES >= 4
-  #if HAS_I_MAX
-    #define MATCH_I_MAX_EILINE(P) MATCH_EILINE(P, I_MAX_PIN)
-  #elif HAS_I_MIN
-    #define MATCH_I_MIN_EILINE(P) MATCH_EILINE(P, I_MIN_PIN)
-  #endif
-#endif
-#if LINEAR_AXES >= 5
-  #if HAS_J_MAX
-    #define MATCH_J_MAX_EILINE(P) MATCH_EILINE(P, J_MAX_PIN)
-  #elif HAS_J_MIN
-    #define MATCH_J_MIN_EILINE(P) MATCH_EILINE(P, J_MIN_PIN)
-  #endif
-#endif
-#if LINEAR_AXES >= 6
-  #if HAS_K_MAX
-    #define MATCH_K_MAX_EILINE(P) MATCH_EILINE(P, K_MAX_PIN)
-  #elif HAS_K_MIN
-    #define MATCH_K_MIN_EILINE(P) MATCH_EILINE(P, K_MIN_PIN)
-  #endif
-#endif
+#define MATCH_EILINE(P1,P2) (P1 != P2 && PIN_TO_EILINE(P1) == PIN_TO_EILINE(P2))
+#define MATCH_X_MAX_EILINE(P)       TERN0(HAS_X_MAX,           MATCH_EILINE(P, X_MAX_PIN))
+#define MATCH_X_MIN_EILINE(P)       TERN0(HAS_X_MIN,           MATCH_EILINE(P, X_MIN_PIN))
+#define MATCH_Y_MAX_EILINE(P)       TERN0(HAS_Y_MAX,           MATCH_EILINE(P, Y_MAX_PIN))
+#define MATCH_Y_MIN_EILINE(P)       TERN0(HAS_Y_MIN,           MATCH_EILINE(P, Y_MIN_PIN))
+#define MATCH_Z_MAX_EILINE(P)       TERN0(HAS_Z_MAX,           MATCH_EILINE(P, Z_MAX_PIN))
+#define MATCH_Z_MIN_EILINE(P)       TERN0(HAS_Z_MIN,           MATCH_EILINE(P, Z_MIN_PIN))
+#define MATCH_Z2_MAX_EILINE(P)      TERN0(HAS_Z2_MAX,          MATCH_EILINE(P, Z2_MAX_PIN))
+#define MATCH_Z2_MIN_EILINE(P)      TERN0(HAS_Z2_MIN,          MATCH_EILINE(P, Z2_MIN_PIN))
+#define MATCH_Z3_MAX_EILINE(P)      TERN0(HAS_Z3_MAX,          MATCH_EILINE(P, Z3_MAX_PIN))
+#define MATCH_Z3_MIN_EILINE(P)      TERN0(HAS_Z3_MIN,          MATCH_EILINE(P, Z3_MIN_PIN))
+#define MATCH_Z4_MAX_EILINE(P)      TERN0(HAS_Z4_MAX,          MATCH_EILINE(P, Z4_MAX_PIN))
+#define MATCH_Z4_MIN_EILINE(P)      TERN0(HAS_Z4_MIN,          MATCH_EILINE(P, Z4_MIN_PIN))
+#define MATCH_Z_MIN_PROBE_EILINE(P) TERN0(HAS_Z_MIN_PROBE_PIN, MATCH_EILINE(P, Z_MIN_PROBE_PIN))
+#define MATCH_I_MAX_EILINE(P)       TERN0(HAS_I_MAX,           MATCH_EILINE(P, I_MAX_PIN))
+#define MATCH_I_MIN_EILINE(P)       TERN0(HAS_I_MIN,           MATCH_EILINE(P, I_MIN_PIN))
+#define MATCH_J_MAX_EILINE(P)       TERN0(HAS_J_MAX,           MATCH_EILINE(P, J_MAX_PIN))
+#define MATCH_J_MIN_EILINE(P)       TERN0(HAS_J_MIN,           MATCH_EILINE(P, J_MIN_PIN))
+#define MATCH_K_MAX_EILINE(P)       TERN0(HAS_K_MAX,           MATCH_EILINE(P, K_MAX_PIN))
+#define MATCH_K_MIN_EILINE(P)       TERN0(HAS_K_MIN,           MATCH_EILINE(P, K_MIN_PIN))
 
-#ifndef MATCH_I_MIN_EILINE
-  #define MATCH_I_MIN_EILINE(P) false
-#endif
-#ifndef MATCH_J_MIN_EILINE
-  #define MATCH_J_MIN_EILINE(P) false
-#endif
-#ifndef MATCH_K_MIN_EILINE
-  #define MATCH_K_MIN_EILINE(P) false
-#endif
-#ifndef MATCH_I_MAX_EILINE
-  #define MATCH_I_MAX_EILINE(P) false
-#endif
-#ifndef MATCH_J_MAX_EILINE
-  #define MATCH_J_MAX_EILINE(P) false
-#endif
-#ifndef MATCH_K_MAX_EILINE
-  #define MATCH_K_MAX_EILINE(P) false
-#endif
-
-#define AVAILABLE_EILINE(P)     (PIN_TO_EILINE(P) != -1                                 \
-                                 && !MATCH_X_MAX_EILINE(P) && !MATCH_X_MIN_EILINE(P)    \
-                                 && !MATCH_Y_MAX_EILINE(P) && !MATCH_Y_MIN_EILINE(P)    \
-                                 && !MATCH_Z_MAX_EILINE(P) && !MATCH_Z_MIN_EILINE(P)    \
-                                 && !MATCH_I_MAX_EILINE(P) && !MATCH_I_MIN_EILINE(P)    \
-                                 && !MATCH_J_MAX_EILINE(P) && !MATCH_J_MIN_EILINE(P)    \
-                                 && !MATCH_K_MAX_EILINE(P) && !MATCH_K_MIN_EILINE(P)    \
-                                 && !MATCH_Z2_MAX_EILINE(P) && !MATCH_Z2_MIN_EILINE(P)  \
-                                 && !MATCH_Z3_MAX_EILINE(P) && !MATCH_Z3_MIN_EILINE(P)  \
-                                 && !MATCH_Z4_MAX_EILINE(P) && !MATCH_Z4_MIN_EILINE(P)  \
-                                 && !MATCH_Z_MIN_PROBE_EILINE(P))
+#define AVAILABLE_EILINE(P) (PIN_TO_EILINE(P) != -1                                 \
+                             && !MATCH_X_MAX_EILINE(P) && !MATCH_X_MIN_EILINE(P)    \
+                             && !MATCH_Y_MAX_EILINE(P) && !MATCH_Y_MIN_EILINE(P)    \
+                             && !MATCH_Z_MAX_EILINE(P) && !MATCH_Z_MIN_EILINE(P)    \
+                             && !MATCH_I_MAX_EILINE(P) && !MATCH_I_MIN_EILINE(P)    \
+                             && !MATCH_J_MAX_EILINE(P) && !MATCH_J_MIN_EILINE(P)    \
+                             && !MATCH_K_MAX_EILINE(P) && !MATCH_K_MIN_EILINE(P)    \
+                             && !MATCH_Z2_MAX_EILINE(P) && !MATCH_Z2_MIN_EILINE(P)  \
+                             && !MATCH_Z3_MAX_EILINE(P) && !MATCH_Z3_MIN_EILINE(P)  \
+                             && !MATCH_Z4_MAX_EILINE(P) && !MATCH_Z4_MIN_EILINE(P)  \
+                             && !MATCH_Z_MIN_PROBE_EILINE(P))
 
 // One ISR for all EXT-Interrupts
 void endstop_ISR() { endstops.update(); }

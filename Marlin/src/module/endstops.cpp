@@ -438,22 +438,20 @@ void Endstops::event_handler() {
     #define ENDSTOP_HIT_TEST_X() _ENDSTOP_HIT_TEST(X,'X')
     #define ENDSTOP_HIT_TEST_Y() _ENDSTOP_HIT_TEST(Y,'Y')
     #define ENDSTOP_HIT_TEST_Z() _ENDSTOP_HIT_TEST(Z,'Z')
+    #define ENDSTOP_HIT_TEST_I() _ENDSTOP_HIT_TEST(I,'I')
+    #define ENDSTOP_HIT_TEST_J() _ENDSTOP_HIT_TEST(J,'J')
+    #define ENDSTOP_HIT_TEST_K() _ENDSTOP_HIT_TEST(K,'K')
 
     SERIAL_ECHO_START();
     SERIAL_ECHOPGM(STR_ENDSTOPS_HIT);
-    ENDSTOP_HIT_TEST_X();
-    ENDSTOP_HIT_TEST_Y();
-    ENDSTOP_HIT_TEST_Z();
-
-    #if LINEAR_AXES >= 4
-      _ENDSTOP_HIT_TEST(I,'I');
-    #endif
-    #if LINEAR_AXES >= 5
-      _ENDSTOP_HIT_TEST(J,'J');
-    #endif
-    #if LINEAR_AXES >= 6
-      _ENDSTOP_HIT_TEST(K,'K');
-    #endif
+    LINEAR_AXIS_CODE(
+       ENDSTOP_HIT_TEST_X(),
+       ENDSTOP_HIT_TEST_Y(),
+       ENDSTOP_HIT_TEST_Z(),
+      _ENDSTOP_HIT_TEST(I,'I'),
+      _ENDSTOP_HIT_TEST(J,'J'),
+      _ENDSTOP_HIT_TEST(K,'K')
+    );
 
     #if HAS_CUSTOM_PROBE_PIN
       #define P_AXIS Z_AXIS
@@ -974,79 +972,83 @@ void Endstops::update() {
     }
   }
 
-  if (stepper.axis_is_moving(Y_AXIS)) {
-    if (stepper.motor_direction(Y_AXIS_HEAD)) { // -direction
-      #if HAS_Y_MIN || (Y_SPI_SENSORLESS && Y_HOME_TO_MIN)
-        PROCESS_ENDSTOP_Y(MIN);
-        #if   CORE_DIAG(XY, X, MIN)
-          PROCESS_CORE_ENDSTOP(X,MIN,Y,MIN);
-        #elif CORE_DIAG(XY, X, MAX)
-          PROCESS_CORE_ENDSTOP(X,MAX,Y,MIN);
-        #elif CORE_DIAG(YZ, Z, MIN)
-          PROCESS_CORE_ENDSTOP(Z,MIN,Y,MIN);
-        #elif CORE_DIAG(YZ, Z, MAX)
-          PROCESS_CORE_ENDSTOP(Z,MAX,Y,MIN);
+  #if LINEAR_AXES >= XY
+    if (stepper.axis_is_moving(Y_AXIS)) {
+      if (stepper.motor_direction(Y_AXIS_HEAD)) { // -direction
+        #if HAS_Y_MIN || (Y_SPI_SENSORLESS && Y_HOME_TO_MIN)
+          PROCESS_ENDSTOP_Y(MIN);
+          #if   CORE_DIAG(XY, X, MIN)
+            PROCESS_CORE_ENDSTOP(X,MIN,Y,MIN);
+          #elif CORE_DIAG(XY, X, MAX)
+            PROCESS_CORE_ENDSTOP(X,MAX,Y,MIN);
+          #elif CORE_DIAG(YZ, Z, MIN)
+            PROCESS_CORE_ENDSTOP(Z,MIN,Y,MIN);
+          #elif CORE_DIAG(YZ, Z, MAX)
+            PROCESS_CORE_ENDSTOP(Z,MAX,Y,MIN);
+          #endif
         #endif
-      #endif
-    }
-    else { // +direction
-      #if HAS_Y_MAX || (Y_SPI_SENSORLESS && Y_HOME_TO_MAX)
-        PROCESS_ENDSTOP_Y(MAX);
-        #if   CORE_DIAG(XY, X, MIN)
-          PROCESS_CORE_ENDSTOP(X,MIN,Y,MAX);
-        #elif CORE_DIAG(XY, X, MAX)
-          PROCESS_CORE_ENDSTOP(X,MAX,Y,MAX);
-        #elif CORE_DIAG(YZ, Z, MIN)
-          PROCESS_CORE_ENDSTOP(Z,MIN,Y,MAX);
-        #elif CORE_DIAG(YZ, Z, MAX)
-          PROCESS_CORE_ENDSTOP(Z,MAX,Y,MAX);
+      }
+      else { // +direction
+        #if HAS_Y_MAX || (Y_SPI_SENSORLESS && Y_HOME_TO_MAX)
+          PROCESS_ENDSTOP_Y(MAX);
+          #if   CORE_DIAG(XY, X, MIN)
+            PROCESS_CORE_ENDSTOP(X,MIN,Y,MAX);
+          #elif CORE_DIAG(XY, X, MAX)
+            PROCESS_CORE_ENDSTOP(X,MAX,Y,MAX);
+          #elif CORE_DIAG(YZ, Z, MIN)
+            PROCESS_CORE_ENDSTOP(Z,MIN,Y,MAX);
+          #elif CORE_DIAG(YZ, Z, MAX)
+            PROCESS_CORE_ENDSTOP(Z,MAX,Y,MAX);
+          #endif
         #endif
-      #endif
+      }
     }
-  }
+  #endif
 
-  if (stepper.axis_is_moving(Z_AXIS)) {
-    if (stepper.motor_direction(Z_AXIS_HEAD)) { // Z -direction. Gantry down, bed up.
+  #if LINEAR_AXES >= XYZ
+    if (stepper.axis_is_moving(Z_AXIS)) {
+      if (stepper.motor_direction(Z_AXIS_HEAD)) { // Z -direction. Gantry down, bed up.
 
-      #if HAS_Z_MIN || (Z_SPI_SENSORLESS && Z_HOME_TO_MIN)
-        if ( TERN1(Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN, z_probe_enabled)
-          && TERN1(HAS_CUSTOM_PROBE_PIN, !z_probe_enabled)
-        ) PROCESS_ENDSTOP_Z(MIN);
-        #if   CORE_DIAG(XZ, X, MIN)
-          PROCESS_CORE_ENDSTOP(X,MIN,Z,MIN);
-        #elif CORE_DIAG(XZ, X, MAX)
-          PROCESS_CORE_ENDSTOP(X,MAX,Z,MIN);
-        #elif CORE_DIAG(YZ, Y, MIN)
-          PROCESS_CORE_ENDSTOP(Y,MIN,Z,MIN);
-        #elif CORE_DIAG(YZ, Y, MAX)
-          PROCESS_CORE_ENDSTOP(Y,MAX,Z,MIN);
+        #if HAS_Z_MIN || (Z_SPI_SENSORLESS && Z_HOME_TO_MIN)
+          if ( TERN1(Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN, z_probe_enabled)
+            && TERN1(HAS_CUSTOM_PROBE_PIN, !z_probe_enabled)
+          ) PROCESS_ENDSTOP_Z(MIN);
+          #if   CORE_DIAG(XZ, X, MIN)
+            PROCESS_CORE_ENDSTOP(X,MIN,Z,MIN);
+          #elif CORE_DIAG(XZ, X, MAX)
+            PROCESS_CORE_ENDSTOP(X,MAX,Z,MIN);
+          #elif CORE_DIAG(YZ, Y, MIN)
+            PROCESS_CORE_ENDSTOP(Y,MIN,Z,MIN);
+          #elif CORE_DIAG(YZ, Y, MAX)
+            PROCESS_CORE_ENDSTOP(Y,MAX,Z,MIN);
+          #endif
         #endif
-      #endif
 
-      // When closing the gap check the enabled probe
-      #if HAS_CUSTOM_PROBE_PIN
-        if (z_probe_enabled) PROCESS_ENDSTOP(Z, MIN_PROBE);
-      #endif
-    }
-    else { // Z +direction. Gantry up, bed down.
-      #if HAS_Z_MAX || (Z_SPI_SENSORLESS && Z_HOME_TO_MAX)
-        #if ENABLED(Z_MULTI_ENDSTOPS)
-          PROCESS_ENDSTOP_Z(MAX);
-        #elif !HAS_CUSTOM_PROBE_PIN || Z_MAX_PIN != Z_MIN_PROBE_PIN  // No probe or probe is Z_MIN || Probe is not Z_MAX
-          PROCESS_ENDSTOP(Z, MAX);
+        // When closing the gap check the enabled probe
+        #if HAS_CUSTOM_PROBE_PIN
+          if (z_probe_enabled) PROCESS_ENDSTOP(Z, MIN_PROBE);
         #endif
-        #if   CORE_DIAG(XZ, X, MIN)
-          PROCESS_CORE_ENDSTOP(X,MIN,Z,MAX);
-        #elif CORE_DIAG(XZ, X, MAX)
-          PROCESS_CORE_ENDSTOP(X,MAX,Z,MAX);
-        #elif CORE_DIAG(YZ, Y, MIN)
-          PROCESS_CORE_ENDSTOP(Y,MIN,Z,MAX);
-        #elif CORE_DIAG(YZ, Y, MAX)
-          PROCESS_CORE_ENDSTOP(Y,MAX,Z,MAX);
+      }
+      else { // Z +direction. Gantry up, bed down.
+        #if HAS_Z_MAX || (Z_SPI_SENSORLESS && Z_HOME_TO_MAX)
+          #if ENABLED(Z_MULTI_ENDSTOPS)
+            PROCESS_ENDSTOP_Z(MAX);
+          #elif !HAS_CUSTOM_PROBE_PIN || Z_MAX_PIN != Z_MIN_PROBE_PIN  // No probe or probe is Z_MIN || Probe is not Z_MAX
+            PROCESS_ENDSTOP(Z, MAX);
+          #endif
+          #if   CORE_DIAG(XZ, X, MIN)
+            PROCESS_CORE_ENDSTOP(X,MIN,Z,MAX);
+          #elif CORE_DIAG(XZ, X, MAX)
+            PROCESS_CORE_ENDSTOP(X,MAX,Z,MAX);
+          #elif CORE_DIAG(YZ, Y, MIN)
+            PROCESS_CORE_ENDSTOP(Y,MIN,Z,MAX);
+          #elif CORE_DIAG(YZ, Y, MAX)
+            PROCESS_CORE_ENDSTOP(Y,MAX,Z,MAX);
+          #endif
         #endif
-      #endif
+      }
     }
-  }
+  #endif
 
   #if LINEAR_AXES >= 4
     if (stepper.axis_is_moving(I_AXIS)) {

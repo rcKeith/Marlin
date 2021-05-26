@@ -1293,6 +1293,10 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
  * Requirements for LINEAR_AXES > 3
  */
 
+#if HAS_LEVELING && !HAS_Z_AXIS
+  #error "Leveling in Marlin requires three or more axes, with Z as the vertical axis."
+#endif
+
 /**
  * Allow only extra axis codes that do not conflict with G-code parameter names
  */

@@ -63,81 +63,97 @@
 
 #define _X_PINS X_STEP_PIN, X_DIR_PIN, _X_ENABLE_PIN _X_MIN _X_MAX _X_MS1 _X_MS2 _X_MS3 _X_CS
 
-#if PIN_EXISTS(Y_MIN)
-  #define _Y_MIN Y_MIN_PIN,
+#if LINEAR_AXES >= XY
+
+  #if PIN_EXISTS(Y_MIN)
+    #define _Y_MIN Y_MIN_PIN,
+  #else
+    #define _Y_MIN
+  #endif
+  #if PIN_EXISTS(Y_MAX)
+    #define _Y_MAX Y_MAX_PIN,
+  #else
+    #define _Y_MAX
+  #endif
+  #if PIN_EXISTS(Y_CS) && AXIS_HAS_SPI(Y)
+    #define _Y_CS Y_CS_PIN,
+  #else
+    #define _Y_CS
+  #endif
+  #if PIN_EXISTS(Y_MS1)
+    #define _Y_MS1 Y_MS1_PIN,
+  #else
+    #define _Y_MS1
+  #endif
+  #if PIN_EXISTS(Y_MS2)
+    #define _Y_MS2 Y_MS2_PIN,
+  #else
+    #define _Y_MS2
+  #endif
+  #if PIN_EXISTS(Y_MS3)
+    #define _Y_MS3 Y_MS3_PIN,
+  #else
+    #define _Y_MS3
+  #endif
+  #if PIN_EXISTS(Y_ENABLE)
+    #define _Y_ENABLE_PIN Y_ENABLE_PIN,
+  #else
+    #define _Y_ENABLE_PIN
+  #endif
+
+  #define _Y_PINS Y_STEP_PIN, Y_DIR_PIN, _Y_ENABLE_PIN _Y_MIN _Y_MAX _Y_MS1 _Y_MS2 _Y_MS3 _Y_CS
+
 #else
-  #define _Y_MIN
-#endif
-#if PIN_EXISTS(Y_MAX)
-  #define _Y_MAX Y_MAX_PIN,
-#else
-  #define _Y_MAX
-#endif
-#if PIN_EXISTS(Y_CS) && AXIS_HAS_SPI(Y)
-  #define _Y_CS Y_CS_PIN,
-#else
-  #define _Y_CS
-#endif
-#if PIN_EXISTS(Y_MS1)
-  #define _Y_MS1 Y_MS1_PIN,
-#else
-  #define _Y_MS1
-#endif
-#if PIN_EXISTS(Y_MS2)
-  #define _Y_MS2 Y_MS2_PIN,
-#else
-  #define _Y_MS2
-#endif
-#if PIN_EXISTS(Y_MS3)
-  #define _Y_MS3 Y_MS3_PIN,
-#else
-  #define _Y_MS3
-#endif
-#if PIN_EXISTS(Y_ENABLE)
-  #define _Y_ENABLE_PIN Y_ENABLE_PIN,
-#else
-  #define _Y_ENABLE_PIN
+
+  #define _Y_PINS
+
 #endif
 
-#define _Y_PINS Y_STEP_PIN, Y_DIR_PIN, _Y_ENABLE_PIN _Y_MIN _Y_MAX _Y_MS1 _Y_MS2 _Y_MS3 _Y_CS
+#if LINEAR_AXES >= XYZ
 
-#if PIN_EXISTS(Z_MIN)
-  #define _Z_MIN Z_MIN_PIN,
-#else
-  #define _Z_MIN
-#endif
-#if PIN_EXISTS(Z_MAX)
-  #define _Z_MAX Z_MAX_PIN,
-#else
-  #define _Z_MAX
-#endif
-#if PIN_EXISTS(Z_CS) && AXIS_HAS_SPI(Z)
-  #define _Z_CS Z_CS_PIN,
-#else
-  #define _Z_CS
-#endif
-#if PIN_EXISTS(Z_MS1)
-  #define _Z_MS1 Z_MS1_PIN,
-#else
-  #define _Z_MS1
-#endif
-#if PIN_EXISTS(Z_MS2)
-  #define _Z_MS2 Z_MS2_PIN,
-#else
-  #define _Z_MS2
-#endif
-#if PIN_EXISTS(Z_MS3)
-  #define _Z_MS3 Z_MS3_PIN,
-#else
-  #define _Z_MS3
-#endif
-#if PIN_EXISTS(Z_ENABLE)
-  #define _Z_ENABLE_PIN Z_ENABLE_PIN,
-#else
-  #define _Z_ENABLE_PIN
-#endif
+  #if PIN_EXISTS(Z_MIN)
+    #define _Z_MIN Z_MIN_PIN,
+  #else
+    #define _Z_MIN
+  #endif
+  #if PIN_EXISTS(Z_MAX)
+    #define _Z_MAX Z_MAX_PIN,
+  #else
+    #define _Z_MAX
+  #endif
+  #if PIN_EXISTS(Z_CS) && AXIS_HAS_SPI(Z)
+    #define _Z_CS Z_CS_PIN,
+  #else
+    #define _Z_CS
+  #endif
+  #if PIN_EXISTS(Z_MS1)
+    #define _Z_MS1 Z_MS1_PIN,
+  #else
+    #define _Z_MS1
+  #endif
+  #if PIN_EXISTS(Z_MS2)
+    #define _Z_MS2 Z_MS2_PIN,
+  #else
+    #define _Z_MS2
+  #endif
+  #if PIN_EXISTS(Z_MS3)
+    #define _Z_MS3 Z_MS3_PIN,
+  #else
+    #define _Z_MS3
+  #endif
+  #if PIN_EXISTS(Z_ENABLE)
+    #define _Z_ENABLE_PIN Z_ENABLE_PIN,
+  #else
+    #define _Z_ENABLE_PIN
+  #endif
 
-#define _Z_PINS Z_STEP_PIN, Z_DIR_PIN, _Z_ENABLE_PIN _Z_MIN _Z_MAX _Z_MS1 _Z_MS2 _Z_MS3 _Z_CS
+  #define _Z_PINS Z_STEP_PIN, Z_DIR_PIN, _Z_ENABLE_PIN _Z_MIN _Z_MAX _Z_MS1 _Z_MS2 _Z_MS3 _Z_CS
+
+#else
+
+  #define _Z_PINS
+
+#endif
 
 #if LINEAR_AXES >= 4
 

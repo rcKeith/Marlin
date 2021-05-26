@@ -133,45 +133,6 @@
 
 #endif
 
-// Add time for each stepper
-#if HAS_X_STEP
-  #define ISR_X_STEPPER_CYCLES       ISR_STEPPER_CYCLES
-#else
-  #define ISR_X_STEPPER_CYCLES       0UL
-#endif
-#if HAS_Y_STEP
-  #define ISR_Y_STEPPER_CYCLES       ISR_STEPPER_CYCLES
-#else
-  #define ISR_START_Y_STEPPER_CYCLES 0UL
-  #define ISR_Y_STEPPER_CYCLES       0UL
-#endif
-#if HAS_Z_STEP
-  #define ISR_Z_STEPPER_CYCLES       ISR_STEPPER_CYCLES
-#else
-  #define ISR_Z_STEPPER_CYCLES       0UL
-#endif
-#if HAS_I_STEP
-  #define ISR_I_STEPPER_CYCLES       ISR_STEPPER_CYCLES
-#elif LINEAR_AXES >= 4
-  #define ISR_START_I_STEPPER_CYCLES 0UL
-  #define ISR_I_STEPPER_CYCLES       0UL
-#endif
-#if HAS_J_STEP
-  #define ISR_J_STEPPER_CYCLES       ISR_STEPPER_CYCLES
-#elif LINEAR_AXES >= 5
-  #define ISR_START_J_STEPPER_CYCLES 0UL
-  #define ISR_J_STEPPER_CYCLES       0UL
-#endif
-#if HAS_K_STEP
-  #define ISR_K_STEPPER_CYCLES       ISR_STEPPER_CYCLES
-#elif LINEAR_AXES >= 6
-  #define ISR_START_K_STEPPER_CYCLES 0UL
-  #define ISR_K_STEPPER_CYCLES       0UL
-#endif
-
-// E is always interpolated, even for mixing extruders
-#define ISR_E_STEPPER_CYCLES         ISR_STEPPER_CYCLES
-
 // If linear advance is disabled, the loop also handles them
 #if DISABLED(LIN_ADVANCE) && ENABLED(MIXING_EXTRUDER)
   #define ISR_MIXING_STEPPER_CYCLES ((MIXING_STEPPERS) * (ISR_STEPPER_CYCLES))
@@ -179,8 +140,31 @@
   #define ISR_MIXING_STEPPER_CYCLES  0UL
 #endif
 
+// Add time for each stepper
+#if HAS_X_STEP
+  #define ISR_X_STEPPER_CYCLES  ISR_STEPPER_CYCLES
+#endif
+#if HAS_Y_STEP
+  #define ISR_Y_STEPPER_CYCLES  ISR_STEPPER_CYCLES
+#endif
+#if HAS_Z_STEP
+  #define ISR_Z_STEPPER_CYCLES  ISR_STEPPER_CYCLES
+#endif
+#if HAS_I_STEP
+  #define ISR_I_STEPPER_CYCLES  ISR_STEPPER_CYCLES
+#endif
+#if HAS_J_STEP
+  #define ISR_J_STEPPER_CYCLES  ISR_STEPPER_CYCLES
+#endif
+#if HAS_K_STEP
+  #define ISR_K_STEPPER_CYCLES  ISR_STEPPER_CYCLES
+#endif
+#if HAS_EXTRUDERS
+  #define ISR_E_STEPPER_CYCLES  ISR_STEPPER_CYCLES    // E is always interpolated, even for mixing extruders
+#endif
+
 // And the total minimum loop time, not including the base
-#define MIN_ISR_LOOP_CYCLES (ISR_E_STEPPER_CYCLES + ISR_MIXING_STEPPER_CYCLES LINEAR_AXIS_GANG(+ ISR_X_STEPPER_CYCLES, + ISR_Y_STEPPER_CYCLES, + ISR_Z_STEPPER_CYCLES, + ISR_I_STEPPER_CYCLES, + ISR_J_STEPPER_CYCLES, + ISR_K_STEPPER_CYCLES))
+#define MIN_ISR_LOOP_CYCLES (ISR_MIXING_STEPPER_CYCLES LOGICAL_AXIS_GANG(+ ISR_E_STEPPER_CYCLES, + ISR_X_STEPPER_CYCLES, + ISR_Y_STEPPER_CYCLES, + ISR_Z_STEPPER_CYCLES, + ISR_I_STEPPER_CYCLES, + ISR_J_STEPPER_CYCLES, + ISR_K_STEPPER_CYCLES))
 
 // Calculate the minimum MPU cycles needed per pulse to enforce, limited to the max stepper rate
 #define _MIN_STEPPER_PULSE_CYCLES(N) _MAX(uint32_t((F_CPU) / (MAXIMUM_STEPPER_RATE)), ((F_CPU) / 500000UL) * (N))

@@ -76,24 +76,18 @@ extern xyz_pos_t cartes;
 constexpr xyz_feedrate_t homing_feedrate_mm_m = HOMING_FEEDRATE_MM_M;
 FORCE_INLINE feedRate_t homing_feedrate(const AxisEnum a) {
   float v;
-  #if ENABLED(DELTA)
+  #if HAS_Z_AXIS
     v = homing_feedrate_mm_m.z;
-  #else
-    switch (a) {
-      case X_AXIS: v = homing_feedrate_mm_m.x; break;
-      case Y_AXIS: v = homing_feedrate_mm_m.y; break;
-      #if LINEAR_AXES >= 4
-        case I_AXIS: v = homing_feedrate_mm_m.i; break;
-      #endif
-      #if LINEAR_AXES >= 5
-        case J_AXIS: v = homing_feedrate_mm_m.j; break;
-      #endif
-      #if LINEAR_AXES >= 6
-        case K_AXIS: v = homing_feedrate_mm_m.k; break;
-      #endif
-      case Z_AXIS:
-          default: v = homing_feedrate_mm_m.z;
-    }
+  #endif
+  #if DISABLED(DELTA)
+    LINEAR_AXIS_CODE(
+           if (a == X_AXIS) v = homing_feedrate_mm_m.x,
+      else if (a == Y_AXIS) v = homing_feedrate_mm_m.y,
+      else if (a == Z_AXIS) v = homing_feedrate_mm_m.z,
+      else if (a == I_AXIS) v = homing_feedrate_mm_m.i,
+      else if (a == J_AXIS) v = homing_feedrate_mm_m.j,
+      else if (a == K_AXIS) v = homing_feedrate_mm_m.k
+    );
   #endif
   return MMM_TO_MMS(v);
 }
@@ -177,14 +171,18 @@ inline float home_bump_mm(const AxisEnum axis) {
             TERN_(MIN_SOFTWARE_ENDSTOP_X, amin = min.x);
             TERN_(MAX_SOFTWARE_ENDSTOP_X, amax = max.x);
             break;
-          case Y_AXIS:
-            TERN_(MIN_SOFTWARE_ENDSTOP_Y, amin = min.y);
-            TERN_(MAX_SOFTWARE_ENDSTOP_Y, amax = max.y);
-            break;
-          case Z_AXIS:
-            TERN_(MIN_SOFTWARE_ENDSTOP_Z, amin = min.z);
-            TERN_(MAX_SOFTWARE_ENDSTOP_Z, amax = max.z);
-            break;
+          #if LINEAR_AXES >= XY
+            case Y_AXIS:
+              TERN_(MIN_SOFTWARE_ENDSTOP_Y, amin = min.y);
+              TERN_(MAX_SOFTWARE_ENDSTOP_Y, amax = max.y);
+              break;
+          #endif
+          #if LINEAR_AXES >= XYZ
+            case Z_AXIS:
+              TERN_(MIN_SOFTWARE_ENDSTOP_Z, amin = min.z);
+              TERN_(MAX_SOFTWARE_ENDSTOP_Z, amax = max.z);
+              break;
+          #endif
           #if LINEAR_AXES >= 4 // TODO (DerAndere): Test for LINEAR_AXES >= 4
             case I_AXIS:
               TERN_(MIN_SOFTWARE_ENDSTOP_I, amin = min.i);
@@ -336,7 +334,9 @@ void do_blocking_move_to(const xyze_pos_t &raw, const_feedRate_t fr_mm_s=0.0f);
 
 void do_blocking_move_to_x(const_float_t rx, const_feedRate_t fr_mm_s=0.0f);
 void do_blocking_move_to_y(const_float_t ry, const_feedRate_t fr_mm_s=0.0f);
-void do_blocking_move_to_z(const_float_t rz, const_feedRate_t fr_mm_s=0.0f);
+#if HAS_Z_AXIS
+  void do_blocking_move_to_z(const_float_t rz, const_feedRate_t fr_mm_s=0.0f);
+#endif
 #if LINEAR_AXES >= 4
   void do_blocking_move_to_i(const_float_t ri, const_feedRate_t fr_mm_s=0.0f);
   void do_blocking_move_to_xyz_i(const xyze_pos_t &raw, const_float_t i, const_feedRate_t fr_mm_s=0.0f);
@@ -355,15 +355,21 @@ void do_blocking_move_to_xy(const xy_pos_t &raw, const_feedRate_t fr_mm_s=0.0f);
 FORCE_INLINE void do_blocking_move_to_xy(const xyz_pos_t &raw, const_feedRate_t fr_mm_s=0.0f)  { do_blocking_move_to_xy(xy_pos_t(raw), fr_mm_s); }
 FORCE_INLINE void do_blocking_move_to_xy(const xyze_pos_t &raw, const_feedRate_t fr_mm_s=0.0f) { do_blocking_move_to_xy(xy_pos_t(raw), fr_mm_s); }
 
-void do_blocking_move_to_xy_z(const xy_pos_t &raw, const_float_t z, const_feedRate_t fr_mm_s=0.0f);
-FORCE_INLINE void do_blocking_move_to_xy_z(const xyz_pos_t &raw, const_float_t z, const_feedRate_t fr_mm_s=0.0f)  { do_blocking_move_to_xy_z(xy_pos_t(raw), z, fr_mm_s); }
-FORCE_INLINE void do_blocking_move_to_xy_z(const xyze_pos_t &raw, const_float_t z, const_feedRate_t fr_mm_s=0.0f) { do_blocking_move_to_xy_z(xy_pos_t(raw), z, fr_mm_s); }
+#if HAS_Z_AXIS
+  void do_blocking_move_to_xy_z(const xy_pos_t &raw, const_float_t z, const_feedRate_t fr_mm_s=0.0f);
+  FORCE_INLINE void do_blocking_move_to_xy_z(const xyz_pos_t &raw, const_float_t z, const_feedRate_t fr_mm_s=0.0f)  { do_blocking_move_to_xy_z(xy_pos_t(raw), z, fr_mm_s); }
+  FORCE_INLINE void do_blocking_move_to_xy_z(const xyze_pos_t &raw, const_float_t z, const_feedRate_t fr_mm_s=0.0f) { do_blocking_move_to_xy_z(xy_pos_t(raw), z, fr_mm_s); }
+#endif
 
 void remember_feedrate_and_scaling();
 void remember_feedrate_scaling_off();
 void restore_feedrate_and_scaling();
 
-void do_z_clearance(const_float_t zclear, const bool lower_allowed=false);
+#if HAS_Z_AXIS
+  void do_z_clearance(const_float_t zclear, const bool lower_allowed=false);
+#else
+  inline void do_z_clearance(float, bool=false) {}
+#endif
 
 /**
  * Homing and Trusted Axes
