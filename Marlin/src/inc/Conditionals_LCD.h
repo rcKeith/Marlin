@@ -612,6 +612,9 @@
 #ifndef LINEAR_AXES
   #define LINEAR_AXES XYZ
 #endif
+#if LINEAR_AXES >= XYZ
+  #define HAS_Z_AXIS 1
+#endif
 
 /**
  * Number of Logical Axes (e.g., XYZE)

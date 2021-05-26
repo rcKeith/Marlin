@@ -34,6 +34,10 @@
   #error "Marlin requires C++11 support (gcc >= 4.7, Arduino IDE >= 1.6.8). Please upgrade your toolchain."
 #endif
 
+// Strings for sanity check messages
+#define _LINEAR_AXES_STR LINEAR_AXIS_GANG("X ", "Y ", "Z ", "I ", "J ", "K ")
+#define _LOGICAL_AXES_STR LOGICAL_AXIS_GANG("E ", "X ", "Y ", "Z ", "I ", "J ", "K ")
+
 // Make sure macros aren't borked
 #define TEST1
 #define TEST2 1
@@ -564,6 +568,9 @@
   #error "MKS_LCD12864 is now MKS_LCD12864A or MKS_LCD12864B."
 #endif
 
+constexpr float sbm[] = AXIS_RELATIVE_MODES;
+static_assert(COUNT(sbm) == LOGICAL_AXES, "AXIS_RELATIVE_MODES must contain " _LOGICAL_AXES_STR "elements.");
+
 /**
  * Probe temp compensation requirements
  */
@@ -642,14 +649,18 @@
 
 #if ENABLED(Y_DUAL_STEPPER_DRIVERS) && !GOOD_AXIS_PINS(Y)
   #error "Y_DUAL_STEPPER_DRIVERS requires Y2 pins to be defined."
-#elif !WITHIN(NUM_Z_STEPPER_DRIVERS, 1, 4)
-  #error "NUM_Z_STEPPER_DRIVERS must be an integer from 1 to 4."
-#elif NUM_Z_STEPPER_DRIVERS == 2 && !GOOD_AXIS_PINS(Z2)
-  #error "If NUM_Z_STEPPER_DRIVERS is 2, you must define stepper pins for Z2."
-#elif NUM_Z_STEPPER_DRIVERS == 3 && !(GOOD_AXIS_PINS(Z2) && GOOD_AXIS_PINS(Z3))
-  #error "If NUM_Z_STEPPER_DRIVERS is 3, you must define stepper pins for Z2 and Z3."
-#elif NUM_Z_STEPPER_DRIVERS == 4 && !(GOOD_AXIS_PINS(Z2) && GOOD_AXIS_PINS(Z3) && GOOD_AXIS_PINS(Z4))
-  #error "If NUM_Z_STEPPER_DRIVERS is 4, you must define stepper pins for Z2, Z3, and Z4."
+#endif
+
+#if HAS_Z_AXIS
+  #if !WITHIN(NUM_Z_STEPPER_DRIVERS, 1, 4)
+    #error "NUM_Z_STEPPER_DRIVERS must be an integer from 1 to 4."
+  #elif NUM_Z_STEPPER_DRIVERS == 2 && !GOOD_AXIS_PINS(Z2)
+    #error "If NUM_Z_STEPPER_DRIVERS is 2, you must define stepper pins for Z2."
+  #elif NUM_Z_STEPPER_DRIVERS == 3 && !(GOOD_AXIS_PINS(Z2) && GOOD_AXIS_PINS(Z3))
+    #error "If NUM_Z_STEPPER_DRIVERS is 3, you must define stepper pins for Z2 and Z3."
+  #elif NUM_Z_STEPPER_DRIVERS == 4 && !(GOOD_AXIS_PINS(Z2) && GOOD_AXIS_PINS(Z3) && GOOD_AXIS_PINS(Z4))
+    #error "If NUM_Z_STEPPER_DRIVERS is 4, you must define stepper pins for Z2, Z3, and Z4."
+  #endif
 #endif
 
 /**
@@ -928,6 +939,13 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
   static_assert(WITHIN(npp_xyz.x, X_MIN_POS, X_MAX_POS), "NOZZLE_PARK_POINT.X is out of bounds (X_MIN_POS, X_MAX_POS).");
   static_assert(WITHIN(npp_xyz.y, Y_MIN_POS, Y_MAX_POS), "NOZZLE_PARK_POINT.Y is out of bounds (Y_MIN_POS, Y_MAX_POS).");
   static_assert(WITHIN(npp_xyz.z, Z_MIN_POS, Z_MAX_POS), "NOZZLE_PARK_POINT.Z is out of bounds (Z_MIN_POS, Z_MAX_POS).");
+#endif
+
+/**
+ * Instant Freeze
+ */
+#if ENABLED(FREEZE_FEATURE) && !PIN_EXISTS(FREEZE)
+  #error "FREEZE_FEATURE requires a FREEZE_PIN to be defined."
 #endif
 
 /**
@@ -1641,18 +1659,60 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
 #endif
 
 /**
- * Homing
+ * Homing checks
  */
-constexpr float hbm[] = HOMING_BUMP_MM;
-static_assert(COUNT(hbm) == LINEAR_AXES, "HOMING_BUMP_MM requires one element per linear axis.");
-LINEAR_AXIS_CODE(
-  static_assert(hbm[X_AXIS] >= 0, "HOMING_BUMP_MM.X must be greater than or equal to 0."),
-  static_assert(hbm[Y_AXIS] >= 0, "HOMING_BUMP_MM.Y must be greater than or equal to 0."),
-  static_assert(hbm[Z_AXIS] >= 0, "HOMING_BUMP_MM.Z must be greater than or equal to 0."),
-  static_assert(hbm[I_AXIS] >= 0, "HOMING_BUMP_MM.I must be greater than or equal to 0."),
-  static_assert(hbm[J_AXIS] >= 0, "HOMING_BUMP_MM.J must be greater than or equal to 0."),
-  static_assert(hbm[K_AXIS] >= 0, "HOMING_BUMP_MM.K must be greater than or equal to 0.")
-);
+#ifndef HOMING_BUMP_MM
+  #error "Required setting HOMING_BUMP_MM is missing!"
+#elif !defined(HOMING_BUMP_DIVISOR)
+  #error "Required setting HOMING_BUMP_DIVISOR is missing!"
+#else
+  constexpr float hbm[] = HOMING_BUMP_MM, hbd[] = HOMING_BUMP_DIVISOR;
+  static_assert(COUNT(hbm) == LINEAR_AXES, "HOMING_BUMP_MM must have " _LINEAR_AXES_STR "elements (and no others).");
+  LINEAR_AXIS_CODE(
+    static_assert(hbm[X_AXIS] >= 0, "HOMING_BUMP_MM.X must be greater than or equal to 0."),
+    static_assert(hbm[Y_AXIS] >= 0, "HOMING_BUMP_MM.Y must be greater than or equal to 0."),
+    static_assert(hbm[Z_AXIS] >= 0, "HOMING_BUMP_MM.Z must be greater than or equal to 0."),
+    static_assert(hbm[I_AXIS] >= 0, "HOMING_BUMP_MM.I must be greater than or equal to 0."),
+    static_assert(hbm[J_AXIS] >= 0, "HOMING_BUMP_MM.J must be greater than or equal to 0."),
+    static_assert(hbm[K_AXIS] >= 0, "HOMING_BUMP_MM.K must be greater than or equal to 0.")
+  );
+  static_assert(COUNT(hbd) == LINEAR_AXES, "HOMING_BUMP_DIVISOR must have " _LINEAR_AXES_STR "elements (and no others).");
+  LINEAR_AXIS_CODE(
+    static_assert(hbd[X_AXIS] >= 1, "HOMING_BUMP_DIVISOR.X must be greater than or equal to 1."),
+    static_assert(hbd[Y_AXIS] >= 1, "HOMING_BUMP_DIVISOR.Y must be greater than or equal to 1."),
+    static_assert(hbd[Z_AXIS] >= 1, "HOMING_BUMP_DIVISOR.Z must be greater than or equal to 1."),
+    static_assert(hbd[I_AXIS] >= 1, "HOMING_BUMP_DIVISOR.I must be greater than or equal to 1."),
+    static_assert(hbd[J_AXIS] >= 1, "HOMING_BUMP_DIVISOR.J must be greater than or equal to 1."),
+    static_assert(hbd[K_AXIS] >= 1, "HOMING_BUMP_DIVISOR.K must be greater than or equal to 1.")
+  );
+#endif
+
+#ifdef HOMING_BACKOFF_POST_MM
+  constexpr float hbp[] = HOMING_BACKOFF_POST_MM;
+  static_assert(COUNT(hbp) == LINEAR_AXES, "HOMING_BACKOFF_POST_MM must have " _LINEAR_AXES_STR "elements (and no others).");
+  LINEAR_AXIS_CODE(
+    static_assert(hbp[X_AXIS] >= 0, "HOMING_BACKOFF_POST_MM.X must be greater than or equal to 0."),
+    static_assert(hbp[Y_AXIS] >= 0, "HOMING_BACKOFF_POST_MM.Y must be greater than or equal to 0."),
+    static_assert(hbp[Z_AXIS] >= 0, "HOMING_BACKOFF_POST_MM.Z must be greater than or equal to 0."),
+    static_assert(hbp[I_AXIS] >= 0, "HOMING_BACKOFF_POST_MM.I must be greater than or equal to 0."),
+    static_assert(hbp[J_AXIS] >= 0, "HOMING_BACKOFF_POST_MM.J must be greater than or equal to 0."),
+    static_assert(hbp[K_AXIS] >= 0, "HOMING_BACKOFF_POST_MM.K must be greater than or equal to 0.")
+  );
+#endif
+
+#ifdef SENSORLESS_BACKOFF_MM
+  constexpr float sbm[] = SENSORLESS_BACKOFF_MM;
+  static_assert(COUNT(sbm) == LINEAR_AXES, "SENSORLESS_BACKOFF_MM must have " _LINEAR_AXES_STR "elements (and no others).");
+  LINEAR_AXIS_CODE(
+    static_assert(sbm[X_AXIS] >= 0, "SENSORLESS_BACKOFF_MM.X must be greater than or equal to 0."),
+    static_assert(sbm[Y_AXIS] >= 0, "SENSORLESS_BACKOFF_MM.Y must be greater than or equal to 0."),
+    static_assert(sbm[Z_AXIS] >= 0, "SENSORLESS_BACKOFF_MM.Z must be greater than or equal to 0."),
+    static_assert(sbm[I_AXIS] >= 0, "SENSORLESS_BACKOFF_MM.I must be greater than or equal to 0."),
+    static_assert(sbm[J_AXIS] >= 0, "SENSORLESS_BACKOFF_MM.J must be greater than or equal to 0."),
+    static_assert(sbm[K_AXIS] >= 0, "SENSORLESS_BACKOFF_MM.K must be greater than or equal to 0.")
+  );
+#endif
+
 #if ENABLED(CODEPENDENT_XY_HOMING)
   #if ENABLED(QUICK_HOME)
     #error "QUICK_HOME is incompatible with CODEPENDENT_XY_HOMING."
@@ -2980,43 +3040,48 @@ LINEAR_AXIS_CODE(
  */
 constexpr float sanity_arr_1[] = DEFAULT_AXIS_STEPS_PER_UNIT,
                 sanity_arr_2[] = DEFAULT_MAX_FEEDRATE,
-                sanity_arr_3[] = DEFAULT_MAX_ACCELERATION;
+                sanity_arr_3[] = DEFAULT_MAX_ACCELERATION,
+                sanity_arr_7[] = HOMING_FEEDRATE_MM_M;
 
 #define _ARR_TEST(N,I) (sanity_arr_##N[_MIN(I,int(COUNT(sanity_arr_##N))-1)] > 0)
 #if HAS_MULTI_EXTRUDER
   #define _EXTRA_NOTE " (Did you forget to enable DISTINCT_E_FACTORS?)"
-#elif EXTRUDERS == 0
-  #define _EXTRA_NOTE " (Note: EXTRUDERS is set to 0.)"
 #else
-  #define _EXTRA_NOTE ""
+  #define _EXTRA_NOTE " (Should be " STRINGIFY(LINEAR_AXES) "+" STRINGIFY(E_STEPPERS) ")"
 #endif
 
-static_assert(COUNT(sanity_arr_1) >= LOGICAL_AXES,  "DEFAULT_AXIS_STEPS_PER_UNIT requires X, Y, Z and E elements.");
+static_assert(COUNT(sanity_arr_1) >= LOGICAL_AXES,  "DEFAULT_AXIS_STEPS_PER_UNIT requires " _LOGICAL_AXES_STR "elements.");
 static_assert(COUNT(sanity_arr_1) <= DISTINCT_AXES, "DEFAULT_AXIS_STEPS_PER_UNIT has too many elements." _EXTRA_NOTE);
 static_assert(   _ARR_TEST(1,0) && _ARR_TEST(1,1) && _ARR_TEST(1,2)
               && _ARR_TEST(1,3) && _ARR_TEST(1,4) && _ARR_TEST(1,5)
               && _ARR_TEST(1,6) && _ARR_TEST(1,7) && _ARR_TEST(1,8),
               "DEFAULT_AXIS_STEPS_PER_UNIT values must be positive.");
 
-static_assert(COUNT(sanity_arr_2) >= LOGICAL_AXES,  "DEFAULT_MAX_FEEDRATE requires X, Y, Z and E elements.");
+static_assert(COUNT(sanity_arr_2) >= LOGICAL_AXES,  "DEFAULT_MAX_FEEDRATE requires " _LOGICAL_AXES_STR "elements.");
 static_assert(COUNT(sanity_arr_2) <= DISTINCT_AXES, "DEFAULT_MAX_FEEDRATE has too many elements." _EXTRA_NOTE);
 static_assert(   _ARR_TEST(2,0) && _ARR_TEST(2,1) && _ARR_TEST(2,2)
               && _ARR_TEST(2,3) && _ARR_TEST(2,4) && _ARR_TEST(2,5)
               && _ARR_TEST(2,6) && _ARR_TEST(2,7) && _ARR_TEST(2,8),
               "DEFAULT_MAX_FEEDRATE values must be positive.");
 
-static_assert(COUNT(sanity_arr_3) >= LOGICAL_AXES,  "DEFAULT_MAX_ACCELERATION requires X, Y, Z and E elements.");
+static_assert(COUNT(sanity_arr_3) >= LOGICAL_AXES,  "DEFAULT_MAX_ACCELERATION requires " _LOGICAL_AXES_STR "elements.");
 static_assert(COUNT(sanity_arr_3) <= DISTINCT_AXES, "DEFAULT_MAX_ACCELERATION has too many elements." _EXTRA_NOTE);
 static_assert(   _ARR_TEST(3,0) && _ARR_TEST(3,1) && _ARR_TEST(3,2)
               && _ARR_TEST(3,3) && _ARR_TEST(3,4) && _ARR_TEST(3,5)
               && _ARR_TEST(3,6) && _ARR_TEST(3,7) && _ARR_TEST(3,8),
               "DEFAULT_MAX_ACCELERATION values must be positive.");
 
+static_assert(COUNT(sanity_arr_7) == LINEAR_AXES,  "HOMING_FEEDRATE_MM_M requires " _LINEAR_AXES_STR "elements (and no others).");
+static_assert(   _ARR_TEST(3,0) && _ARR_TEST(3,1) && _ARR_TEST(3,2)
+              && _ARR_TEST(3,3) && _ARR_TEST(3,4) && _ARR_TEST(3,5)
+              && _ARR_TEST(3,6) && _ARR_TEST(3,7) && _ARR_TEST(3,8),
+              "HOMING_FEEDRATE_MM_M values must be positive.");
+
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
   #ifdef MAX_ACCEL_EDIT_VALUES
     constexpr float sanity_arr_4[] = MAX_ACCEL_EDIT_VALUES;
-    static_assert(COUNT(sanity_arr_4) >= LOGICAL_AXES, "MAX_ACCEL_EDIT_VALUES requires X, Y, Z and E elements.");
-    static_assert(COUNT(sanity_arr_4) <= LOGICAL_AXES, "MAX_ACCEL_EDIT_VALUES has too many elements. X, Y, Z and E elements only.");
+    static_assert(COUNT(sanity_arr_4) >= LOGICAL_AXES, "MAX_ACCEL_EDIT_VALUES requires " _LOGICAL_AXES_STR "elements.");
+    static_assert(COUNT(sanity_arr_4) <= LOGICAL_AXES, "MAX_ACCEL_EDIT_VALUES has too many elements. " _LOGICAL_AXES_STR "elements only.");
     static_assert(   _ARR_TEST(4,0) && _ARR_TEST(4,1) && _ARR_TEST(4,2)
                   && _ARR_TEST(4,3) && _ARR_TEST(4,4) && _ARR_TEST(4,5)
                   && _ARR_TEST(4,6) && _ARR_TEST(4,7) && _ARR_TEST(4,8),
@@ -3027,8 +3092,8 @@ static_assert(   _ARR_TEST(3,0) && _ARR_TEST(3,1) && _ARR_TEST(3,2)
 #if ENABLED(LIMITED_MAX_FR_EDITING)
   #ifdef MAX_FEEDRATE_EDIT_VALUES
     constexpr float sanity_arr_5[] = MAX_FEEDRATE_EDIT_VALUES;
-    static_assert(COUNT(sanity_arr_5) >= LOGICAL_AXES, "MAX_FEEDRATE_EDIT_VALUES requires X, Y, Z and E elements.");
-    static_assert(COUNT(sanity_arr_5) <= LOGICAL_AXES, "MAX_FEEDRATE_EDIT_VALUES has too many elements. X, Y, Z and E elements only.");
+    static_assert(COUNT(sanity_arr_5) >= LOGICAL_AXES, "MAX_FEEDRATE_EDIT_VALUES requires " _LOGICAL_AXES_STR "elements.");
+    static_assert(COUNT(sanity_arr_5) <= LOGICAL_AXES, "MAX_FEEDRATE_EDIT_VALUES has too many elements. " _LOGICAL_AXES_STR "elements only.");
     static_assert(   _ARR_TEST(5,0) && _ARR_TEST(5,1) && _ARR_TEST(5,2)
                   && _ARR_TEST(5,3) && _ARR_TEST(5,4) && _ARR_TEST(5,5)
                   && _ARR_TEST(5,6) && _ARR_TEST(5,7) && _ARR_TEST(5,8),
@@ -3039,8 +3104,8 @@ static_assert(   _ARR_TEST(3,0) && _ARR_TEST(3,1) && _ARR_TEST(3,2)
 #if ENABLED(LIMITED_JERK_EDITING)
   #ifdef MAX_JERK_EDIT_VALUES
     constexpr float sanity_arr_6[] = MAX_JERK_EDIT_VALUES;
-    static_assert(COUNT(sanity_arr_6) >= LOGICAL_AXES, "MAX_JERK_EDIT_VALUES requires X, Y, Z and E elements.");
-    static_assert(COUNT(sanity_arr_6) <= LOGICAL_AXES, "MAX_JERK_EDIT_VALUES has too many elements. X, Y, Z and E elements only.");
+    static_assert(COUNT(sanity_arr_6) >= LOGICAL_AXES, "MAX_JERK_EDIT_VALUES requires " _LOGICAL_AXES_STR "elements.");
+    static_assert(COUNT(sanity_arr_6) <= LOGICAL_AXES, "MAX_JERK_EDIT_VALUES has too many elements. " _LOGICAL_AXES_STR "elements only.");
     static_assert(   _ARR_TEST(6,0) && _ARR_TEST(6,1) && _ARR_TEST(6,2)
                   && _ARR_TEST(6,3) && _ARR_TEST(6,4) && _ARR_TEST(6,5)
                   && _ARR_TEST(6,6) && _ARR_TEST(6,7) && _ARR_TEST(6,8),
@@ -3495,7 +3560,5 @@ static_assert(   _ARR_TEST(3,0) && _ARR_TEST(3,1) && _ARR_TEST(3,2)
 
 // Misc. Cleanup
 #undef _TEST_PWM
-
-#if ENABLED(FREEZE_FEATURE) && !PIN_EXISTS(FREEZE)
-  #error "FREEZE_FEATURE requires a FREEZE_PIN to be defined."
-#endif
+#undef _LINEAR_AXES_STR
+#undef _LOGICAL_AXES_STR
