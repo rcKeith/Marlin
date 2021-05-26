@@ -89,8 +89,12 @@
 #endif
 
 #define X_MAX_LENGTH (X_MAX_POS - (X_MIN_POS))
-#define Y_MAX_LENGTH (Y_MAX_POS - (Y_MIN_POS))
-#define Z_MAX_LENGTH (Z_MAX_POS - (Z_MIN_POS))
+#if LINEAR_AXES >= XY
+  #define Y_MAX_LENGTH (Y_MAX_POS - (Y_MIN_POS))
+#endif
+#if LINEAR_AXES >= XYZ
+  #define Z_MAX_LENGTH (Z_MAX_POS - (Z_MIN_POS))
+#endif
 #if LINEAR_AXES >= 4
   #define I_MAX_LENGTH (I_MAX_POS - (I_MIN_POS))
 #endif
@@ -105,7 +109,7 @@
 #ifndef X_BED_SIZE
   #define X_BED_SIZE X_MAX_LENGTH
 #endif
-#ifndef Y_BED_SIZE
+#if LINEAR_AXES >= XY && !defined(Y_BED_SIZE)
   #define Y_BED_SIZE Y_MAX_LENGTH
 #endif
 #if LINEAR_AXES >= 4 && !defined(I_BED_SIZE)
@@ -125,7 +129,9 @@
 
 // Define center values for future use
 #define _X_HALF_BED ((X_BED_SIZE) / 2)
-#define _Y_HALF_BED ((Y_BED_SIZE) / 2)
+#if LINEAR_AXES >= XY
+  #define _Y_HALF_BED ((Y_BED_SIZE) / 2)
+#endif
 #if LINEAR_AXES >= 4
   #define _I_HALF_IMAX ((I_BED_SIZE) / 2)
 #endif
@@ -137,8 +143,10 @@
 #endif
 
 #define X_CENTER TERN(BED_CENTER_AT_0_0, 0, _X_HALF_BED)
-#define Y_CENTER TERN(BED_CENTER_AT_0_0, 0, _Y_HALF_BED)
-#define XY_CENTER { X_CENTER, Y_CENTER }
+#if LINEAR_AXES >= XY
+  #define Y_CENTER TERN(BED_CENTER_AT_0_0, 0, _Y_HALF_BED)
+  #define XY_CENTER { X_CENTER, Y_CENTER }
+#endif
 #if LINEAR_AXES >= 4
   #define I_CENTER TERN(BED_CENTER_AT_0_0, 0, _I_HALF_BED)
 #endif
@@ -152,8 +160,10 @@
 // Get the linear boundaries of the bed
 #define X_MIN_BED (X_CENTER - _X_HALF_BED)
 #define X_MAX_BED (X_MIN_BED + X_BED_SIZE)
-#define Y_MIN_BED (Y_CENTER - _Y_HALF_BED)
-#define Y_MAX_BED (Y_MIN_BED + Y_BED_SIZE)
+#if LINEAR_AXES >= XY
+  #define Y_MIN_BED (Y_CENTER - _Y_HALF_BED)
+  #define Y_MAX_BED (Y_MIN_BED + Y_BED_SIZE)
+#endif
 #if LINEAR_AXES >= 4
   #define I_MINIM (I_CENTER - _I_HALF_BED_SIZE)
   #define I_MAXIM (I_MINIM + I_BED_SIZE)
@@ -222,14 +232,16 @@
   #endif
 #endif
 
-#ifdef MANUAL_Y_HOME_POS
-  #define Y_HOME_POS MANUAL_Y_HOME_POS
-#else
-  #define Y_END_POS TERN(Y_HOME_TO_MIN, Y_MIN_POS, Y_MAX_POS)
-  #if ENABLED(BED_CENTER_AT_0_0)
-    #define Y_HOME_POS TERN(DELTA, 0, Y_END_POS)
+#if LINEAR_AXES >= XY
+  #ifdef MANUAL_Y_HOME_POS
+    #define Y_HOME_POS MANUAL_Y_HOME_POS
   #else
-    #define Y_HOME_POS TERN(DELTA, Y_MIN_POS + (Y_BED_SIZE) * 0.5, Y_END_POS)
+    #define Y_END_POS TERN(Y_HOME_TO_MIN, Y_MIN_POS, Y_MAX_POS)
+    #if ENABLED(BED_CENTER_AT_0_0)
+      #define Y_HOME_POS TERN(DELTA, 0, Y_END_POS)
+    #else
+      #define Y_HOME_POS TERN(DELTA, Y_MIN_POS + (Y_BED_SIZE) * 0.5, Y_END_POS)
+    #endif
   #endif
 #endif
 
@@ -455,10 +467,10 @@
 #ifndef DISABLE_INACTIVE_X
   #define DISABLE_INACTIVE_X DISABLE_X
 #endif
-#ifndef DISABLE_INACTIVE_Y
+#if LINEAR_AXES >= XY && !defined(DISABLE_INACTIVE_Y)
   #define DISABLE_INACTIVE_Y DISABLE_Y
 #endif
-#ifndef DISABLE_INACTIVE_Z
+#if LINEAR_AXES >= XYZ && !defined(DISABLE_INACTIVE_Z)
   #define DISABLE_INACTIVE_Z DISABLE_Z
 #endif
 #ifndef DISABLE_INACTIVE_E
@@ -1592,30 +1604,32 @@
   #define HAS_X2_MS_PINS 1
 #endif
 
-#if PIN_EXISTS(Y_ENABLE) || (ENABLED(SOFTWARE_DRIVER_ENABLE) && AXIS_IS_TMC(Y))
-  #define HAS_Y_ENABLE 1
-#endif
-#if PIN_EXISTS(Y_DIR)
-  #define HAS_Y_DIR 1
-#endif
-#if PIN_EXISTS(Y_STEP)
-  #define HAS_Y_STEP 1
-#endif
-#if PIN_EXISTS(Y_MS1)
-  #define HAS_Y_MS_PINS 1
-#endif
+#if LINEAR_AXES >= XY
+  #if PIN_EXISTS(Y_ENABLE) || (ENABLED(SOFTWARE_DRIVER_ENABLE) && AXIS_IS_TMC(Y))
+    #define HAS_Y_ENABLE 1
+  #endif
+  #if PIN_EXISTS(Y_DIR)
+    #define HAS_Y_DIR 1
+  #endif
+  #if PIN_EXISTS(Y_STEP)
+    #define HAS_Y_STEP 1
+  #endif
+  #if PIN_EXISTS(Y_MS1)
+    #define HAS_Y_MS_PINS 1
+  #endif
 
-#if PIN_EXISTS(Y2_ENABLE) || (ENABLED(SOFTWARE_DRIVER_ENABLE) && AXIS_IS_TMC(Y2))
-  #define HAS_Y2_ENABLE 1
-#endif
-#if PIN_EXISTS(Y2_DIR)
-  #define HAS_Y2_DIR 1
-#endif
-#if PIN_EXISTS(Y2_STEP)
-  #define HAS_Y2_STEP 1
-#endif
-#if PIN_EXISTS(Y2_MS1)
-  #define HAS_Y2_MS_PINS 1
+  #if PIN_EXISTS(Y2_ENABLE) || (ENABLED(SOFTWARE_DRIVER_ENABLE) && AXIS_IS_TMC(Y2))
+    #define HAS_Y2_ENABLE 1
+  #endif
+  #if PIN_EXISTS(Y2_DIR)
+    #define HAS_Y2_DIR 1
+  #endif
+  #if PIN_EXISTS(Y2_STEP)
+    #define HAS_Y2_STEP 1
+  #endif
+  #if PIN_EXISTS(Y2_MS1)
+    #define HAS_Y2_MS_PINS 1
+  #endif
 #endif
 
 #if LINEAR_AXES >= XYZ

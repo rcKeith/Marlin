@@ -333,7 +333,9 @@ void do_blocking_move_to(const xyz_pos_t &raw, const_feedRate_t fr_mm_s=0.0f);
 void do_blocking_move_to(const xyze_pos_t &raw, const_feedRate_t fr_mm_s=0.0f);
 
 void do_blocking_move_to_x(const_float_t rx, const_feedRate_t fr_mm_s=0.0f);
-void do_blocking_move_to_y(const_float_t ry, const_feedRate_t fr_mm_s=0.0f);
+#if LINEAR_AXES >= XY
+  void do_blocking_move_to_y(const_float_t ry, const_feedRate_t fr_mm_s=0.0f);
+#endif
 #if HAS_Z_AXIS
   void do_blocking_move_to_z(const_float_t rz, const_feedRate_t fr_mm_s=0.0f);
 #endif
@@ -350,10 +352,12 @@ void do_blocking_move_to_y(const_float_t ry, const_feedRate_t fr_mm_s=0.0f);
   void do_blocking_move_to_xyzij_k(const xyze_pos_t &raw, const_float_t k, const_feedRate_t fr_mm_s=0.0f);
 #endif
 
-void do_blocking_move_to_xy(const_float_t rx, const_float_t ry, const_feedRate_t fr_mm_s=0.0f);
-void do_blocking_move_to_xy(const xy_pos_t &raw, const_feedRate_t fr_mm_s=0.0f);
-FORCE_INLINE void do_blocking_move_to_xy(const xyz_pos_t &raw, const_feedRate_t fr_mm_s=0.0f)  { do_blocking_move_to_xy(xy_pos_t(raw), fr_mm_s); }
-FORCE_INLINE void do_blocking_move_to_xy(const xyze_pos_t &raw, const_feedRate_t fr_mm_s=0.0f) { do_blocking_move_to_xy(xy_pos_t(raw), fr_mm_s); }
+#if LINEAR_AXES >= XY
+  void do_blocking_move_to_xy(const_float_t rx, const_float_t ry, const_feedRate_t fr_mm_s=0.0f);
+  void do_blocking_move_to_xy(const xy_pos_t &raw, const_feedRate_t fr_mm_s=0.0f);
+  FORCE_INLINE void do_blocking_move_to_xy(const xyz_pos_t &raw, const_feedRate_t fr_mm_s=0.0f)  { do_blocking_move_to_xy(xy_pos_t(raw), fr_mm_s); }
+  FORCE_INLINE void do_blocking_move_to_xy(const xyze_pos_t &raw, const_feedRate_t fr_mm_s=0.0f) { do_blocking_move_to_xy(xy_pos_t(raw), fr_mm_s); }
+#endif
 
 #if HAS_Z_AXIS
   void do_blocking_move_to_xy_z(const xy_pos_t &raw, const_float_t z, const_feedRate_t fr_mm_s=0.0f);
@@ -467,12 +471,15 @@ FORCE_INLINE bool all_axes_trusted()                        { return linear_bits
   FORCE_INLINE void toNative(xyze_pos_t&)  {}
 #endif
 #define LOGICAL_X_POSITION(POS) NATIVE_TO_LOGICAL(POS, X_AXIS)
-#define LOGICAL_Y_POSITION(POS) NATIVE_TO_LOGICAL(POS, Y_AXIS)
-#define LOGICAL_Z_POSITION(POS) NATIVE_TO_LOGICAL(POS, Z_AXIS)
 #define RAW_X_POSITION(POS)     LOGICAL_TO_NATIVE(POS, X_AXIS)
-#define RAW_Y_POSITION(POS)     LOGICAL_TO_NATIVE(POS, Y_AXIS)
-#define RAW_Z_POSITION(POS)     LOGICAL_TO_NATIVE(POS, Z_AXIS)
-
+#if LINEAR_AXES >= XY
+  #define LOGICAL_Y_POSITION(POS) NATIVE_TO_LOGICAL(POS, Y_AXIS)
+  #define RAW_Y_POSITION(POS)     LOGICAL_TO_NATIVE(POS, Y_AXIS)
+#endif
+#if LINEAR_AXES >= XYZ
+  #define LOGICAL_Z_POSITION(POS) NATIVE_TO_LOGICAL(POS, Z_AXIS)
+  #define RAW_Z_POSITION(POS)     LOGICAL_TO_NATIVE(POS, Z_AXIS)
+#endif
 #if LINEAR_AXES >= 4
   #define LOGICAL_I_POSITION(POS) NATIVE_TO_LOGICAL(POS, I_AXIS)
   #define RAW_I_POSITION(POS)     LOGICAL_TO_NATIVE(POS, I_AXIS)

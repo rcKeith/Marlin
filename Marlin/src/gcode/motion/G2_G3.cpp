@@ -112,7 +112,6 @@ void plan_arc(
   #if HAS_Z_AXIS
     float linear_travel = cart[l_axis] - start_L;
   #endif
-
   #if HAS_EXTRUDERS
     float extruder_travel = cart.e - current_position.e;
   #endif

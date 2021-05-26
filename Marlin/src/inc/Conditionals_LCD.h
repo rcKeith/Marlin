@@ -1124,10 +1124,10 @@
 #ifndef INVERT_X_DIR
   #define INVERT_X_DIR false
 #endif
-#ifndef INVERT_Y_DIR
+#if LINEAR_AXES >= XY && !defined(INVERT_Y_DIR)
   #define INVERT_Y_DIR false
 #endif
-#ifndef INVERT_Z_DIR
+#if HAS_Z_AXIS && !defined(INVERT_Z_DIR)
   #define INVERT_Z_DIR false
 #endif
 #if LINEAR_AXES >= 4 && !defined(INVERT_I_DIR)
@@ -1139,7 +1139,7 @@
 #if LINEAR_AXES >= 6 && !defined(INVERT_K_DIR)
   #define INVERT_K_DIR false
 #endif
-#ifndef INVERT_E_DIR
+#if HAS_EXTRUDERS && !defined(INVERT_E_DIR)
   #define INVERT_E_DIR false
 #endif
 

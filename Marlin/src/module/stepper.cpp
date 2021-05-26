@@ -2960,9 +2960,7 @@ void Stepper::report_positions() {
   // No other ISR should ever interrupt this!
   void Stepper::do_babystep(const AxisEnum axis, const bool direction) {
 
-    #if DISABLED(INTEGRATED_BABYSTEPPING)
-      cli();
-    #endif
+    IF_DISABLED(INTEGRATED_BABYSTEPPING, cli());
 
     switch (axis) {
 
@@ -3006,7 +3004,6 @@ void Stepper::report_positions() {
           ENABLE_AXIS_X();
           ENABLE_AXIS_Y();
           ENABLE_AXIS_Z();
-
           ENABLE_AXIS_I();
           ENABLE_AXIS_J();
           ENABLE_AXIS_K();
@@ -3016,9 +3013,12 @@ void Stepper::report_positions() {
           const xyz_byte_t old_dir = LINEAR_AXIS_ARRAY(X_DIR_READ(), Y_DIR_READ(), Z_DIR_READ(), I_DIR_READ(), J_DIR_READ(), K_DIR_READ());
 
           X_DIR_WRITE(INVERT_X_DIR ^ z_direction);
-          Y_DIR_WRITE(INVERT_Y_DIR ^ z_direction);
-          Z_DIR_WRITE(INVERT_Z_DIR ^ z_direction);
-
+          #ifdef Y_DIR_WRITE
+            Y_DIR_WRITE(INVERT_Y_DIR ^ z_direction);
+          #endif
+          #ifdef Z_DIR_WRITE
+            Z_DIR_WRITE(INVERT_Z_DIR ^ z_direction);
+          #endif
           #ifdef I_DIR_WRITE
             I_DIR_WRITE(INVERT_I_DIR ^ z_direction);
           #endif
@@ -3034,9 +3034,12 @@ void Stepper::report_positions() {
           _SAVE_START();
 
           X_STEP_WRITE(!INVERT_X_STEP_PIN);
-          Y_STEP_WRITE(!INVERT_Y_STEP_PIN);
-          Z_STEP_WRITE(!INVERT_Z_STEP_PIN);
-
+          #ifdef Y_STEP_WRITE
+            Y_STEP_WRITE(!INVERT_Y_STEP_PIN);
+          #endif
+          #ifdef Z_STEP_WRITE
+            Z_STEP_WRITE(!INVERT_Z_STEP_PIN);
+          #endif
           #ifdef I_STEP_WRITE
             I_STEP_WRITE(!INVERT_I_STEP_PIN);
           #endif
@@ -3050,9 +3053,12 @@ void Stepper::report_positions() {
           _PULSE_WAIT();
 
           X_STEP_WRITE(INVERT_X_STEP_PIN);
-          Y_STEP_WRITE(INVERT_Y_STEP_PIN);
-          Z_STEP_WRITE(INVERT_Z_STEP_PIN);
-
+          #ifdef Y_STEP_WRITE
+            Y_STEP_WRITE(INVERT_Y_STEP_PIN);
+          #endif
+          #ifdef Z_STEP_WRITE
+            Z_STEP_WRITE(INVERT_Z_STEP_PIN);
+          #endif
           #ifdef I_STEP_WRITE
             I_STEP_WRITE(INVERT_I_STEP_PIN);
           #endif
@@ -3067,9 +3073,12 @@ void Stepper::report_positions() {
           EXTRA_DIR_WAIT_BEFORE();
 
           X_DIR_WRITE(old_dir.x);
-          Y_DIR_WRITE(old_dir.y);
-          Z_DIR_WRITE(old_dir.z);
-
+          #ifdef Y_DIR_WRITE
+            Y_DIR_WRITE(old_dir.y);
+          #endif
+          #ifdef Z_DIR_WRITE
+            Z_DIR_WRITE(old_dir.z);
+          #endif
           #ifdef I_DIR_WRITE
             I_DIR_WRITE(old_dir.i);
           #endif
@@ -3099,9 +3108,7 @@ void Stepper::report_positions() {
       default: break;
     }
 
-    #if DISABLED(INTEGRATED_BABYSTEPPING)
-      sei();
-    #endif
+    IF_DISABLED(INTEGRATED_BABYSTEPPING, sei());
   }
 
 #endif // BABYSTEPPING

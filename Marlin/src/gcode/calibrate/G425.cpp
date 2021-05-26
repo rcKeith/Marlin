@@ -73,7 +73,7 @@
 #if BOTH(CALIBRATION_MEASURE_LEFT, CALIBRATION_MEASURE_RIGHT)
   #define HAS_X_CENTER 1
 #endif
-#if BOTH(CALIBRATION_MEASURE_FRONT, CALIBRATION_MEASURE_BACK)
+#if LINEAR_AXES >= XY && BOTH(CALIBRATION_MEASURE_FRONT, CALIBRATION_MEASURE_BACK)
   #define HAS_Y_CENTER 1
 #endif
 #if LINEAR_AXES >= 4 && BOTH(CALIBRATION_MEASURE_IMIN, CALIBRATION_MEASURE_IMAX)
@@ -242,6 +242,14 @@ inline void probe_side(measurements_t &m, const float uncertainty, const side_t 
   park_above_object(m, uncertainty);
 
   switch (side) {
+    #if AXIS_CAN_CALIBRATE(X)
+      case RIGHT: dir = -1;
+      case LEFT:  axis = X_AXIS; break;
+    #endif
+    #if LINEAR_AXES >= 2 && AXIS_CAN_CALIBRATE(Y)
+      case BACK:  dir = -1;
+      case FRONT: axis = Y_AXIS; break;
+    #endif
     #if HAS_Z_AXIS && AXIS_CAN_CALIBRATE(Z)
       case TOP: {
         const float measurement = measure(Z_AXIS, -1, true, &m.backlash[TOP], uncertainty);
@@ -250,23 +258,15 @@ inline void probe_side(measurements_t &m, const float uncertainty, const side_t 
         return;
       }
     #endif
-    #if AXIS_CAN_CALIBRATE(X)
-      case RIGHT: dir = -1;
-      case LEFT:  axis = X_AXIS; break;
-    #endif
-    #if AXIS_CAN_CALIBRATE(Y)
-      case BACK:  dir = -1;
-      case FRONT: axis = Y_AXIS; break;
-    #endif
-    #if LINEAR_AXES >= 4
+    #if LINEAR_AXES >= 4 && AXIS_CAN_CALIBRATE(I)
       case IMINIMUM: dir = -1;
       case IMAXIMUM: axis = I_AXIS; break;
     #endif
-    #if LINEAR_AXES >= 5
+    #if LINEAR_AXES >= 5 && AXIS_CAN_CALIBRATE(J)
       case JMINIMUM: dir = -1;
       case JMAXIMUM: axis = J_AXIS; break;
     #endif
-    #if LINEAR_AXES >= 6
+    #if LINEAR_AXES >= 6 && AXIS_CAN_CALIBRATE(K)
       case KMINIMUM: dir = -1;
       case KMAXIMUM: axis = K_AXIS; break;
     #endif
@@ -362,11 +362,13 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
     #if ENABLED(CALIBRATION_MEASURE_RIGHT)
       SERIAL_ECHOLNPAIR("  Right: ", m.obj_side[RIGHT]);
     #endif
-    #if ENABLED(CALIBRATION_MEASURE_FRONT)
-      SERIAL_ECHOLNPAIR("  Front: ", m.obj_side[FRONT]);
-    #endif
-    #if ENABLED(CALIBRATION_MEASURE_BACK)
-      SERIAL_ECHOLNPAIR("  Back: ", m.obj_side[BACK]);
+    #if LINEAR_AXES >= XY
+      #if ENABLED(CALIBRATION_MEASURE_FRONT)
+        SERIAL_ECHOLNPAIR("  Front: ", m.obj_side[FRONT]);
+      #endif
+      #if ENABLED(CALIBRATION_MEASURE_BACK)
+        SERIAL_ECHOLNPAIR("  Back: ", m.obj_side[BACK]);
+      #endif
     #endif
     #if LINEAR_AXES >= 4
       #if ENABLED(CALIBRATION_MEASURE_IMIN)
@@ -426,7 +428,7 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
         SERIAL_ECHOLNPAIR("  Right: ", m.backlash[RIGHT]);
       #endif
     #endif
-    #if AXIS_CAN_CALIBRATE(Y)
+    #if LINEAR_AXES >= XY && AXIS_CAN_CALIBRATE(Y)
       #if ENABLED(CALIBRATION_MEASURE_FRONT)
         SERIAL_ECHOLNPAIR("  Front: ", m.backlash[FRONT]);
       #endif
@@ -437,7 +439,7 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
     #if HAS_Z_AXIS && AXIS_CAN_CALIBRATE(Z)
       SERIAL_ECHOLNPAIR("  Top: ", m.backlash[TOP]);
     #endif
-    #if LINEAR_AXES >= 4
+    #if LINEAR_AXES >= 4 AXIS_CAN_CALIBRATE(I)
       #if ENABLED(CALIBRATION_MEASURE_IMIN)
         SERIAL_ECHOLNPAIR("  " STR_I_MIN ": ", m.backlash[IMINIMUM]);
       #endif
@@ -445,7 +447,7 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
         SERIAL_ECHOLNPAIR("  " STR_I_MAX ": ", m.backlash[IMAXIMUM]);
       #endif
     #endif
-    #if LINEAR_AXES >= 5
+    #if LINEAR_AXES >= 5 AXIS_CAN_CALIBRATE(J)
       #if ENABLED(CALIBRATION_MEASURE_JMIN)
         SERIAL_ECHOLNPAIR("  " STR_J_MIN ": ", m.backlash[JMINIMUM]);
       #endif
@@ -453,7 +455,7 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
         SERIAL_ECHOLNPAIR("  " STR_J_MAX ": ", m.backlash[JMAXIMUM]);
       #endif
     #endif
-    #if LINEAR_AXES >= 6
+    #if LINEAR_AXES >= 6 AXIS_CAN_CALIBRATE(K)
       #if ENABLED(CALIBRATION_MEASURE_KMIN)
         SERIAL_ECHOLNPAIR("  " STR_K_MIN ": ", m.backlash[KMINIMUM]);
       #endif
@@ -468,13 +470,22 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
     SERIAL_CHAR('T');
     SERIAL_ECHO(active_extruder);
     SERIAL_ECHOLNPGM(" Positional Error:");
-    #if HAS_X_CENTER
+    #if HAS_X_CENTER && AXIS_CAN_CALIBRATE(X)
       SERIAL_ECHOLNPAIR_P(SP_X_STR, m.pos_error.x);
     #endif
-    #if HAS_Y_CENTER
+    #if HAS_Y_CENTER && AXIS_CAN_CALIBRATE(Y)
       SERIAL_ECHOLNPAIR_P(SP_Y_STR, m.pos_error.y);
     #endif
     #if HAS_Z_AXIS && AXIS_CAN_CALIBRATE(Z)
+      SERIAL_ECHOLNPAIR_P(SP_Z_STR, m.pos_error.z);
+    #endif
+    #if HAS_I_CENTER && AXIS_CAN_CALIBRATE(I)
+      SERIAL_ECHOLNPAIR_P(SP_I_STR, m.pos_error.i);
+    #endif
+    #if HAS_J_CENTER && AXIS_CAN_CALIBRATE(J)
+      SERIAL_ECHOLNPAIR_P(SP_J_STR, m.pos_error.j);
+    #endif
+    #if HAS_K_CENTER && AXIS_CAN_CALIBRATE(K)
       SERIAL_ECHOLNPAIR_P(SP_Z_STR, m.pos_error.z);
     #endif
     SERIAL_EOL();
@@ -482,17 +493,14 @@ inline void probe_sides(measurements_t &m, const float uncertainty) {
 
   inline void report_measured_nozzle_dimensions(const measurements_t &m) {
     SERIAL_ECHOLNPGM("Nozzle Tip Outer Dimensions:");
-    #if HAS_X_CENTER || HAS_Y_CENTER
-      #if HAS_X_CENTER
-        SERIAL_ECHOLNPAIR_P(SP_X_STR, m.nozzle_outer_dimension.x);
-      #endif
-      #if HAS_Y_CENTER
-        SERIAL_ECHOLNPAIR_P(SP_Y_STR, m.nozzle_outer_dimension.y);
-      #endif
-    #else
-      UNUSED(m);
+    #if HAS_X_CENTER
+      SERIAL_ECHOLNPAIR_P(SP_X_STR, m.nozzle_outer_dimension.x);
+    #endif
+    #if HAS_Y_CENTER
+      SERIAL_ECHOLNPAIR_P(SP_Y_STR, m.nozzle_outer_dimension.y);
     #endif
     SERIAL_EOL();
+    UNUSED(m);
   }
 
   #if HAS_HOTEND_OFFSET
@@ -608,11 +616,7 @@ inline void calibrate_toolhead(measurements_t &m, const float uncertainty, const
   TEMPORARY_BACKLASH_CORRECTION(all_on);
   TEMPORARY_BACKLASH_SMOOTHING(0.0f);
 
-  #if HAS_MULTI_HOTEND
-    set_nozzle(m, extruder);
-  #else
-    UNUSED(extruder);
-  #endif
+  TERN(HAS_MULTI_HOTEND, set_nozzle(m, extruder), UNUSED(extruder));
 
   probe_sides(m, uncertainty);
 
