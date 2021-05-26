@@ -58,9 +58,9 @@ void plan_arc(
     AxisEnum p_axis, q_axis OPTARG(HAS_Z_AXIS, l_axis);
     switch (gcode.workspace_plane) {
       default:
-      case GcodeSuite::PLANE_XY: p_axis = X_AXIS; q_axis = Y_AXIS; OPTARG(HAS_Z_AXIS, l_axis = Z_AXIS); break;
-      case GcodeSuite::PLANE_YZ: p_axis = Y_AXIS; q_axis = Z_AXIS; OPTARG(HAS_Z_AXIS, l_axis = X_AXIS); break;
-      case GcodeSuite::PLANE_ZX: p_axis = Z_AXIS; q_axis = X_AXIS; OPTARG(HAS_Z_AXIS, l_axis = Y_AXIS); break;
+      case GcodeSuite::PLANE_XY: p_axis = X_AXIS; q_axis = Y_AXIS; TERN_(HAS_Z_AXIS, l_axis = Z_AXIS); break;
+      case GcodeSuite::PLANE_YZ: p_axis = Y_AXIS; q_axis = Z_AXIS; TERN_(HAS_Z_AXIS, l_axis = X_AXIS); break;
+      case GcodeSuite::PLANE_ZX: p_axis = Z_AXIS; q_axis = X_AXIS; TERN_(HAS_Z_AXIS, l_axis = Y_AXIS); break;
     }
   #else
     constexpr AxisEnum p_axis = X_AXIS, q_axis = Y_AXIS OPTARG(HAS_Z_AXIS, l_axis = Z_AXIS);
