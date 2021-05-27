@@ -2826,12 +2826,9 @@ void Planner::buffer_sync_block(TERN_(LASER_SYNCHRONOUS_M106_M107, uint8_t sync_
  *
  * Return 'false' if no segment was queued due to cleaning, cold extrusion, full queue, etc.
  */
-bool Planner::buffer_segment(
-  LOGICAL_AXIS_LIST(const_float_t e,
-                    const_float_t a, const_float_t b, const_float_t c,
-                    const_float_t i, const_float_t j, const_float_t k)
+bool Planner::buffer_segment(const abce_pos_t &abce
   OPTARG(HAS_DIST_MM_ARG, const xyze_float_t &cart_dist_mm)
-  , const_feedRate_t fr_mm_s, const uint8_t extruder, const_float_t millimeters/*=0.0*/
+  , const_feedRate_t fr_mm_s, const uint8_t extruder/*=active_extruder*/, const_float_t millimeters/*=0.0*/
 ) {
 
   // If we are cleaning, do not accept queuing of movements
@@ -2849,66 +2846,66 @@ bool Planner::buffer_segment(
   // Calculate target position in absolute steps
   const abce_long_t target = {
      LOGICAL_AXIS_LIST(
-      int32_t(LROUND(e * settings.axis_steps_per_mm[E_AXIS_N(extruder)])),
-      int32_t(LROUND(a * settings.axis_steps_per_mm[A_AXIS])),
-      int32_t(LROUND(b * settings.axis_steps_per_mm[B_AXIS])),
-      int32_t(LROUND(c * settings.axis_steps_per_mm[C_AXIS])),
-      int32_t(LROUND(i * settings.axis_steps_per_mm[I_AXIS])), // FIXME (DerAndere): Multiplication by 4.0 is a work-around for issue with wrong internal steps per mm
-      int32_t(LROUND(j * settings.axis_steps_per_mm[J_AXIS])),
-      int32_t(LROUND(k * settings.axis_steps_per_mm[K_AXIS]))
+      int32_t(LROUND(abce.e * settings.axis_steps_per_mm[E_AXIS_N(extruder)])),
+      int32_t(LROUND(abce.a * settings.axis_steps_per_mm[A_AXIS])),
+      int32_t(LROUND(abce.b * settings.axis_steps_per_mm[B_AXIS])),
+      int32_t(LROUND(abce.c * settings.axis_steps_per_mm[C_AXIS])),
+      int32_t(LROUND(abce.i * settings.axis_steps_per_mm[I_AXIS])), // FIXME (DerAndere): Multiplication by 4.0 is a work-around for issue with wrong internal steps per mm
+      int32_t(LROUND(abce.j * settings.axis_steps_per_mm[J_AXIS])),
+      int32_t(LROUND(abce.k * settings.axis_steps_per_mm[K_AXIS]))
     )
   };
 
   #if HAS_POSITION_FLOAT
-    const xyze_pos_t target_float = LOGICAL_AXIS_ARRAY(e, a, b, c, i, j, k);
+    const xyze_pos_t target_float = abce;
   #endif
 
   #if HAS_EXTRUDERS
     // DRYRUN prevents E moves from taking place
     if (DEBUGGING(DRYRUN) || TERN0(CANCEL_OBJECTS, cancelable.skipping)) {
       position.e = target.e;
-      TERN_(HAS_POSITION_FLOAT, position_float.e = e);
+      TERN_(HAS_POSITION_FLOAT, position_float.e = abce.e);
     }
   #endif
 
   /* <-- add a slash to enable
     SERIAL_ECHOPAIR("  buffer_segment FR:", fr_mm_s);
     #if IS_KINEMATIC
-      SERIAL_ECHOPAIR(" A:", a, " (", position.a, "->", target.a, ") B:", b);
+      SERIAL_ECHOPAIR(" A:", abce.a, " (", position.a, "->", target.a, ") B:", abce.b);
     #else
-      SERIAL_ECHOPAIR_P(SP_X_LBL, a);
+      SERIAL_ECHOPAIR_P(SP_X_LBL, abce.a);
       SERIAL_ECHOPAIR(" (", position.x, "->", target.x);
       SERIAL_CHAR(')');
-      SERIAL_ECHOPAIR_P(SP_Y_LBL, b);
+      SERIAL_ECHOPAIR_P(SP_Y_LBL, abce.b);
     #endif
     SERIAL_ECHOPAIR(" (", position.y, "->", target.y);
     #if LINEAR_AXES >= ABC
       #if ENABLED(DELTA)
-        SERIAL_ECHOPAIR(") C:", c);
+        SERIAL_ECHOPAIR(") C:", abce.c);
       #else
         SERIAL_CHAR(')');
-        SERIAL_ECHOPAIR_P(SP_Z_LBL, c);
+        SERIAL_ECHOPAIR_P(SP_Z_LBL, abce.c);
       #endif
       SERIAL_ECHOPAIR(" (", position.z, "->", target.z);
       SERIAL_CHAR(')');
     #endif
     #if LINEAR_AXES >= 4
-      SERIAL_ECHOPAIR_P(SP_I_LBL, i);
+      SERIAL_ECHOPAIR_P(SP_I_LBL, abce.i);
       SERIAL_ECHOPAIR(" (", position.i, "->", target.i); // FIXME (DerAndere): Introduce work-around for issue with wrong internal steps per mm and feedrate for I_AXIS
       SERIAL_CHAR(')');
     #endif
     #if LINEAR_AXES >= 5
-      SERIAL_ECHOPAIR_P(SP_J_LBL, j);
+      SERIAL_ECHOPAIR_P(SP_J_LBL, abce.j);
       SERIAL_ECHOPAIR(" (", position.j, "->", target.j);
       SERIAL_CHAR(')');
     #endif
     #if LINEAR_AXES >= 6
-      SERIAL_ECHOPAIR_P(SP_K_LBL, k);
+      SERIAL_ECHOPAIR_P(SP_K_LBL, abce.k);
       SERIAL_ECHOPAIR(" (", position.k, "->", target.k);
       SERIAL_CHAR(')');
     #endif
     #if HAS_EXTRUDERS
-      SERIAL_ECHOPAIR_P(SP_E_LBL, e);
+      SERIAL_ECHOPAIR_P(SP_E_LBL, abce.e);
       SERIAL_ECHOLNPAIR(" (", position.e, "->", target.e, ")");
     #else
       SERIAL_EOL();
@@ -2935,34 +2932,30 @@ bool Planner::buffer_segment(
  * The target is cartesian. It's translated to
  * delta/scara if needed.
  *
- *  rx,ry,rz,...,e  - target position in mm or degrees
+ *  cart            - target position in mm or degrees
  *  fr_mm_s         - (target) speed of the move (mm/s)
  *  extruder        - target extruder
  *  millimeters     - the length of the movement, if known
  *  inv_duration    - the reciprocal if the duration of the movement, if known (kinematic only if feeedrate scaling is enabled)
  */
-bool Planner::buffer_line(
-  LOGICAL_AXIS_LIST(const_float_t e,
-                    const_float_t rx, const_float_t ry, const_float_t rz,
-                    const_float_t ri, const_float_t rj, const_float_t rk)
-  , const feedRate_t &fr_mm_s, const uint8_t extruder, const float millimeters
-  OPTARG(SCARA_FEEDRATE_SCALING, const_float_t inv_duration)
+bool Planner::buffer_line(const xyze_pos_t &cart, const_feedRate_t fr_mm_s, const uint8_t extruder/*=active_extruder*/, const float millimeters/*=0.0*/
+  OPTARG(SCARA_FEEDRATE_SCALING, const_float_t inv_duration/*=0.0*/)
 ) {
-  xyze_pos_t machine = LOGICAL_AXIS_ARRAY(e, rx, ry, rz, ri, rj, rk);
+  xyze_pos_t machine = cart;
   TERN_(HAS_POSITION_MODIFIERS, apply_modifiers(machine));
 
   #if IS_KINEMATIC
 
     #if HAS_JUNCTION_DEVIATION
       const xyze_pos_t cart_dist_mm = LOGICAL_AXIS_ARRAY(
-        e  - position_cart.e,
-        rx - position_cart.x, ry - position_cart.y, rz - position_cart.z,
-        ri - position_cart.i, rj - position_cart.j, rj - position_cart.k
+        cart.e - position_cart.e,
+        cart.x - position_cart.x, cart.y - position_cart.y, cart.z - position_cart.z,
+        cart.i - position_cart.i, cart.j - position_cart.j, cart.j - position_cart.k
       );
     #else
       const xyz_pos_t cart_dist_mm = LINEAR_AXIS_ARRAY(
-        rx - position_cart.x, ry - position_cart.y, rz - position_cart.z,
-        ri - position_cart.i, rj - position_cart.j, rj - position_cart.k
+        cart.x - position_cart.x, cart.y - position_cart.y, cart.z - position_cart.z,
+        cart.i - position_cart.i, cart.j - position_cart.j, cart.j - position_cart.k
       );
     #endif
 
@@ -2980,12 +2973,12 @@ bool Planner::buffer_line(
     #else
       const feedRate_t feedrate = fr_mm_s;
     #endif
-    if (buffer_segment(delta.a, delta.b, delta.c, machine.e OPTARG(HAS_JUNCTION_DEVIATION, cart_dist_mm), feedrate, extruder, mm)) {
-      position_cart.set(rx, ry, rz, e);
+    delta.e = machine.e;
+    if (buffer_segment(delta OPTARG(HAS_DIST_MM_ARG, cart_dist_mm), feedrate, extruder, mm)) {
+      position_cart = cart;
       return true;
     }
-    else
-      return false;
+    return false;
   #else
     return buffer_segment(machine, fr_mm_s, extruder, millimeters);
   #endif
@@ -3051,27 +3044,23 @@ bool Planner::buffer_line(
 #endif // DIRECT_STEPPING
 
 /**
- * Directly set the planner ABC position (and stepper positions)
+ * Directly set the planner ABCE position (and stepper positions)
  * converting mm (or angles for SCARA) into steps.
  *
- * The provided ABC position is in machine units.
+ * The provided ABCE position is in machine units.
  */
-void Planner::set_machine_position_mm(
-  LOGICAL_AXIS_LIST(const_float_t e,
-                    const_float_t a, const_float_t b, const_float_t c,
-                    const_float_t i, const_float_t j, const_float_t k)
-) {
+void Planner::set_machine_position_mm(const abce_pos_t &abce) {
   TERN_(DISTINCT_E_FACTORS, last_extruder = active_extruder);
-  TERN_(HAS_POSITION_FLOAT, position_float.set(LOGICAL_AXIS_LIST(e, a, b, c, i, j, k)));
+  TERN_(HAS_POSITION_FLOAT, position_float = abce);
   position.set(
     LOGICAL_AXIS_LIST(
-      LROUND(e * settings.axis_steps_per_mm[E_AXIS_N(active_extruder)]),
-      LROUND(a * settings.axis_steps_per_mm[A_AXIS]),
-      LROUND(b * settings.axis_steps_per_mm[B_AXIS]),
-      LROUND(c * settings.axis_steps_per_mm[C_AXIS]),
-      LROUND(i * settings.axis_steps_per_mm[I_AXIS]),
-      LROUND(j * settings.axis_steps_per_mm[J_AXIS]),
-      LROUND(k * settings.axis_steps_per_mm[K_AXIS])
+      LROUND(abce.e * settings.axis_steps_per_mm[E_AXIS_N(active_extruder)]),
+      LROUND(abce.a * settings.axis_steps_per_mm[A_AXIS]),
+      LROUND(abce.b * settings.axis_steps_per_mm[B_AXIS]),
+      LROUND(abce.c * settings.axis_steps_per_mm[C_AXIS]),
+      LROUND(abce.i * settings.axis_steps_per_mm[I_AXIS]),
+      LROUND(abce.j * settings.axis_steps_per_mm[J_AXIS]),
+      LROUND(abce.k * settings.axis_steps_per_mm[K_AXIS])
     )
   );
   if (has_blocks_queued()) {
@@ -3083,17 +3072,14 @@ void Planner::set_machine_position_mm(
     stepper.set_position(position);
 }
 
-void Planner::set_position_mm(
-  LOGICAL_AXIS_LIST(const_float_t e,
-                    const_float_t rx, const_float_t ry, const_float_t rz,
-                    const_float_t ri, const_float_t rj, const_float_t rk)
-) {
-  xyze_pos_t machine = LOGICAL_AXIS_ARRAY(e, rx, ry, rz, ri, rj, rk);
+void Planner::set_position_mm(const xyze_pos_t &xyze) {
+  xyze_pos_t machine = xyze;
   TERN_(HAS_POSITION_MODIFIERS, apply_modifiers(machine, true));
   #if IS_KINEMATIC
-    position_cart.set(rx, ry, rz, e);
+    position_cart = xyze;
     inverse_kinematics(machine);
-    set_machine_position_mm(delta.a, delta.b, delta.c, machine.e);
+    delta.e = machine.e;
+    set_machine_position_mm(delta);
   #else
     set_machine_position_mm(machine);
   #endif
@@ -3111,7 +3097,7 @@ void Planner::set_position_mm(
     const float e_new = DIFF_TERN(FWRETRACT, e, fwretract.current_retract[active_extruder]);
     position.e = LROUND(settings.axis_steps_per_mm[axis_index] * e_new);
     TERN_(HAS_POSITION_FLOAT, position_float.e = e_new);
-    TERN_(IS_KINEMATIC, position_cart.e = e);
+    TERN_(IS_KINEMATIC, TERN_(HAS_EXTRUDERS, position_cart.e = e));
 
     if (has_blocks_queued())
       buffer_sync_block();
@@ -3123,15 +3109,11 @@ void Planner::set_position_mm(
 
 // Recalculate the steps/s^2 acceleration rates, based on the mm/s^2
 void Planner::reset_acceleration_rates() {
-  #if ENABLED(DISTINCT_E_FACTORS)
-    #define AXIS_CONDITION (i < E_AXIS || i == E_AXIS_N(active_extruder))
-  #else
-    #define AXIS_CONDITION true
-  #endif
   uint32_t highest_rate = 1;
   LOOP_DISTINCT_AXES(i) {
     max_acceleration_steps_per_s2[i] = settings.max_acceleration_mm_per_s2[i] * settings.axis_steps_per_mm[i];
-    if (AXIS_CONDITION) NOLESS(highest_rate, max_acceleration_steps_per_s2[i]);
+    if (TERN1(DISTINCT_E_FACTORS, i < E_AXIS || i == E_AXIS_N(active_extruder)))
+      NOLESS(highest_rate, max_acceleration_steps_per_s2[i]);
   }
   acceleration_long_cutoff = 4294967295UL / highest_rate; // 0xFFFFFFFFUL
   TERN_(HAS_LINEAR_E_JERK, recalculate_max_e_jerk());

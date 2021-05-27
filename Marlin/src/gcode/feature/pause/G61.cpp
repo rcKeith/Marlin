@@ -46,7 +46,7 @@ void GcodeSuite::G61(void) {
 
   const uint8_t slot = parser.byteval('S');
 
-  #define SYNC_E(POINT) planner.set_e_position_mm((destination.e = current_position.e = (POINT)))
+  #define SYNC_E(POINT) TERN_(HAS_EXTRUDERS, planner.set_e_position_mm((destination.e = current_position.e = (POINT))))
 
   #if SAVED_POSITIONS < 256
     if (slot >= SAVED_POSITIONS) {

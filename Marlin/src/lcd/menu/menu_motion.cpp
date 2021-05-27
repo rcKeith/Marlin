@@ -230,14 +230,18 @@ void menu_move() {
   if (NONE(IS_KINEMATIC, NO_MOTION_BEFORE_HOMING) || all_axes_homed()) {
     if (TERN1(DELTA, current_position.z <= delta_clip_start_height)) {
       SUBMENU(MSG_MOVE_X, []{ _menu_move_distance(X_AXIS, lcd_move_x); });
-      SUBMENU(MSG_MOVE_Y, []{ _menu_move_distance(Y_AXIS, lcd_move_y); });
+      #if LINEAR_AXES >= XY
+        SUBMENU(MSG_MOVE_Y, []{ _menu_move_distance(Y_AXIS, lcd_move_y); });
+      #endif
     }
     #if ENABLED(DELTA)
       else
         ACTION_ITEM(MSG_FREE_XY, []{ line_to_z(delta_clip_start_height); ui.synchronize(); });
     #endif
 
-    SUBMENU(MSG_MOVE_Z, []{ _menu_move_distance(Z_AXIS, lcd_move_z); });
+    #if LINEAR_AXES >= XYZ
+      SUBMENU(MSG_MOVE_Z, []{ _menu_move_distance(Z_AXIS, lcd_move_z); });
+    #endif
     #if LINEAR_AXES >= 4
       SUBMENU(MSG_MOVE_I, []{ _menu_move_distance(I_AXIS, lcd_move_i); });
     #endif
@@ -343,8 +347,12 @@ void menu_motion() {
   GCODES_ITEM(MSG_AUTO_HOME, G28_STR);
   #if ENABLED(INDIVIDUAL_AXIS_HOMING_MENU)
     GCODES_ITEM(MSG_AUTO_HOME_X, PSTR("G28X"));
-    GCODES_ITEM(MSG_AUTO_HOME_Y, PSTR("G28Y"));
-    GCODES_ITEM(MSG_AUTO_HOME_Z, PSTR("G28Z"));
+    #if LINEAR_AXES >= XY
+      GCODES_ITEM(MSG_AUTO_HOME_Y, PSTR("G28Y"));
+    #endif
+    #if LINEAR_AXES >= XYZ
+      GCODES_ITEM(MSG_AUTO_HOME_Z, PSTR("G28Z"));
+    #endif
     #if LINEAR_AXES >= 4
       GCODES_ITEM(MSG_AUTO_HOME_I, PSTR("G28" I_STR));
     #endif

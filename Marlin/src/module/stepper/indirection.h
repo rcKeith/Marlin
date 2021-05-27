@@ -36,7 +36,7 @@
   #include "L64xx.h"
 #endif
 
-#if HAS_DRIVER(TMC26X)
+#if HAS_TMC26X
   #include "TMC26X.h"
 #endif
 

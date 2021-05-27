@@ -1321,12 +1321,10 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
 #endif
 
 /**
- * SAVED_POSITIONS is not supported with LINEARS_AXES > 3
+ * DIRECT_STEPPING is not supported with LINEAR_AXES > 3
  */
-#if LINEAR_AXES >= 4
-  #if SAVED_POSITIONS
-    #error "SAVED_POSITIONS currently requires LINEAR_AXES 3"
-  #elif DIRECT_STEPPING
+#if LINEAR_AXES > XYZ
+  #if ENABLED(DIRECT_STEPPING)
     #error "DIRECT_STEPPING currently requires LINEAR_AXES 3"
   #endif
 #endif

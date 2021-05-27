@@ -2714,32 +2714,32 @@ void Stepper::init() {
 /**
  * Set the stepper positions directly in steps
  *
- * The input is based on the typical per-axis XYZ steps.
+ * The input is based on the typical per-axis XYZE steps.
  * For CORE machines XYZ needs to be translated to ABC.
  *
  * This allows get_axis_position_mm to correctly
- * derive the current XYZ position later on.
+ * derive the current XYZE position later on.
  */
-void Stepper::_set_position(LOGICAL_AXIS_LIST(
-  const int32_t &e, const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &i, const int32_t &j, const int32_t &k
-)) {
-  #if CORE_IS_XY
-    // corexy positioning
-    // these equations follow the form of the dA and dB equations on https://www.corexy.com/theory.html
-    count_position.set(a + b, CORESIGN(a - b), c);
-  #elif CORE_IS_XZ
-    // corexz planning
-    count_position.set(a + c, b, CORESIGN(a - c));
-  #elif CORE_IS_YZ
-    // coreyz planning
-    count_position.set(a, b + c, CORESIGN(b - c));
-  #elif ENABLED(MARKFORGED_XY)
-    count_position.set(a - b, b, c);
+void Stepper::_set_position(const abce_long_t &spos) {
+  #if EITHER(IS_CORE, MARKFORGED_XY)
+    #if CORE_IS_XY
+      // corexy positioning
+      // these equations follow the form of the dA and dB equations on https://www.corexy.com/theory.html
+      count_position.set(spos.a + spos.b, CORESIGN(spos.a - spos.b), spos.c);
+    #elif CORE_IS_XZ
+      // corexz planning
+      count_position.set(spos.a + spos.c, spos.b, CORESIGN(spos.a - spos.c));
+    #elif CORE_IS_YZ
+      // coreyz planning
+      count_position.set(spos.a, spos.b + spos.c, CORESIGN(spos.b - spos.c));
+    #elif ENABLED(MARKFORGED_XY)
+      count_position.set(spos.a - spos.b, spos.b, spos.c);
+    #endif
+    TERN_(HAS_EXTRUDERS, count_position.e = spos.e);
   #else
     // default non-h-bot planning
-    count_position.set(LINEAR_AXIS_LIST(a, b, c, i, j, k));
+    count_position = spos;
   #endif
-  TERN_(HAS_EXTRUDERS, count_position.e = e);
 }
 
 /**
@@ -2762,12 +2762,10 @@ int32_t Stepper::position(const AxisEnum axis) {
 }
 
 // Set the current position in steps
-void Stepper::set_position(LOGICAL_AXIS_LIST(
-  const int32_t &e, const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &i, const int32_t &j, const int32_t &k
-)) {
+void Stepper::set_position(const xyze_long_t &spos) {
   planner.synchronize();
   const bool was_enabled = suspend();
-  _set_position(LOGICAL_AXIS_LIST(e, a, b, c, i, j, k));
+  _set_position(spos);
   if (was_enabled) wake_up();
 }
 

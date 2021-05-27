@@ -109,7 +109,7 @@ void plan_arc(
     #endif
   }
 
-  #if HAS_Z_AXIS
+  #if LINEAR_AXES >= 3
     float linear_travel = cart[l_axis] - start_L;
   #endif
   #if HAS_EXTRUDERS
@@ -121,7 +121,7 @@ void plan_arc(
     const float total_angular = angular_travel + circles * RADIANS(360),  // Total rotation with all circles and remainder
               part_per_circle = RADIANS(360) / total_angular;             // Each circle's part of the total
 
-    #if HAS_Z_AXIS
+    #if LINEAR_AXES >= 3
       const float l_per_circle = linear_travel * part_per_circle;         // L movement per circle
     #endif
     #if HAS_EXTRUDERS
@@ -192,7 +192,7 @@ void plan_arc(
               sin_T = theta_per_segment - sq_theta_per_segment * theta_per_segment / 6,
               cos_T = 1 - 0.5f * sq_theta_per_segment; // Small angle approximation
 
-  #if HAS_Z_AXIS && DISABLED(AUTO_BED_LEVELING_UBL)
+  #if LINEAR_AXES >= 3 && DISABLED(AUTO_BED_LEVELING_UBL)
     const float linear_per_segment = linear_travel / segments;
   #endif
   #if HAS_EXTRUDERS
@@ -250,7 +250,7 @@ void plan_arc(
     raw[p_axis] = center_P + rvec.a;
     raw[q_axis] = center_Q + rvec.b;
 
-    #if HAS_Z_AXIS && DISABLED(AUTO_BED_LEVELING_UBL)
+    #if LINEAR_AXES >= 3 && DISABLED(AUTO_BED_LEVELING_UBL)
       raw[l_axis] += linear_per_segment;
     #elif HAS_Z_AXIS
       raw[l_axis] = start_L;

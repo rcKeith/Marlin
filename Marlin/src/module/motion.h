@@ -53,7 +53,7 @@ extern xyz_pos_t cartes;
 
 // Until kinematics.cpp is created, declare this here
 #if IS_KINEMATIC
-  extern abc_pos_t delta;
+  extern abce_pos_t delta;
 #endif
 
 #if HAS_ABL_NOT_UBL
@@ -75,10 +75,7 @@ extern xyz_pos_t cartes;
  */
 constexpr xyz_feedrate_t homing_feedrate_mm_m = HOMING_FEEDRATE_MM_M;
 FORCE_INLINE feedRate_t homing_feedrate(const AxisEnum a) {
-  float v;
-  #if HAS_Z_AXIS
-    v = homing_feedrate_mm_m.z;
-  #endif
+  float v = TERN0(HAS_Z_AXIS, homing_feedrate_mm_m.z);
   #if DISABLED(DELTA)
     LINEAR_AXIS_CODE(
            if (a == X_AXIS) v = homing_feedrate_mm_m.x,
@@ -324,10 +321,7 @@ inline void prepare_internal_move_to_destination(const_feedRate_t fr_mm_s=0.0f) 
 /**
  * Blocking movement and shorthand functions
  */
-void do_blocking_move_to(
-  LINEAR_AXIS_LIST(const float rx, const float ry, const float rz, const float ri, const float rj, const float rk),
-  const_feedRate_t fr_mm_s=0.0f
-);
+void do_blocking_move_to(LINEAR_AXIS_ARGS(const float), const_feedRate_t fr_mm_s=0.0f);
 void do_blocking_move_to(const xy_pos_t &raw, const_feedRate_t fr_mm_s=0.0f);
 void do_blocking_move_to(const xyz_pos_t &raw, const_feedRate_t fr_mm_s=0.0f);
 void do_blocking_move_to(const xyze_pos_t &raw, const_feedRate_t fr_mm_s=0.0f);
