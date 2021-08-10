@@ -640,7 +640,7 @@
 #elif MB(MKS_MONSTER8)
   #include "stm32f4/pins_MKS_MONSTER8.h"        // STM32F4                                env:mks_monster8 env:mks_monster8_usb_flash_drive env:mks_monster8_usb_flash_drive_msc
 #elif MB(INDEX_REV03)
-  #include "stm32f4/pins_INDEX_REV03.h"         // STM32F4
+  #include "stm32f4/pins_INDEX_REV03.h"         // STM32F4                                env:Index_Mobo_Rev03
 
 //
 // ARM Cortex M7
