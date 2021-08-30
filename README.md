@@ -1,28 +1,103 @@
-# Marlin 3D Printer Firmware
+# Marlin2ForPipetBot 3D Printer and Lab Robot CNC Firmware
+ 
+Additional documentation can be found in the 
+repository [DerAndere1/Marlin at https://github.com](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot), the [Wiki](https://github.com/DerAndere1/Marlin/wiki)
+or on the [PipetBot-A8 project homepage](https://derandere.gitlab.io/pipetbot-a8) 
+that is part of the [authors homepage](https://derandere.gitlab.io). 
+For CNC machines with additional axes I, (J, (K)) that drive pumps or other tools,
+e.g. lab robots (liquid handling robots, "pipetting robots"). 
+Please test this firmware and let us know if it misbehaves in any way. 
+Volunteers are standing by!
 
-![GitHub](https://img.shields.io/github/license/marlinfirmware/marlin.svg)
-![GitHub contributors](https://img.shields.io/github/contributors/marlinfirmware/marlin.svg)
-![GitHub Release Date](https://img.shields.io/github/release-date/marlinfirmware/marlin.svg)
-[![Build Status](https://github.com/MarlinFirmware/Marlin/workflows/CI/badge.svg?branch=bugfix-2.0.x)](https://github.com/MarlinFirmware/Marlin/actions)
-
-<img align="right" width=175 src="buildroot/share/pixmaps/logo/marlin-250.png" />
-
-Additional documentation can be found at the [Marlin Home Page](https://marlinfw.org/).
-Please test this firmware and let us know if it misbehaves in any way. Volunteers are standing by!
-
-## Marlin 2.0 Bugfix Branch
+## Marlin2ForPipetBot Branch
 
 __Not for production use. Use with caution!__
 
-Marlin 2.0 takes this popular RepRap firmware to the next level by adding support for much faster 32-bit and ARM-based boards while improving support for 8-bit AVR boards. Read about Marlin's decision to use a "Hardware Abstraction Layer" below.
+Marlin2forPipetBot is a branch of the Marlin fork by DerAndere (based on 
+https://github.com/MarlinFirmware/Marlin/commit/90cd1ca68d3f4f5ede56cbea4913f06ca4782a94 ). 
 
-This branch is for patches to the latest 2.0.x release version. Periodically this branch will form the basis for the next minor 2.0.x release.
+This branch is for patches to the latest Marlin2ForPipetBot release version.
 
-Download earlier versions of Marlin on the [Releases page](https://github.com/MarlinFirmware/Marlin/releases).
+Marlin2ForPipetBot supports up to six non-extruder axes (LINEAR_AXES) plus 
+extruders (e.g. XYZIJK+E or XYZUVW+E). 
 
-## Building Marlin 2.0
+Default axis names are:
 
-To build Marlin 2.0 you'll need [Arduino IDE 1.8.8 or newer](https://www.arduino.cc/en/main/software) or [PlatformIO](https://docs.platformio.org/en/latest/ide.html#platformio-ide). We've posted detailed instructions on [Building Marlin with Arduino](https://marlinfw.org/docs/basics/install_arduino.html) and [Building Marlin with PlatformIO for ReArm](https://marlinfw.org/docs/basics/install_rearm.html) (which applies well to other 32-bit boards).
+| LINEAR_AXES | Axis codes        |
+|------------|-------------------|
+|           3|X, Y, Z, E         |
+|           4|X, Y, Z, A, E      |
+|           5|X, Y, Z, A, B, E   |
+|           6|X, Y, Z, A, B, C, E|
+
+Example syntax for movement (G-code G1) with LINEAR_AXES 6: 
+```
+G1 [Xx.xxxx] [Yy.yyyy] [Zz.zzzz] [Aa.aaaa] Bb.bbbb] [Cc.cccc] [Ee.eeee] [Ff.ffff]
+```
+
+## Configuration
+
+Configuration is done by editing the file Marlin/Configuration.h. E.g. change
+
+`define LINEAR_AXES 3`
+
+to: 
+
+`define LINEAR_AXES 4`
+
+Important options are:
+
+### `FOAMCUTTER_XYUV`
+
+Define `FOAMCUTTER_XYUV` kinematics for a hot wire cutter with parallel horizontal axes X, U where the hights
+of the two wire ends are controlled by parallel axes Y, V.
+
+### `LINEAR_AXES`
+
+`LINEAR_AXES`: 
+The number of axes that are not used for extruders (axes that
+benefit from endstops and homing). `LINEAR_AXES` > `3` requires definition of
+`[[I, [J, [K]]]_STEP_PIN`, `[I, [J, [K]]]_ENABLE_PIN`, `[I, [J, [K]]]_DIR_PIN`,
+`[I, [J, [K]]]_STOP_PIN`, `USE_[I, [J, [K]]][MIN || MAX]_PLUG` and definition of the
+respective values of `DEFAULT_AXIS_STEPS_PER_UNIT`, `DEFAULT_MAX_FEEDRATE`,
+`DEFAULT_MAX_ACCELERATION`, `AXIS_RELATIVE_MODES`, `MICROSTEP_MODES` and
+`MANUAL_FEEDRATE`.
+
+Allowed values: [3, 4, 5, 6]
+
+
+### `AXIS4_NAME`
+
+`AXIS4_NAME`, `AXIS5_NAME`, `AXIS6_NAME`:
+Axis codes for additional axes:
+This defines the axis code that is used in G-code commands to 
+reference a specific axis. 
+
+   * 'A' for rotational axis parallel to X
+   * 'B' for rotational axis parallel to Y
+   * 'C' for rotational axis parallel to Z
+   * 'U' for secondary linear axis parallel to X
+   * 'V' for secondary linear axis parallel to Y
+   * 'W' for secondary linear axis parallel to Z
+
+Regardless of the settings, firmware-internal axis names are
+I (AXIS4), J (AXIS5), K (AXIS6).
+
+Allowed values: ['I', 'J', 'K', 'A', 'B', 'C', 'U', 'V', 'W'] 
+
+## Building Marlin2ForPipetBot
+
+To build Marlin2ForPipetBot you'll need [PlatformIO](http://docs.platformio.org/en/latest/ide.html#platformio-ide). The MarlinFirmware team has posted detailed instructions on [Building Marlin with PlatformIO](https://marlinfw.org/docs/basics/install_platformio.html).
+
+The different branches in the git repository https://github.com/DerAndere1/Marlin reflect different stages of development: 
+ 
+- [9axis_PR1](https://github.com/DerAndere1/Marlin/tree/6axis_PR1) branch: A long-time goal is to bring support for up to 10 non-extruder axes into upstream MarlinFirmware/Marlin.
+
+- [Marlin2ForPipetBot](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot) branch is more stable but outdated. This branch is the release branch for [tagged releases of Marlin2ForPipetBot firmware](https://github.com/DerAndere1/Marlin/tags). It is based on Marlin bugfix-2.0.x from August 2020 (commit https://github.com/DerAndere1/Marlin/commit/638f6f0f0607399bce82123663f5463380f83ce4) 
+
+- [Marlin2ForPipetBot_dev](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot_dev) is used to develop and test bugfixes for Marlin2ForPipetBot. After successful testing, it will be merged into Marlin2ForPipetBot. 
+
+- Other branches: Deprecated legacy code.
 
 ## Hardware Abstraction Layer (HAL)
 
@@ -122,15 +197,24 @@ Proposed patches should be submitted as a Pull Request against the ([bugfix-2.0.
 
 The current Marlin dev team consists of:
 
- - Scott Lahteine [[@thinkyhead](https://github.com/thinkyhead)] - USA &nbsp; [Donate](https://www.thinkyhead.com/donate-to-marlin) / Flattr: [![Flattr Scott](https://api.flattr.com/button/flattr-badge-small.png)](https://flattr.com/submit/auto?user_id=thinkyhead&url=https://github.com/MarlinFirmware/Marlin&title=Marlin&language=&tags=github&category=software)
+ - Scott Lahteine [[@thinkyhead](https://github.com/thinkyhead)] - USA &nbsp; [![Flattr Scott](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=thinkyhead&url=https://github.com/MarlinFirmware/Marlin&title=Marlin&language=&tags=github&category=software)
  - Roxanne Neufeld [[@Roxy-3D](https://github.com/Roxy-3D)] - USA
- - Chris Pepper [[@p3p](https://github.com/p3p)] - UK
  - Bob Kuhn [[@Bob-the-Kuhn](https://github.com/Bob-the-Kuhn)] - USA
+ - Chris Pepper [[@p3p](https://github.com/p3p)] - UK
  - João Brazio [[@jbrazio](https://github.com/jbrazio)] - Portugal
- - Erik van der Zalm [[@ErikZalm](https://github.com/ErikZalm)] - Netherlands &nbsp; [![Flattr Erik](https://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=ErikZalm&url=https://github.com/MarlinFirmware/Marlin&title=Marlin&language=&tags=github&category=software)
+ - Erik van der Zalm [[@ErikZalm](https://github.com/ErikZalm)] - Netherlands &nbsp; [![Flattr Erik](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=ErikZalm&url=https://github.com/MarlinFirmware/Marlin&title=Marlin&language=&tags=github&category=software)
+
+Marlin2ForPipetBot is modified by:
+
+ - DerAndere [[@DerAndere1](https://github.com/DerAndere1)] - Germany
+ - Garbriel Beraldo [@GabrielBeraldo](https://github.com/GabrielBeraldo)] - Brasil
+ - Olivier Briand [@hobiseven](https://github.com/hobiseven)] - France
+ - Wolverine [@MohammadSDGHN](https://github.com/MohammadSDGHN) - Undisclosed 
+ - bilsef [@bilsef](https://github.com/bilsef) - Undisclosed 
+ - FNeo31 [@FNeo31](https://github.com/FNeo31) - Undisclosed 
 
 ## License
 
-Marlin is published under the [GPL license](/LICENSE) because we believe in open development. The GPL comes with both rights and obligations. Whether you use Marlin firmware as the driver for your open or closed-source product, you must keep Marlin open, and you must provide your compatible Marlin source code to end users upon request. The most straightforward way to comply with the Marlin license is to make a fork of Marlin on Github, perform your modifications, and direct users to your modified fork.
+Marlin2ForPipetBot is published under the [GPL license](https://github.com/DerAndere1/Marlin/blob/Marlin2ForPipetBot/LICENSE) because we believe in open development. The GPL comes with both rights and obligations. Whether you use Marlin firmware as the driver for your open or closed-source product, you must keep Marlin open, and you must provide your compatible Marlin source code to end users upon request. The most straightforward way to comply with the Marlin license is to make a fork of Marlin on Github, perform your modifications, and direct users to your modified fork.
 
 While we can't prevent the use of this code in products (3D printers, CNC, etc.) that are closed source or crippled by a patent, we would prefer that you choose another firmware or, better yet, make your own.
