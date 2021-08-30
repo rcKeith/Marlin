@@ -1,5 +1,12 @@
 /*==============================================================================
 
+  Marlin2ForPipetBot [https://github.com/DerAndere1/Marlin]
+
+  Copyright 2019 - 2021 Christian Bartz ("DerAndere") and other Marlin2ForPipetBot authors [https://github.com/DerAndere1/Marlin]
+  Portions of Marlin are (c) by their respective authors.
+  All code complies with GPLv2 and/or GPLv3
+
+  Based on:
   Marlin Firmware
 
   (c) 2011-2020 MarlinFirmware
@@ -8,13 +15,22 @@
 
 ================================================================================
 
-Greetings! Thank you for choosing Marlin 2 as your 3D printer firmware.
+Greetings! Thank you for choosing Marlin2ForPipetBot as your 3D printer firmware.
 
 To configure Marlin you must edit Configuration.h and Configuration_adv.h
 located in the root 'Marlin' folder. Check our Configurations repository to
 see if there's a more suitable starting-point for your specific hardware.
 
 Before diving in, we recommend the following essential links:
+
+PipetBot-A8 project page
+  - https://derandere.gitlab.io/pipetbot-a8/
+    The PipetBot-A8 project page by DerAndere. Marlin2ForPipetBot was 
+    developed based on Marlin Firmware as part of this project.
+Repository of the Marlin fork by DerAndere
+  - https://github.com/DerAndere1/Marlin/
+    including Marlin2ForPipetBot source code in the branch Marlin2ForPipetBot 
+    and a Multi-Axis-Marlin wiki
 
 Marlin Firmware Official Website
 

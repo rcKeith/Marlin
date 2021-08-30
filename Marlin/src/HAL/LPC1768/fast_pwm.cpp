@@ -26,11 +26,7 @@
 
 void set_pwm_duty(const pin_t pin, const uint16_t v, const uint16_t v_size/*=255*/, const bool invert/*=false*/) {
   if (!LPC176x::pin_is_valid(pin)) return;
-<<<<<<< Upstream, based on bugfix-2.0.x
   if (LPC176x::pwm_attach_pin(pin))
-=======
-  if (LPC176x::pwm_attach_pin(pin)) 
->>>>>>> cea5f1f Support for up to 10 non-extruder axes ( LINEAR_AXES 10 )
     LPC176x::pwm_write_ratio(pin, invert ? 1.0f - (float)v / v_size : (float)v / v_size);  // map 1-254 onto PWM range
 }
 

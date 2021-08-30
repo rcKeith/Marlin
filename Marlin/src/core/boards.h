@@ -1,4 +1,8 @@
 /**
+ * Marlin2ForPipetBot [https://github.com/DerAndere1/Marlin]
+ * Copyright 2019 - 2021 Christian Bartz ("DerAndere") and other Marlin2ForPipetBot authors [https://github.com/DerAndere1/Marlin]
+ *
+ * Based on:
  * Marlin 3D Printer Firmware
  * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
@@ -186,6 +190,7 @@
 #define BOARD_AZTEEG_X1               1509  // Azteeg X1
 #define BOARD_ANET_10                 1510  // Anet 1.0 (Melzi clone)
 #define BOARD_ZMIB_V2                 1511  // ZoneStar ZMIB V2
+#define BOARD_DERANDERE_PB_1          1512  // Repurposed Anet 1.0 (Melzi clone)
 
 //
 // Other ATmega644P, ATmega644, ATmega1284P

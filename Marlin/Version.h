@@ -1,4 +1,8 @@
 /**
+ * Marlin2ForPipetBot [https://github.com/DerAndere1/Marlin]
+ * Copyright 2019 - 2021 Christian Bartz ("DerAndere") and other Marlin2ForPipetBot authors [https://github.com/DerAndere1/Marlin]
+ *
+ * Based on:
  * Marlin 3D Printer Firmware
  * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
@@ -41,11 +45,7 @@
  * here we define this default string as the date where the latest release
  * version was tagged.
  */
-<<<<<<< Upstream, based on bugfix-2.0.x
 //#define STRING_DISTRIBUTION_DATE "2021-12-05"
-=======
-//#define STRING_DISTRIBUTION_DATE "2021-11-14"
->>>>>>> cea5f1f Support for up to 10 non-extruder axes ( LINEAR_AXES 10 )
 
 /**
  * Defines a generic printer name to be output to the LCD after booting Marlin.
