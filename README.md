@@ -58,10 +58,15 @@ of the two wire ends are controlled by parallel axes Y, V.
 The number of axes that are not used for extruders (axes that
 benefit from endstops and homing). `LINEAR_AXES` > `3` requires definition of
 `[[I, [J, [K]]]_STEP_PIN`, `[I, [J, [K]]]_ENABLE_PIN`, `[I, [J, [K]]]_DIR_PIN`,
-`[I, [J, [K]]]_STOP_PIN`, `USE_[I, [J, [K]]][MIN || MAX]_PLUG` and definition of the
-respective values of `DEFAULT_AXIS_STEPS_PER_UNIT`, `DEFAULT_MAX_FEEDRATE`,
-`DEFAULT_MAX_ACCELERATION`, `AXIS_RELATIVE_MODES`, `MICROSTEP_MODES` and
-`MANUAL_FEEDRATE`.
+`[I, [J, [K]]]_STOP_PIN`, `USE_[I, [J, [K]]][MIN || MAX]_PLUG`, 
+`[I, [J, [K]]]_ENABLE_ON`, `DISABLE_[I, [J, [K]]]`, `[I, [J, [K]]]_MIN_POS`, 
+`[I, [J, [K]]]_MAX_POS`, `[I, [J, [K]]]_HOME_DIR`, possibly `DEFAULT_[I, [J, [K]]]JERK`, 
+and definition of the respective values of `DEFAULT_AXIS_STEPS_PER_UNIT`, `DEFAULT_MAX_FEEDRATE`,
+`DEFAULT_MAX_ACCELERATION`, `HOMING_FEEDRATE_MM_M`, `AXIS_RELATIVE_MODES`, `MICROSTEP_MODES`,
+`MANUAL_FEEDRATE` and possibly also values of `HOMING_BUMP_DIVISOR`,  
+`HOMING_BACKOFF_POST_MM`, `BACKLASH_DISTANCE_MM`.
+For bed-leveling, `NOZZLE_TO_PROBE_OFFSETS` has to be extended with elemets of value 0
+until the number of elements is equal to the value of `LINEAR_AXES`.
 
 Allowed values: [3, 4, 5, 6]
 
@@ -83,21 +88,23 @@ reference a specific axis.
 Regardless of the settings, firmware-internal axis names are
 I (AXIS4), J (AXIS5), K (AXIS6).
 
-Allowed values: ['I', 'J', 'K', 'A', 'B', 'C', 'U', 'V', 'W'] 
+Allowed values: ['A', 'B', 'C', 'U', 'V', 'W'] 
 
 ## Building Marlin2ForPipetBot
 
-To build Marlin2ForPipetBot you'll need [PlatformIO](http://docs.platformio.org/en/latest/ide.html#platformio-ide). The MarlinFirmware team has posted detailed instructions on [Building Marlin with PlatformIO](https://marlinfw.org/docs/basics/install_platformio.html).
+To build Marlin2ForPipetBot you'll need [PlatformIO](http://docs.platformio.org/en/latest/ide.html#platformio-ide). The Marlin team has posted detailed instructions on [Building Marlin with PlatformIO](https://marlinfw.org/docs/basics/install_platformio.html). [Marlin2ForPipetBot](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot) is preconfigured for the Anet-V1.0 board of the PipetBot-A8. When using the default build environment (`default_env = melzi_optiboot`), upload of the compiled Marlin2ForPipetBot firmware to the board via USB using the optiboot bootloader requires burning of the [optiboot bootloader](https://github.com/Optiboot/optiboot) onto the board as described in the [SkyNet3D/anet-board documentation](https://github.com/SkyNet3D/anet-board).
 
 The different branches in the git repository https://github.com/DerAndere1/Marlin reflect different stages of development: 
  
-- [9axis_PR1](https://github.com/DerAndere1/Marlin/tree/6axis_PR1) branch: A long-time goal is to bring support for up to 10 non-extruder axes into upstream MarlinFirmware/Marlin.
+- [Marlin2ForPipetBot](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot) branch is the stable release branch for [tagged releases of Marlin2ForPipetBot firmware](https://github.com/DerAndere1/Marlin/tags). It is optimized and preconfigured for the [PipetBot-A8](https://derandere.gitlab.io/pipetbot-a8) by default. Currently it is based on Marlin bugfix-2.0.x from 2021-08-30, [https://github.com/MarlinFirmware/Marlin/commit/90cd1ca68d3f4f5ede56cbea4913f06ca4782a94](https://github.com/MarlinFirmware/Marlin/commit/90cd1ca68d3f4f5ede56cbea4913f06ca4782a94) or later. Users that feel comfortable with configuring the firmware themselves should use [MarlinFirmware/Marlin](https://github.com/MarlinFirmware/Marlin) instead, which is more up to date. 
 
-- [Marlin2ForPipetBot](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot) branch is more stable but outdated. This branch is the release branch for [tagged releases of Marlin2ForPipetBot firmware](https://github.com/DerAndere1/Marlin/tags). It is based on Marlin bugfix-2.0.x from August 2020 (commit https://github.com/DerAndere1/Marlin/commit/638f6f0f0607399bce82123663f5463380f83ce4) 
+- [Marlin2ForPipetBot_dev](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot_dev) branch is used to develop and test bugfixes for Marlin2ForPipetBot. After successful testing, it will be merged into Marlin2ForPipetBot.
 
-- [Marlin2ForPipetBot_dev](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot_dev) is used to develop and test bugfixes for Marlin2ForPipetBot. After successful testing, it will be merged into Marlin2ForPipetBot. 
+- [6axis_PR1](https://github.com/DerAndere1/Marlin/tree/6axis_PR1) branch was merged into upstream MarlinFirmware/Marlin (pull request https://github.com/MarlinFirmware/Marlin/pull/19112). This branch is now outdated. Use current [MarlinFirmware/Marlin](https://github.com/MarlinFirmware/Marlin) instead.
 
-- Other branches: Deprecated legacy code.
+- [9axis_PR1](https://github.com/DerAndere1/Marlin/tree/9axis_PR1) branch is used to develop support for up to 10 non-extruder axes. This branch needs to be rebased onto https://github.com/MarlinFirmware/Marlin/tree/bugfix-2.0 and a pull request targeting https://github.com/MarlinFirmware/Marlin/tree/bugfix-2.0 has to be prepared.
+
+- Other branches: Deprecated legacy code. Use current [MarlinFirmware/Marlin](https://github.com/MarlinFirmware/Marlin) instead.
 
 ## Hardware Abstraction Layer (HAL)
 
