@@ -56,6 +56,9 @@ void GcodeSuite::M425() {
         case I_AXIS: return AXIS_CAN_CALIBRATE(I),
         case J_AXIS: return AXIS_CAN_CALIBRATE(J),
         case K_AXIS: return AXIS_CAN_CALIBRATE(K),
+        case U_AXIS: return AXIS_CAN_CALIBRATE(U),
+        case V_AXIS: return AXIS_CAN_CALIBRATE(V),
+        case W_AXIS: return AXIS_CAN_CALIBRATE(W)
       );
     }
   };
@@ -126,7 +129,10 @@ void GcodeSuite::M425_report(const bool forReplay/*=true*/) {
         SP_Z_STR, LINEAR_UNIT(backlash.distance_mm.z),
         SP_I_STR, LINEAR_UNIT(backlash.distance_mm.i),
         SP_J_STR, LINEAR_UNIT(backlash.distance_mm.j),
-        SP_K_STR, LINEAR_UNIT(backlash.distance_mm.k)
+        SP_K_STR, LINEAR_UNIT(backlash.distance_mm.k),
+        SP_U_STR, LINEAR_UNIT(backlash.distance_mm.u),
+        SP_V_STR, LINEAR_UNIT(backlash.distance_mm.v),
+        SP_W_STR, LINEAR_UNIT(backlash.distance_mm.w)
       )
   );
 }

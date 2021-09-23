@@ -951,6 +951,21 @@
 #elif K_HOME_DIR < 0
   #define K_HOME_TO_MIN 1
 #endif
+#if U_HOME_DIR > 0
+  #define U_HOME_TO_MAX 1
+#elif U_HOME_DIR < 0
+  #define U_HOME_TO_MIN 1
+#endif
+#if V_HOME_DIR > 0
+  #define V_HOME_TO_MAX 1
+#elif V_HOME_DIR < 0
+  #define V_HOME_TO_MIN 1
+#endif
+#if W_HOME_DIR > 0
+  #define W_HOME_TO_MAX 1
+#elif W_HOME_DIR < 0
+  #define W_HOME_TO_MIN 1
+#endif
 
 /**
  * Conditionals based on the type of Bed Probe
@@ -1223,6 +1238,15 @@
 #endif
 #if LINEAR_AXES >= 6 && !defined(INVERT_K_DIR)
   #define INVERT_K_DIR false
+#endif
+#if LINEAR_AXES >= 7 && !defined(INVERT_U_DIR)
+  #define INVERT_U_DIR false
+#endif
+#if LINEAR_AXES >= 8 && !defined(INVERT_V_DIR)
+  #define INVERT_V_DIR false
+#endif
+#if LINEAR_AXES >= 9 && !defined(INVERT_W_DIR)
+  #define INVERT_W_DIR false
 #endif
 #if HAS_EXTRUDERS && !defined(INVERT_E_DIR)
   #define INVERT_E_DIR false

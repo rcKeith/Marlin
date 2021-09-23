@@ -35,8 +35,8 @@
 #endif
 
 // Strings for sanity check messages
-#define _LINEAR_AXES_STR LINEAR_AXIS_GANG("X ", "Y ", "Z ", "I ", "J ", "K ")
-#define _LOGICAL_AXES_STR LOGICAL_AXIS_GANG("E ", "X ", "Y ", "Z ", "I ", "J ", "K ")
+#define _LINEAR_AXES_STR LINEAR_AXIS_GANG("X ", "Y ", "Z ", "I ", "J ", "K ", "U ", "V ", "W ")
+#define _LOGICAL_AXES_STR LOGICAL_AXIS_GANG("E ", "X ", "Y ", "Z ", "I ", "J ", "K ", "U ", "V ", "W ")
 
 // Make sure macros aren't borked
 #define TEST1
@@ -791,6 +791,18 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
   #error "Enable only one of ENDSTOPPULLUP_Y_MAX or ENDSTOPPULLDOWN_Y_MAX."
 #elif BOTH(ENDSTOPPULLUP_ZMAX, ENDSTOPPULLDOWN_ZMAX)
   #error "Enable only one of ENDSTOPPULLUP_Z_MAX or ENDSTOPPULLDOWN_Z_MAX."
+#elif BOTH(ENDSTOPPULLUP_IMAX, ENDSTOPPULLDOWN_IMAX)
+  #error "Enable only one of ENDSTOPPULLUP_I_MAX or ENDSTOPPULLDOWN_I_MAX."
+#elif BOTH(ENDSTOPPULLUP_JMAX, ENDSTOPPULLDOWN_JMAX)
+  #error "Enable only one of ENDSTOPPULLUP_J_MAX or ENDSTOPPULLDOWN_J_MAX."
+#elif BOTH(ENDSTOPPULLUP_KMAX, ENDSTOPPULLDOWN_KMAX)
+  #error "Enable only one of ENDSTOPPULLUP_K_MAX or ENDSTOPPULLDOWN_K_MAX."
+#elif BOTH(ENDSTOPPULLUP_UMAX, ENDSTOPPULLDOWN_UMAX)
+  #error "Enable only one of ENDSTOPPULLUP_U_MAX or ENDSTOPPULLDOWN_U_MAX."
+#elif BOTH(ENDSTOPPULLUP_VMAX, ENDSTOPPULLDOWN_VMAX)
+  #error "Enable only one of ENDSTOPPULLUP_V_MAX or ENDSTOPPULLDOWN_V_MAX."
+#elif BOTH(ENDSTOPPULLUP_WMAX, ENDSTOPPULLDOWN_WMAX)
+  #error "Enable only one of ENDSTOPPULLUP_W_MAX or ENDSTOPPULLDOWN_W_MAX."
 #elif BOTH(ENDSTOPPULLUP_XMIN, ENDSTOPPULLDOWN_XMIN)
   #error "Enable only one of ENDSTOPPULLUP_X_MIN or ENDSTOPPULLDOWN_X_MIN."
 #elif BOTH(ENDSTOPPULLUP_YMIN, ENDSTOPPULLDOWN_YMIN)
@@ -803,6 +815,12 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
   #error "Enable only one of ENDSTOPPULLUP_J_MIN or ENDSTOPPULLDOWN_J_MIN."
 #elif BOTH(ENDSTOPPULLUP_KMIN, ENDSTOPPULLDOWN_KMIN)
   #error "Enable only one of ENDSTOPPULLUP_K_MIN or ENDSTOPPULLDOWN_K_MIN."
+#elif BOTH(ENDSTOPPULLUP_UMIN, ENDSTOPPULLDOWN_UMIN)
+  #error "Enable only one of ENDSTOPPULLUP_U_MIN or ENDSTOPPULLDOWN_U_MIN."
+#elif BOTH(ENDSTOPPULLUP_VMIN, ENDSTOPPULLDOWN_VMIN)
+  #error "Enable only one of ENDSTOPPULLUP_V_MIN or ENDSTOPPULLDOWN_V_MIN."
+#elif BOTH(ENDSTOPPULLUP_WMIN, ENDSTOPPULLDOWN_WMIN)
+  #error "Enable only one of ENDSTOPPULLUP_W_MIN or ENDSTOPPULLDOWN_W_MIN."
 #endif
 
 /**
@@ -1451,6 +1469,27 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
     #error "K_ENABLE_ON is required for your K driver with LINEAR_AXES >= 6."
   #endif
 #endif
+#if LINEAR_AXES >= 7
+  #if AXIS7_NAME == AXIS6_NAME || AXIS7_NAME == AXIS5_NAME || AXIS7_NAME == AXIS4_NAME
+    #error "AXIS7_NAME must be unique."
+  #elif AXIS7_NAME != 'A' && AXIS7_NAME != 'B' && AXIS7_NAME != 'C' && AXIS7_NAME != 'U' && AXIS7_NAME != 'V' && AXIS7_NAME != 'W'
+    #error "AXIS7_NAME can only be one of 'A', 'B', 'C', 'U', 'V', or 'W'."
+  #endif
+#endif
+#if LINEAR_AXES >= 8
+  #if AXIS8_NAME == AXIS7_NAME || AXIS8_NAME == AXIS6_NAME || AXIS8_NAME == AXIS5_NAME || AXIS8_NAME == AXIS4_NAME
+    #error "AXIS8_NAME must be unique."
+  #elif AXIS8_NAME != 'A' && AXIS8_NAME != 'B' && AXIS8_NAME != 'C' && AXIS8_NAME != 'U' && AXIS8_NAME != 'V' && AXIS8_NAME != 'W'
+    #error "AXIS8_NAME can only be one of 'A', 'B', 'C', 'U', 'V', or 'W'."
+  #endif
+#endif
+#if LINEAR_AXES >= 9
+  #if AXIS9_NAME == AXIS8_NAME || AXIS9_NAME == AXIS7_NAME || AXIS9_NAME == AXIS6_NAME || AXIS9_NAME == AXIS5_NAME || AXIS9_NAME == AXIS4_NAME
+    #error "AXIS9_NAME must be unique."
+  #elif AXIS9_NAME != 'A' && AXIS9_NAME != 'B' && AXIS9_NAME != 'C' && AXIS9_NAME != 'U' && AXIS9_NAME != 'V' && AXIS9_NAME != 'W'
+    #error "AXIS9_NAME can only be one of 'A', 'B', 'C', 'U', 'V', or 'W'."
+  #endif
+#endif
 
 /**
  * Kinematics
@@ -1825,7 +1864,10 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
     static_assert(hbm[Z_AXIS] >= 0, "HOMING_BUMP_MM.Z must be greater than or equal to 0."),
     static_assert(hbm[I_AXIS] >= 0, "HOMING_BUMP_MM.I must be greater than or equal to 0."),
     static_assert(hbm[J_AXIS] >= 0, "HOMING_BUMP_MM.J must be greater than or equal to 0."),
-    static_assert(hbm[K_AXIS] >= 0, "HOMING_BUMP_MM.K must be greater than or equal to 0.")
+    static_assert(hbm[K_AXIS] >= 0, "HOMING_BUMP_MM.K must be greater than or equal to 0."),
+    static_assert(hbm[U_AXIS] >= 0, "HOMING_BUMP_MM.U must be greater than or equal to 0."),
+    static_assert(hbm[V_AXIS] >= 0, "HOMING_BUMP_MM.V must be greater than or equal to 0."),
+    static_assert(hbm[W_AXIS] >= 0, "HOMING_BUMP_MM.W must be greater than or equal to 0.")
   );
   static_assert(COUNT(hbd) == LINEAR_AXES, "HOMING_BUMP_DIVISOR must have " _LINEAR_AXES_STR "elements (and no others).");
   LINEAR_AXIS_CODE(
@@ -1834,7 +1876,10 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
     static_assert(hbd[Z_AXIS] >= 1, "HOMING_BUMP_DIVISOR.Z must be greater than or equal to 1."),
     static_assert(hbd[I_AXIS] >= 1, "HOMING_BUMP_DIVISOR.I must be greater than or equal to 1."),
     static_assert(hbd[J_AXIS] >= 1, "HOMING_BUMP_DIVISOR.J must be greater than or equal to 1."),
-    static_assert(hbd[K_AXIS] >= 1, "HOMING_BUMP_DIVISOR.K must be greater than or equal to 1.")
+    static_assert(hbd[K_AXIS] >= 1, "HOMING_BUMP_DIVISOR.K must be greater than or equal to 1."),
+    static_assert(hbd[U_AXIS] >= 1, "HOMING_BUMP_DIVISOR.U must be greater than or equal to 1."),
+    static_assert(hbd[V_AXIS] >= 1, "HOMING_BUMP_DIVISOR.V must be greater than or equal to 1."),
+    static_assert(hbd[W_AXIS] >= 1, "HOMING_BUMP_DIVISOR.W must be greater than or equal to 1.")
   );
 #endif
 
@@ -1847,7 +1892,10 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
     static_assert(hbp[Z_AXIS] >= 0, "HOMING_BACKOFF_POST_MM.Z must be greater than or equal to 0."),
     static_assert(hbp[I_AXIS] >= 0, "HOMING_BACKOFF_POST_MM.I must be greater than or equal to 0."),
     static_assert(hbp[J_AXIS] >= 0, "HOMING_BACKOFF_POST_MM.J must be greater than or equal to 0."),
-    static_assert(hbp[K_AXIS] >= 0, "HOMING_BACKOFF_POST_MM.K must be greater than or equal to 0.")
+    static_assert(hbp[K_AXIS] >= 0, "HOMING_BACKOFF_POST_MM.K must be greater than or equal to 0."),
+    static_assert(hbp[U_AXIS] >= 0, "HOMING_BACKOFF_POST_MM.U must be greater than or equal to 0."),
+    static_assert(hbp[V_AXIS] >= 0, "HOMING_BACKOFF_POST_MM.V must be greater than or equal to 0."),
+    static_assert(hbp[W_AXIS] >= 0, "HOMING_BACKOFF_POST_MM.W must be greater than or equal to 0.")
   );
 #endif
 
@@ -1860,7 +1908,10 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
     static_assert(sbm[Z_AXIS] >= 0, "SENSORLESS_BACKOFF_MM.Z must be greater than or equal to 0."),
     static_assert(sbm[I_AXIS] >= 0, "SENSORLESS_BACKOFF_MM.I must be greater than or equal to 0."),
     static_assert(sbm[J_AXIS] >= 0, "SENSORLESS_BACKOFF_MM.J must be greater than or equal to 0."),
-    static_assert(sbm[K_AXIS] >= 0, "SENSORLESS_BACKOFF_MM.K must be greater than or equal to 0.")
+    static_assert(sbm[K_AXIS] >= 0, "SENSORLESS_BACKOFF_MM.K must be greater than or equal to 0."),
+    static_assert(sbm[U_AXIS] >= 0, "SENSORLESS_BACKOFF_MM.U must be greater than or equal to 0."),
+    static_assert(sbm[V_AXIS] >= 0, "SENSORLESS_BACKOFF_MM.V must be greater than or equal to 0."),
+    static_assert(sbm[W_AXIS] >= 0, "SENSORLESS_BACKOFF_MM.W must be greater than or equal to 0.")
   );
 #endif
 
@@ -1883,9 +1934,9 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
 /**
  * Make sure DISABLE_[XYZ] compatible with selected homing options
  */
-#if ANY(DISABLE_X, DISABLE_Y, DISABLE_Z, DISABLE_I, DISABLE_J, DISABLE_K)
+#if ANY(DISABLE_X, DISABLE_Y, DISABLE_Z, DISABLE_I, DISABLE_J, DISABLE_K, DISABLE_U, DISABLE_V, DISABLE_W)
   #if EITHER(HOME_AFTER_DEACTIVATE, Z_SAFE_HOMING)
-    #error "DISABLE_[XYZIJK] is not compatible with HOME_AFTER_DEACTIVATE or Z_SAFE_HOMING."
+    #error "DISABLE_[XYZIJKUVW] is not compatible with HOME_AFTER_DEACTIVATE or Z_SAFE_HOMING."
   #endif
 #endif
 
@@ -2377,7 +2428,9 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
 #define _PLUG_UNUSED_TEST(A,P) (DISABLED(USE_##P##MIN_PLUG, USE_##P##MAX_PLUG) \
   && !(ENABLED(A##_DUAL_ENDSTOPS) && WITHIN(A##2_USE_ENDSTOP, _##P##MAX_, _##P##MIN_)) \
   && !(ENABLED(A##_MULTI_ENDSTOPS) && WITHIN(A##2_USE_ENDSTOP, _##P##MAX_, _##P##MIN_)) )
-#define _AXIS_PLUG_UNUSED_TEST(A) (1 LINEAR_AXIS_GANG(&& _PLUG_UNUSED_TEST(A,X), && _PLUG_UNUSED_TEST(A,Y), && _PLUG_UNUSED_TEST(A,Z), && _PLUG_UNUSED_TEST(A,I), && _PLUG_UNUSED_TEST(A,J), && _PLUG_UNUSED_TEST(A,K) ) )
+#define _AXIS_PLUG_UNUSED_TEST(A) (1 LINEAR_AXIS_GANG(&& _PLUG_UNUSED_TEST(A,X), && _PLUG_UNUSED_TEST(A,Y), && _PLUG_UNUSED_TEST(A,Z), \
+                                                      && _PLUG_UNUSED_TEST(A,I), && _PLUG_UNUSED_TEST(A,J), && _PLUG_UNUSED_TEST(A,K), \
+                                                      && _PLUG_UNUSED_TEST(A,U), && _PLUG_UNUSED_TEST(A,V), && _PLUG_UNUSED_TEST(A,W) ) )
 
 // A machine with endstops must have a minimum of 3
 #if HAS_ENDSTOPS
@@ -2398,6 +2451,15 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
   #endif
   #if LINEAR_AXES >= 6 && _AXIS_PLUG_UNUSED_TEST(K)
     #error "You must enable USE_KMIN_PLUG or USE_KMAX_PLUG."
+  #endif
+  #if LINEAR_AXES >= 7 && _AXIS_PLUG_UNUSED_TEST(U)
+    #error "You must enable USE_UMIN_PLUG or USE_UMAX_PLUG."
+  #endif
+  #if LINEAR_AXES >= 8 && _AXIS_PLUG_UNUSED_TEST(V)
+    #error "You must enable USE_VMIN_PLUG or USE_VMAX_PLUG."
+  #endif
+  #if LINEAR_AXES >= 9 && _AXIS_PLUG_UNUSED_TEST(W)
+    #error "You must enable USE_WMIN_PLUG or USE_WMAX_PLUG."
   #endif
 
   // Delta and Cartesian use 3 homing endstops
@@ -2422,6 +2484,18 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
       #error "Enable USE_KMIN_PLUG when homing K to MIN."
     #elif LINEAR_AXES >= 6 && K_HOME_TO_MAX && DISABLED(USE_KMAX_PLUG)
       #error "Enable USE_KMAX_PLUG when homing K to MAX."
+    #elif LINEAR_AXES >= 7 && U_HOME_TO_MIN && DISABLED(USE_UMIN_PLUG)
+      #error "Enable USE_UMIN_PLUG when homing U to MIN."
+    #elif LINEAR_AXES >= 7 && U_HOME_TO_MAX && DISABLED(USE_UMAX_PLUG)
+      #error "Enable USE_UMAX_PLUG when homing U to MAX."
+    #elif LINEAR_AXES >= 8 && V_HOME_TO_MIN && DISABLED(USE_VMIN_PLUG)
+      #error "Enable USE_VMIN_PLUG when homing V to MIN."
+    #elif LINEAR_AXES >= 8 && V_HOME_TO_MAX && DISABLED(USE_VMAX_PLUG)
+      #error "Enable USE_VMAX_PLUG when homing V to MAX."
+    #elif LINEAR_AXES >= 9 && W_HOME_TO_MIN && DISABLED(USE_WMIN_PLUG)
+      #error "Enable USE_WMIN_PLUG when homing W to MIN."
+    #elif LINEAR_AXES >= 9 && W_HOME_TO_MAX && DISABLED(USE_WMAX_PLUG)
+      #error "Enable USE_WMAX_PLUG when homing W to MAX."
     #endif
   #endif
 
@@ -2892,6 +2966,12 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
   #error "An SPI driven TMC on J requires J_CS_PIN."
 #elif INVALID_TMC_SPI(K)
   #error "An SPI driven TMC on K requires K_CS_PIN."
+#elif INVALID_TMC_SPI(U)
+  #error "An SPI driven TMC on U requires U_CS_PIN."
+#elif INVALID_TMC_SPI(V)
+  #error "An SPI driven TMC on V requires V_CS_PIN."
+#elif INVALID_TMC_SPI(W)
+  #error "An SPI driven TMC on W requires W_CS_PIN."
 #endif
 #undef INVALID_TMC_SPI
 
@@ -2937,6 +3017,13 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
   #error "TMC2208 or TMC2209 on J requires J_HARDWARE_SERIAL or J_SERIAL_(RX|TX)_PIN."
 #elif LINEAR_AXES >= 6 && INVALID_TMC_UART(K)
   #error "TMC2208 or TMC2209 on K requires K_HARDWARE_SERIAL or K_SERIAL_(RX|TX)_PIN."
+#elif LINEAR_AXES >= 7 && INVALID_TMC_UART(U)
+  #error "TMC2208 or TMC2209 on U requires U_HARDWARE_SERIAL or U_SERIAL_(RX|TX)_PIN."
+#elif LINEAR_AXES >= 8 && INVALID_TMC_UART(V)
+  #error "TMC2208 or TMC2209 on V requires V_HARDWARE_SERIAL or V_SERIAL_(RX|TX)_PIN."
+#elif LINEAR_AXES >= 9 && INVALID_TMC_UART(W)
+  #error "TMC2208 or TMC2209 on W requires W_HARDWARE_SERIAL or W_SERIAL_(RX|TX)_PIN."
+
 #endif
 #undef INVALID_TMC_UART
 
@@ -2966,6 +3053,12 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
   INVALID_TMC_ADDRESS(J);
 #elif AXIS_DRIVER_TYPE_K(TMC2209)
   INVALID_TMC_ADDRESS(K);
+#elif AXIS_DRIVER_TYPE_U(TMC2209)
+  INVALID_TMC_ADDRESS(U);
+#elif AXIS_DRIVER_TYPE_V(TMC2209)
+  INVALID_TMC_ADDRESS(V);
+#elif AXIS_DRIVER_TYPE_W(TMC2209)
+  INVALID_TMC_ADDRESS(W);
 #elif AXIS_DRIVER_TYPE_E0(TMC2209)
   INVALID_TMC_ADDRESS(E0);
 #elif AXIS_DRIVER_TYPE_E1(TMC2209)
@@ -3027,6 +3120,12 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
   INVALID_TMC_MS(J)
 #elif LINEAR_AXES >= 6 && !TMC_MICROSTEP_IS_VALID(K)
   INVALID_TMC_MS(K)
+#elif LINEAR_AXES >= 7 && !TMC_MICROSTEP_IS_VALID(U)
+  INVALID_TMC_MS(U)
+#elif LINEAR_AXES >= 8 && !TMC_MICROSTEP_IS_VALID(V)
+  INVALID_TMC_MS(V)
+#elif LINEAR_AXES >= 9 && !TMC_MICROSTEP_IS_VALID(W)
+  INVALID_TMC_MS(W)
 #endif
 #undef INVALID_TMC_MS
 #undef TMC_MICROSTEP_IS_VALID
@@ -3056,6 +3155,15 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
   #if LINEAR_AXES >= 6
     #define K_ENDSTOP_INVERTING !AXIS_DRIVER_TYPE(K,TMC2209)
   #endif
+  #if LINEAR_AXES >= 7
+    #define U_ENDSTOP_INVERTING !AXIS_DRIVER_TYPE(U,TMC2209)
+  #endif
+  #if LINEAR_AXES >= 8
+    #define V_ENDSTOP_INVERTING !AXIS_DRIVER_TYPE(V,TMC2209)
+  #endif
+  #if LINEAR_AXES >= 9
+    #define W_ENDSTOP_INVERTING !AXIS_DRIVER_TYPE(W,TMC2209)
+  #endif
 
   #if NONE(SPI_ENDSTOPS, ONBOARD_ENDSTOPPULLUPS, ENDSTOPPULLUPS)
     #if   X_SENSORLESS && X_HOME_TO_MIN && DISABLED(ENDSTOPPULLUP_XMIN)
@@ -3082,6 +3190,19 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
       #error "SENSORLESS_HOMING requires ENDSTOPPULLUP_KMIN (or ENDSTOPPULLUPS) when homing to K_MIN."
     #elif LINEAR_AXES >= 6 && K_SENSORLESS && K_HOME_TO_MAX && DISABLED(ENDSTOPPULLUP_KMAX)
       #error "SENSORLESS_HOMING requires ENDSTOPPULLUP_KMAX (or ENDSTOPPULLUPS) when homing to K_MAX."
+    #elif LINEAR_AXES >= 7 && U_SENSORLESS && U_HOME_TO_MIN && DISABLED(ENDSTOPPULLUP_UMIN)
+      #error "SENSORLESS_HOMING requires ENDSTOPPULLUP_UMIN (or ENDSTOPPULLUPS) when homing to U_MIN."
+    #elif LINEAR_AXES >= 7 && U_SENSORLESS && U_HOME_TO_MAX && DISABLED(ENDSTOPPULLUP_UMAX)
+      #error "SENSORLESS_HOMING requires ENDSTOPPULLUP_UMAX (or ENDSTOPPULLUPS) when homing to U_MAX."
+    #elif LINEAR_AXES >= 8 && V_SENSORLESS && V_HOME_TO_MIN && DISABLED(ENDSTOPPULLUP_VMIN)
+      #error "SENSORLESS_HOMING requires ENDSTOPPULLUP_VMIN (or ENDSTOPPULLUPS) when homing to V_MIN."
+    #elif LINEAR_AXES >= 8 && V_SENSORLESS && V_HOME_TO_MAX && DISABLED(ENDSTOPPULLUP_VMAX)
+      #error "SENSORLESS_HOMING requires ENDSTOPPULLUP_VMAX (or ENDSTOPPULLUPS) when homing to V_MAX."
+    #elif LINEAR_AXES >= 9 && W_SENSORLESS && W_HOME_TO_MIN && DISABLED(ENDSTOPPULLUP_WMIN)
+      #error "SENSORLESS_HOMING requires ENDSTOPPULLUP_WMIN (or ENDSTOPPULLUPS) when homing to W_MIN."
+    #elif LINEAR_AXES >= 9 && W_SENSORLESS && W_HOME_TO_MAX && DISABLED(ENDSTOPPULLUP_WMAX)
+      #error "SENSORLESS_HOMING requires ENDSTOPPULLUP_WMAX (or ENDSTOPPULLUPS) when homing to W_MAX."
+
     #endif
   #endif
 
@@ -3162,6 +3283,42 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
       #else
         #error "SENSORLESS_HOMING requires K_MAX_ENDSTOP_INVERTING = false when homing TMC2209 to K_MAX."
       #endif
+    #elif LINEAR_AXES >= 7 && U_SENSORLESS && U_HOME_TO_MIN && U_MIN_ENDSTOP_INVERTING != U_ENDSTOP_INVERTING
+      #if U_ENDSTOP_INVERTING
+        #error "SENSORLESS_HOMING requires U_MIN_ENDSTOP_INVERTING = true when homing to U_MIN."
+      #else
+        #error "SENSORLESS_HOMING requires U_MIN_ENDSTOP_INVERTING = false when homing TMC2209 to U_MIN."
+      #endif
+    #elif LINEAR_AXES >= 7 && U_SENSORLESS && U_HOME_TO_MAX && U_MAX_ENDSTOP_INVERTING != U_ENDSTOP_INVERTING
+      #if U_ENDSTOP_INVERTING
+        #error "SENSORLESS_HOMING requires U_MAX_ENDSTOP_INVERTING = true when homing to U_MAX."
+      #else
+        #error "SENSORLESS_HOMING requires U_MAX_ENDSTOP_INVERTING = false when homing TMC2209 to U_MAX."
+      #endif
+    #elif LINEAR_AXES >= 8 && V_SENSORLESS && V_HOME_TO_MIN && V_MIN_ENDSTOP_INVERTING != V_ENDSTOP_INVERTING
+      #if V_ENDSTOP_INVERTING
+        #error "SENSORLESS_HOMING requires V_MIN_ENDSTOP_INVERTING = true when homing to V_MIN."
+      #else
+        #error "SENSORLESS_HOMING requires V_MIN_ENDSTOP_INVERTING = false when homing TMC2209 to V_MIN."
+      #endif
+    #elif LINEAR_AXES >= 8 && V_SENSORLESS && V_HOME_TO_MAX && V_MAX_ENDSTOP_INVERTING != V_ENDSTOP_INVERTING
+      #if V_ENDSTOP_INVERTING
+        #error "SENSORLESS_HOMING requires V_MAX_ENDSTOP_INVERTING = true when homing to V_MAX."
+      #else
+        #error "SENSORLESS_HOMING requires V_MAX_ENDSTOP_INVERTING = false when homing TMC2209 to V_MAX."
+      #endif
+    #elif LINEAR_AXES >= 9 && W_SENSORLESS && W_HOME_TO_MIN && W_MIN_ENDSTOP_INVERTING != W_ENDSTOP_INVERTING
+      #if W_ENDSTOP_INVERTING
+        #error "SENSORLESS_HOMING requires W_MIN_ENDSTOP_INVERTING = true when homing to W_MIN."
+      #else
+        #error "SENSORLESS_HOMING requires W_MIN_ENDSTOP_INVERTING = false when homing TMC2209 to W_MIN."
+      #endif
+    #elif LINEAR_AXES >= 9 && W_SENSORLESS && W_HOME_TO_MAX0 && W_MAX_ENDSTOP_INVERTING != W_ENDSTOP_INVERTING
+      #if W_ENDSTOP_INVERTING
+        #error "SENSORLESS_HOMING requires W_MAX_ENDSTOP_INVERTING = true when homing to W_MAX."
+      #else
+        #error "SENSORLESS_HOMING requires W_MAX_ENDSTOP_INVERTING = false when homing TMC2209 to W_MAX."
+      #endif
     #endif
   #endif
 
@@ -3179,6 +3336,9 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
   #undef I_ENDSTOP_INVERTING
   #undef J_ENDSTOP_INVERTING
   #undef K_ENDSTOP_INVERTING
+  #undef U_ENDSTOP_INVERTING
+  #undef V_ENDSTOP_INVERTING
+  #undef W_ENDSTOP_INVERTING
 #endif
 
 // Sensorless probing requirements
@@ -3247,6 +3407,12 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
       #define CS_COMPARE J_CS_PIN
     #elif IN_CHAIN(K)
       #define CS_COMPARE K_CS_PIN
+    #elif IN_CHAIN(U)
+      #define CS_COMPARE U_CS_PIN
+    #elif IN_CHAIN(V)
+      #define CS_COMPARE V_CS_PIN
+    #elif IN_CHAIN(W)
+      #define CS_COMPARE W_CS_PIN
     #elif IN_CHAIN(E0)
       #define CS_COMPARE E0_CS_PIN
     #elif IN_CHAIN(E1)
@@ -3267,6 +3433,7 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
     #define BAD_CS_PIN(A) (IN_CHAIN(A) && A##_CS_PIN != CS_COMPARE)
     #if  BAD_CS_PIN(X ) || BAD_CS_PIN(Y ) || BAD_CS_PIN(Z ) || BAD_CS_PIN(X2) || BAD_CS_PIN(Y2) || BAD_CS_PIN(Z2) || BAD_CS_PIN(Z3) || BAD_CS_PIN(Z4) \
       || BAD_CS_PIN(I) || BAD_CS_PIN(J) || BAD_CS_PIN(K) \
+      || BAD_CS_PIN(U) || BAD_CS_PIN(V) || BAD_CS_PIN(W) \
       || BAD_CS_PIN(E0) || BAD_CS_PIN(E1) || BAD_CS_PIN(E2) || BAD_CS_PIN(E3) || BAD_CS_PIN(E4) || BAD_CS_PIN(E5) || BAD_CS_PIN(E6) || BAD_CS_PIN(E7)
       #error "All chained TMC drivers must use the same CS pin."
     #endif
@@ -3751,22 +3918,24 @@ static_assert(_PLUS_TEST(4), "HOMING_FEEDRATE_MM_M values must be positive.");
 #if _BAD_DRIVER(Z)
   #error "Z_DRIVER_TYPE is not recognized."
 #endif
-#if LINEAR_AXES >= 4
-  #if _BAD_DRIVER(I)
-    #error "I_DRIVER_TYPE is not recognized."
-  #endif
+#if LINEAR_AXES >= 4 && _BAD_DRIVER(I)
+  #error "I_DRIVER_TYPE is not recognized."
 #endif
-#if LINEAR_AXES >= 5
-  #if _BAD_DRIVER(J)
-    #error "J_DRIVER_TYPE is not recognized."
-  #endif
+#if LINEAR_AXES >= 5 && _BAD_DRIVER(J)
+  #error "J_DRIVER_TYPE is not recognized."
 #endif
-#if LINEAR_AXES >= 6
-  #if _BAD_DRIVER(K)
-    #error "K_DRIVER_TYPE is not recognized."
-  #endif
+#if LINEAR_AXES >= 6 && _BAD_DRIVER(K)
+  #error "K_DRIVER_TYPE is not recognized."
 #endif
-
+#if LINEAR_AXES >= 7 && _BAD_DRIVER(U)
+  #error "U_DRIVER_TYPE is not recognized."
+#endif
+#if LINEAR_AXES >= 8 && _BAD_DRIVER(V)
+  #error "V_DRIVER_TYPE is not recognized."
+#endif
+#if LINEAR_AXES >= 9 && _BAD_DRIVER(W)
+  #error "W_DRIVER_TYPE is not recognized."
+#endif
 #if _BAD_DRIVER(X2)
   #error "X2_DRIVER_TYPE is not recognized."
 #endif

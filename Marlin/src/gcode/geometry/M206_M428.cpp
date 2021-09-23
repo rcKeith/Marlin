@@ -62,7 +62,10 @@ void GcodeSuite::M206_report(const bool forReplay/*=true*/) {
         SP_Z_STR, LINEAR_UNIT(home_offset.z),
         SP_I_STR, LINEAR_UNIT(home_offset.i),
         SP_J_STR, LINEAR_UNIT(home_offset.j),
-        SP_K_STR, LINEAR_UNIT(home_offset.k)
+        SP_K_STR, LINEAR_UNIT(home_offset.k),
+        SP_U_STR, LINEAR_UNIT(home_offset.u),
+        SP_V_STR, LINEAR_UNIT(home_offset.v),
+        SP_W_STR, LINEAR_UNIT(home_offset.w)
       )
     #else
       PSTR("  M206 Z"), LINEAR_UNIT(home_offset.z)

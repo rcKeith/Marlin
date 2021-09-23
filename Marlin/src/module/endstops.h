@@ -45,6 +45,12 @@ enum EndstopEnum : char {
   _ES_ITEM(HAS_J_MAX, J_MAX)
   _ES_ITEM(HAS_K_MIN, K_MIN)
   _ES_ITEM(HAS_K_MAX, K_MAX)
+  _ES_ITEM(HAS_U_MIN, U_MIN)
+  _ES_ITEM(HAS_U_MAX, U_MAX)
+  _ES_ITEM(HAS_V_MIN, V_MIN)
+  _ES_ITEM(HAS_V_MAX, V_MAX)
+  _ES_ITEM(HAS_W_MIN, W_MIN)
+  _ES_ITEM(HAS_W_MAX, W_MAX)
 
   // Extra Endstops for XYZ
   _ES_ITEM(HAS_X2_MIN, X2_MIN)

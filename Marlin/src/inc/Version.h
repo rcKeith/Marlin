@@ -42,7 +42,11 @@
  * version was tagged.
  */
 #ifndef STRING_DISTRIBUTION_DATE
+<<<<<<< Upstream, based on bugfix-2.0.x
   #define STRING_DISTRIBUTION_DATE "2021-12-05"
+=======
+  #define STRING_DISTRIBUTION_DATE "2021-11-14"
+>>>>>>> cea5f1f Support for up to 10 non-extruder axes ( LINEAR_AXES 10 )
 #endif
 
 /**
