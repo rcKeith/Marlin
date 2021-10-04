@@ -2119,6 +2119,10 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
           #else
             sq(steps_dist_mm.x) + sq(steps_dist_mm.y)
           #endif
+        #elif CARTESIAN_WITH_AUXILILARY_AXES
+          // Axes I, J, K do not contribute to tool positioning. Thus, disregard them, if the three-dimensional XYZ travel distance is longer
+		  // than each of the one-dimensional I, J, K travel distances.
+          _MAX(sq(steps_dist_mm.x) + sq(steps_dist_mm.y) + sq(steps_dist_mm.z), sq(steps_dist_mm.i), sq(steps_dist_mm.j), sq(steps_dist_mm.k))
         #else
           LINEAR_AXIS_GANG(
               sq(steps_dist_mm.x), + sq(steps_dist_mm.y), + sq(steps_dist_mm.z),
@@ -3011,12 +3015,12 @@ bool Planner::buffer_line(const xyze_pos_t &cart, const_feedRate_t fr_mm_s, cons
       const xyze_pos_t cart_dist_mm = LOGICAL_AXIS_ARRAY(
         cart.e - position_cart.e,
         cart.x - position_cart.x, cart.y - position_cart.y, cart.z - position_cart.z,
-        cart.i - position_cart.i, cart.j - position_cart.j, cart.j - position_cart.k
+        cart.i - position_cart.i, cart.j - position_cart.j, cart.k - position_cart.k
       );
     #else
       const xyz_pos_t cart_dist_mm = LINEAR_AXIS_ARRAY(
         cart.x - position_cart.x, cart.y - position_cart.y, cart.z - position_cart.z,
-        cart.i - position_cart.i, cart.j - position_cart.j, cart.j - position_cart.k
+        cart.i - position_cart.i, cart.j - position_cart.j, cart.k - position_cart.k
       );
     #endif
 

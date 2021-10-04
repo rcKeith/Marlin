@@ -758,6 +758,10 @@
 //#define COREZY
 //#define MARKFORGED_XY  // MarkForged. See https://reprap.org/forum/read.php?152,504042
 
+// Alternatively, enable the option below for a cartesian machine that has
+// additional auxiliary axes (depending on LINEAR_AXES >= 3) that are not involved in positioning of the main tool
+//#define CARTESIAN_WITH_AUXILILARY_AXES
+
 //===========================================================================
 //============================== Endstop Settings ===========================
 //===========================================================================
