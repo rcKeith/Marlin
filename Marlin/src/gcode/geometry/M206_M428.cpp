@@ -41,9 +41,24 @@ void GcodeSuite::M206() {
   if (!parser.seen_any()) return M206_report();
 
   LOOP_LINEAR_AXES(i)
-    if (parser.seen(AXIS_CHAR(i)))
-      set_home_offset((AxisEnum)i, parser.value_linear_units());
-
+    if (parser.seen(AXIS_CHAR(i))) {
+      #if HAS_ROTATIONAL_AXES
+        if ((HAS_ROTATIONAL_AXIS4 && i == I_AXIS)
+          #if HAS_ROTATIONAL_AXIS5
+            || (i == J_AXIS)
+          #endif
+          #if HAS_ROTATIONAL_AXIS6
+            || ( && i == K_AXIS))
+          #endif
+        ) {
+          set_home_offset((AxisEnum)i, parser.value_float());
+        }
+        else
+          set_home_offset((AxisEnum)i, parser.value_linear_units());
+      #else
+        set_home_offset((AxisEnum)i, parser.value_linear_units());
+      #endif
+    }
   #if ENABLED(MORGAN_SCARA)
     if (parser.seen('T')) set_home_offset(A_AXIS, parser.value_float()); // Theta
     if (parser.seen('P')) set_home_offset(B_AXIS, parser.value_float()); // Psi

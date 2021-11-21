@@ -1428,6 +1428,9 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
 #elif ENABLED(FOAMCUTTER_XYUV) && LINEAR_AXES < 5
   #error "FOAMCUTTER_XYUV requires LINEAR_AXES >= 5."
 #endif
+#elif ENABLED(LINEAR_ADVANCE) && LINEAR_AXES >= 4
+  #error "LINEAR_ADVANCE currently requires LINEAR_AXES <= 3."
+#endif
 
 /**
  * Allow only extra axis codes that do not conflict with G-code parameter names
@@ -1446,8 +1449,8 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
 #if LINEAR_AXES >= 5
   #if AXIS5_NAME == AXIS4_NAME
     #error "AXIS5_NAME must be unique."
-  #elif AXIS5_NAME != 'A' && AXIS5_NAME != 'B' && AXIS5_NAME != 'C' && AXIS5_NAME != 'U' && AXIS5_NAME != 'V' && AXIS5_NAME != 'W'
-    #error "AXIS5_NAME can only be one of 'A', 'B', 'C', 'U', 'V', or 'W'."
+  #elif AXIS5_NAME != 'B' && AXIS5_NAME != 'C' && AXIS5_NAME != 'U' && AXIS5_NAME != 'V' && AXIS5_NAME != 'W'
+    #error "AXIS5_NAME can only be one of 'B', 'C', 'U', 'V', or 'W'."
   #elif !defined(J_MIN_POS) || !defined(J_MAX_POS)
     #error "J_MIN_POS and J_MAX_POS are required with LINEAR_AXES >= 5."
   #elif !defined(J_HOME_DIR)
@@ -1459,8 +1462,8 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
 #if LINEAR_AXES >= 6
   #if AXIS6_NAME == AXIS5_NAME || AXIS6_NAME == AXIS4_NAME
     #error "AXIS6_NAME must be unique."
-  #elif AXIS6_NAME != 'A' && AXIS6_NAME != 'B' && AXIS6_NAME != 'C' && AXIS6_NAME != 'U' && AXIS6_NAME != 'V' && AXIS6_NAME != 'W'
-    #error "AXIS6_NAME can only be one of 'A', 'B', 'C', 'U', 'V', or 'W'."
+  #elif AXIS6_NAME != 'C' && AXIS6_NAME != 'U' && AXIS6_NAME != 'V' && AXIS6_NAME != 'W'
+    #error "AXIS6_NAME can only be one of 'C', 'U', 'V', or 'W'."
   #elif !defined(K_MIN_POS) || !defined(K_MAX_POS)
     #error "K_MIN_POS and K_MAX_POS are required with LINEAR_AXES >= 6."
   #elif !defined(K_HOME_DIR)
@@ -1472,22 +1475,22 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
 #if LINEAR_AXES >= 7
   #if AXIS7_NAME == AXIS6_NAME || AXIS7_NAME == AXIS5_NAME || AXIS7_NAME == AXIS4_NAME
     #error "AXIS7_NAME must be unique."
-  #elif AXIS7_NAME != 'A' && AXIS7_NAME != 'B' && AXIS7_NAME != 'C' && AXIS7_NAME != 'U' && AXIS7_NAME != 'V' && AXIS7_NAME != 'W'
-    #error "AXIS7_NAME can only be one of 'A', 'B', 'C', 'U', 'V', or 'W'."
+  #elif AXIS7_NAME != 'U' && AXIS7_NAME != 'V' && AXIS7_NAME != 'W'
+    #error "AXIS7_NAME can only be one of 'U', 'V', or 'W'."
   #endif
 #endif
 #if LINEAR_AXES >= 8
   #if AXIS8_NAME == AXIS7_NAME || AXIS8_NAME == AXIS6_NAME || AXIS8_NAME == AXIS5_NAME || AXIS8_NAME == AXIS4_NAME
     #error "AXIS8_NAME must be unique."
-  #elif AXIS8_NAME != 'A' && AXIS8_NAME != 'B' && AXIS8_NAME != 'C' && AXIS8_NAME != 'U' && AXIS8_NAME != 'V' && AXIS8_NAME != 'W'
-    #error "AXIS8_NAME can only be one of 'A', 'B', 'C', 'U', 'V', or 'W'."
+  #elif AXIS8_NAME != 'V' && AXIS8_NAME != 'W'
+    #error "AXIS8_NAME can only be one of 'V', or 'W'."
   #endif
 #endif
 #if LINEAR_AXES >= 9
   #if AXIS9_NAME == AXIS8_NAME || AXIS9_NAME == AXIS7_NAME || AXIS9_NAME == AXIS6_NAME || AXIS9_NAME == AXIS5_NAME || AXIS9_NAME == AXIS4_NAME
     #error "AXIS9_NAME must be unique."
-  #elif AXIS9_NAME != 'A' && AXIS9_NAME != 'B' && AXIS9_NAME != 'C' && AXIS9_NAME != 'U' && AXIS9_NAME != 'V' && AXIS9_NAME != 'W'
-    #error "AXIS9_NAME can only be one of 'A', 'B', 'C', 'U', 'V', or 'W'."
+  #elif AXIS9_NAME != 'W'
+    #error "AXIS9_NAME can only be 'W'."
   #endif
 #endif
 
