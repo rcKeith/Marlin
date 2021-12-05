@@ -4,7 +4,7 @@ Additional documentation can be found in the
 repository [DerAndere1/Marlin at https://github.com](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot), the [Wiki](https://github.com/DerAndere1/Marlin/wiki)
 or on the [PipetBot-A8 project homepage](https://derandere.gitlab.io/pipetbot-a8) 
 that is part of the [authors homepage](https://derandere.gitlab.io). 
-For CNC machines with additional axes I, (J, (K)) that drive pumps or other tools,
+For CNC machines with additional axes (I, J, K, U, V, W) that can be used for indexed machining or to drive pumps or other tools,
 e.g. lab robots (liquid handling robots, "pipetting robots"). 
 Please test this firmware and let us know if it misbehaves in any way. 
 Volunteers are standing by!
@@ -18,22 +18,49 @@ https://github.com/MarlinFirmware/Marlin/commit/90cd1ca68d3f4f5ede56cbea4913f06c
 
 This branch is for patches to the latest Marlin2ForPipetBot release version.
 
-Marlin2ForPipetBot supports up to six non-extruder axes (LINEAR_AXES) plus 
-extruders (e.g. XYZIJK+E or XYZUVW+E). 
+Marlin2ForPipetBot supports up to nine non-extruder axes (LINEAR_AXES) plus 
+extruders (e.g. XYZABCUVW+E or XYZABCW+E or XYZCUVW+E or XYZABC+E XYZUVW+E). 
 
 Default axis names are:
 
-| LINEAR_AXES | Axis codes        |
-|------------|-------------------|
-|           3|X, Y, Z, E         |
-|           4|X, Y, Z, A, E      |
-|           5|X, Y, Z, A, B, E   |
-|           6|X, Y, Z, A, B, C, E|
+| LINEAR_AXES | Axis codes                 |
+|-------------|----------------------------|
+|            3|X, Y, Z, E                  |
+|            4|X, Y, Z, A, E               |
+|            5|X, Y, Z, A, B, E            |
+|            6|X, Y, Z, A, B, C, E         |
+|            7|X, Y, Z, A, B, C, U, E      |
+|            8|X, Y, Z, A, B, C, U, V, E   |
+|            9|X, Y, Z, A, B, C, u, V, W, E|
 
-Example syntax for movement (G-code G1) with LINEAR_AXES 6: 
+Example syntax for movement (G-code G1) with LINEAR_AXES 9: 
 ```
-G1 [Xx.xxxx] [Yy.yyyy] [Zz.zzzz] [Aa.aaaa] Bb.bbbb] [Cc.cccc] [Ee.eeee] [Ff.ffff]
+G1 [Xx.xxxx] [Yy.yyyy] [Zz.zzzz] [Aa.aaaa] Bb.bbbb] [Cc.cccc] [Uu.uuuu] [Vv.vvvv] [Ww.wwww] [Ee.eeee] [Ff.ffff]
 ```
+Parameters:
+
+`X`, `Y`, `Z`: position in the cartesian coordinate system consisting of primary linear axes X, Y and Z. Unit: mm (after G-code G21) or imperial inch (after G-code G20)
+
+`A`, `B`, `C`: angular position in the pseudo-cartesian coordinate system consisting of rotational axes A, B, and C that are parallel (wrapped around) axes axes X, Y and Z. Unit: degrees
+
+`U`, `V`, `W`: position in the cartesian coordinate system consisting of secondary linear axes U, V and W that are parallel to axes X, Y and Z. Unit: mm (after G-code G21) or imperial inch (after G-code G20)
+
+`E`: distance the E stepper should move. Unit: mm (after G-code G21) or imperial inch (after G-code G20)
+
+`F`: Feedrate as defined by LinuxCNC (extension of NIST RS274NGC interpreter - version 3):
+
+- For motion involving one or more of the X, Y, and Z axes (with or without motion of other axes), the feed rate means length units per minute along the
+programmed XYZ path, as if the other axes were not moving.
+- For motion of one or more of the secondary linear axes (axis names 'U', 'V', or 'W') with the X, Y , and Z axes not moving (with or without motion of rotational axes), the feed rate means length units per minute along the
+programmed UVW path (using the usual Euclidean metric in the UVW coordinate system), as if the rotational axes were not moving.
+- For motion of one or more of the rotational axes (axis names 'A', 'B' or 'C') with linear axes not moving, the rate is
+applied as follows. Let dA, dB, and dC be the angles in degrees through which the A, B,
+and C axes, respectively, must move. Let D = sqrt((dA)^2 + (dB)^2 + (dC)^2). Conceptually, D is a
+measure of total angular motion, using the usual Euclidean metric. Let T be the amount
+of time required to move through D degrees at the current feed rate in degrees per
+minute. The rotational axes should be moved in coordinated linear motion so that the
+elapsed time from the start to the end of the motion is T plus any time required for
+acceleration or deceleration.
 
 ## Configuration
 
@@ -57,10 +84,10 @@ of the two wire ends are controlled by parallel axes Y, V.
 `LINEAR_AXES`: 
 The number of axes that are not used for extruders (axes that
 benefit from endstops and homing). `LINEAR_AXES` > `3` requires definition of
-`[[I, [J, [K]]]_STEP_PIN`, `[I, [J, [K]]]_ENABLE_PIN`, `[I, [J, [K]]]_DIR_PIN`,
-`[I, [J, [K]]]_STOP_PIN`, `USE_[I, [J, [K]]][MIN || MAX]_PLUG`, 
-`[I, [J, [K]]]_ENABLE_ON`, `DISABLE_[I, [J, [K]]]`, `[I, [J, [K]]]_MIN_POS`, 
-`[I, [J, [K]]]_MAX_POS`, `[I, [J, [K]]]_HOME_DIR`, possibly `DEFAULT_[I, [J, [K]]]JERK`, 
+`[[I, [J, [K...]]]_STEP_PIN`, `[I, [J, [K...]]]_ENABLE_PIN`, `[I, [J, [K...]]]_DIR_PIN`,
+`[I, [J, [K...]]]_STOP_PIN`, `USE_[I, [J, [K...]]][MIN || MAX]_PLUG`, 
+`[I, [J, [K...]]]_ENABLE_ON`, `DISABLE_[I, [J, [K...]]]`, `[I, [J, [K...]]]_MIN_POS`, 
+`[I, [J, [K...]]]_MAX_POS`, `[I, [J, [K...]]]_HOME_DIR`, possibly `DEFAULT_[I, [J, [K...]]]JERK`, 
 and definition of the respective values of `DEFAULT_AXIS_STEPS_PER_UNIT`, `DEFAULT_MAX_FEEDRATE`,
 `DEFAULT_MAX_ACCELERATION`, `HOMING_FEEDRATE_MM_M`, `AXIS_RELATIVE_MODES`, `MICROSTEP_MODES`,
 `MANUAL_FEEDRATE` and possibly also values of `HOMING_BUMP_DIVISOR`,  
@@ -68,15 +95,16 @@ and definition of the respective values of `DEFAULT_AXIS_STEPS_PER_UNIT`, `DEFAU
 For bed-leveling, `NOZZLE_TO_PROBE_OFFSETS` has to be extended with elemets of value 0
 until the number of elements is equal to the value of `LINEAR_AXES`.
 
-Allowed values: [3, 4, 5, 6]
-
+Allowed values: [2, 3, 4, 5, 6, 7, 8, 9]
 
 ### `AXIS4_NAME`
 
-`AXIS4_NAME`, `AXIS5_NAME`, `AXIS6_NAME`:
+`AXIS4_NAME`, `AXIS5_NAME`, `AXIS6_NAME`, `AXIS7_NAME``AXIS8_NAME``AXIS9_NAME`:
 Axis codes for additional axes:
 This defines the axis code that is used in G-code commands to 
-reference a specific axis. 
+reference a specific axis. Axes with name 'A',, 'B' or 'C' are rotational axes for which
+distances and positions must be specified in degrees. Other axes are linear axes for which
+distances and positions must be specified in length units (mm in default mode (after G21) or imperial inches in inch mode (after G20))
 
    * 'A' for rotational axis parallel to X
    * 'B' for rotational axis parallel to Y
@@ -86,9 +114,16 @@ reference a specific axis.
    * 'W' for secondary linear axis parallel to Z
 
 Regardless of the settings, firmware-internal axis names are
-I (AXIS4), J (AXIS5), K (AXIS6).
+I (AXIS4), J (AXIS5), K (AXIS6), U (AXIS7), V (AXIS8), W (AXIS9).
 
 Allowed values: ['A', 'B', 'C', 'U', 'V', 'W'] 
+
+### SAFE_BED_LEVELING_START_X
+
+`SAFE_BED_LEVELING_START_X`, `SAFE_BED_LEVELING_START_Y`, `SAFE_BED_LEVELING_START_Z`, `SAFE_BED_LEVELING_START_I`, `SAFE_BED_LEVELING_START_J`, `SAFE_BED_LEVELING_START_K`, `SAFE_BED_LEVELING_START_U`, `SAFE_BED_LEVELING_START_V`, `SAFE_BED_LEVELING_START_W`: 
+Safe bed leveling start coordinates. If enabled, the respective axis is moved to the specified position at the beginning of the bed leveling procedure.
+Required e.g. with LINEAR_AXES >= 4, if Z probe is not perpendicular to the bed after homing.
+Values must be chosen so that the bed is oriented horizontally and so that the Z-probe is oriented vertically.
 
 ## Building Marlin2ForPipetBot
 
@@ -102,7 +137,7 @@ The different branches in the git repository https://github.com/DerAndere1/Marli
 
 - [6axis_PR1](https://github.com/DerAndere1/Marlin/tree/6axis_PR1) branch was merged into upstream MarlinFirmware/Marlin (pull request https://github.com/MarlinFirmware/Marlin/pull/19112). This branch is now outdated. Use current [MarlinFirmware/Marlin](https://github.com/MarlinFirmware/Marlin) instead.
 
-- [9axis_PR1](https://github.com/DerAndere1/Marlin/tree/9axis_PR1) branch is used to develop support for up to 10 non-extruder axes. This branch needs to be rebased onto https://github.com/MarlinFirmware/Marlin/tree/bugfix-2.0 and a pull request targeting https://github.com/MarlinFirmware/Marlin/tree/bugfix-2.0 has to be prepared.
+- [9axis_PR2](https://github.com/DerAndere1/Marlin/tree/9axis_PR2) branch is used to develop support for up to 10 non-extruder axes. This branch needs to be rebased onto https://github.com/MarlinFirmware/Marlin/tree/bugfix-2.0 and a pull request targeting https://github.com/MarlinFirmware/Marlin/tree/bugfix-2.0 has to be prepared.
 
 - Other branches: Deprecated legacy code. Use current [MarlinFirmware/Marlin](https://github.com/MarlinFirmware/Marlin) instead.
 
@@ -216,9 +251,10 @@ Marlin2ForPipetBot is modified by:
  - DerAndere [[@DerAndere1](https://github.com/DerAndere1)] - Germany
  - Garbriel Beraldo [@GabrielBeraldo](https://github.com/GabrielBeraldo)] - Brasil
  - Olivier Briand [@hobiseven](https://github.com/hobiseven)] - France
- - Wolverine [@MohammadSDGHN](https://github.com/MohammadSDGHN) - Undisclosed 
- - bilsef [@bilsef](https://github.com/bilsef) - Undisclosed 
- - FNeo31 [@FNeo31](https://github.com/FNeo31) - Undisclosed 
+ - Wolverine [@MohammadSDGHN](https://github.com/MohammadSDGHN) - Undisclosed
+ - bilsef [@bilsef](https://github.com/bilsef) - Undisclosed
+ - FNeo31 [@FNeo31](https://github.com/FNeo31) - Undisclosed
+ - HendrikJan-5D [@HendrikJan-5D](https://github.com/HendrikJan-5D) - Undisclosed
 
 ## License
 

@@ -2,7 +2,7 @@
 
   Marlin2ForPipetBot [https://github.com/DerAndere1/Marlin]
 
-  Copyright 2019 - 2021 Christian Bartz ("DerAndere") and other Marlin2ForPipetBot authors [https://github.com/DerAndere1/Marlin]
+  Copyright 2019 - 2021 DerAndere and other Marlin2ForPipetBot authors [https://github.com/DerAndere1/Marlin]
   Portions of Marlin are (c) by their respective authors.
   All code complies with GPLv2 and/or GPLv3
 

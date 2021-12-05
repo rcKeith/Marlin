@@ -1,6 +1,6 @@
 /**
  * Marlin2ForPipetBot [https://github.com/DerAndere1/Marlin]
- * Copyright 2019 - 2021 Christian Bartz ("DerAndere") and other Marlin2ForPipetBot authors [https://github.com/DerAndere1/Marlin]
+ * Copyright 2019 - 2021 DerAndere and other Marlin2ForPipetBot authors [https://github.com/DerAndere1/Marlin]
  *
  * Based on:
  * Marlin 3D Printer Firmware
