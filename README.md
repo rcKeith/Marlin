@@ -14,12 +14,12 @@ Volunteers are standing by!
 __Not for production use. Use with caution!__
 
 Marlin2forPipetBot is a branch of the Marlin fork by DerAndere (based on 
-https://github.com/MarlinFirmware/Marlin/commit/90cd1ca68d3f4f5ede56cbea4913f06ca4782a94 ). 
+https://github.com/MarlinFirmware/Marlin/commit/d6b332f4c7a79553a41c4a6166f21f802be930c8). 
 
 This branch is for patches to the latest Marlin2ForPipetBot release version.
 
 Marlin2ForPipetBot supports up to nine non-extruder axes (LINEAR_AXES) plus 
-extruders (e.g. XYZABCUVW+E or XYZABCW+E or XYZCUVW+E or XYZABC+E XYZUVW+E). 
+extruders (e.g. XYZABCUVW+E or XYZABCW+E or XYZCUVW+E or XYZABC+E or XYZUVW+E). 
 
 Default axis names are:
 
@@ -31,7 +31,7 @@ Default axis names are:
 |            6|X, Y, Z, A, B, C, E         |
 |            7|X, Y, Z, A, B, C, U, E      |
 |            8|X, Y, Z, A, B, C, U, V, E   |
-|            9|X, Y, Z, A, B, C, u, V, W, E|
+|            9|X, Y, Z, A, B, C, U, V, W, E|
 
 Example syntax for movement (G-code G1) with LINEAR_AXES 9: 
 ```
@@ -102,7 +102,7 @@ Allowed values: [2, 3, 4, 5, 6, 7, 8, 9]
 `AXIS4_NAME`, `AXIS5_NAME`, `AXIS6_NAME`, `AXIS7_NAME``AXIS8_NAME``AXIS9_NAME`:
 Axis codes for additional axes:
 This defines the axis code that is used in G-code commands to 
-reference a specific axis. Axes with name 'A',, 'B' or 'C' are rotational axes for which
+reference a specific axis. Axes with name 'A', 'B' or 'C' are rotational axes for which
 distances and positions must be specified in degrees. Other axes are linear axes for which
 distances and positions must be specified in length units (mm in default mode (after G21) or imperial inches in inch mode (after G20))
 
@@ -131,13 +131,13 @@ To build Marlin2ForPipetBot you'll need [PlatformIO](http://docs.platformio.org/
 
 The different branches in the git repository https://github.com/DerAndere1/Marlin reflect different stages of development: 
  
-- [Marlin2ForPipetBot](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot) branch is the stable release branch for [tagged releases of Marlin2ForPipetBot firmware](https://github.com/DerAndere1/Marlin/tags). It is optimized and preconfigured for the [PipetBot-A8](https://derandere.gitlab.io/pipetbot-a8) by default. Currently it is based on Marlin bugfix-2.0.x from 2021-08-30, [https://github.com/MarlinFirmware/Marlin/commit/90cd1ca68d3f4f5ede56cbea4913f06ca4782a94](https://github.com/MarlinFirmware/Marlin/commit/90cd1ca68d3f4f5ede56cbea4913f06ca4782a94) or later. Users that feel comfortable with configuring the firmware themselves should use [MarlinFirmware/Marlin](https://github.com/MarlinFirmware/Marlin) instead, which is more up to date. 
+- [Marlin2ForPipetBot](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot) branch is the stable release branch for [tagged releases of Marlin2ForPipetBot firmware](https://github.com/DerAndere1/Marlin/tags). It is optimized and preconfigured for the [PipetBot-A8](https://derandere.gitlab.io/pipetbot-a8) by default. Currently it is based on Marlin bugfix-2.0.x from 2021-12-05, [https://github.com/MarlinFirmware/Marlin/commit/d6b332f4c7a79553a41c4a6166f21f802be930c8](https://github.com/MarlinFirmware/Marlin/commit/d6b332f4c7a79553a41c4a6166f21f802be930c8) or later. Adds support for 9 axes, including rotational axes (AXIS*_NAME 'A', 'B', or 'C')
 
 - [Marlin2ForPipetBot_dev](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot_dev) branch is used to develop and test bugfixes for Marlin2ForPipetBot. After successful testing, it will be merged into Marlin2ForPipetBot.
 
 - [6axis_PR1](https://github.com/DerAndere1/Marlin/tree/6axis_PR1) branch was merged into upstream MarlinFirmware/Marlin (pull request https://github.com/MarlinFirmware/Marlin/pull/19112). This branch is now outdated. Use current [MarlinFirmware/Marlin](https://github.com/MarlinFirmware/Marlin) instead.
 
-- [9axis_PR2](https://github.com/DerAndere1/Marlin/tree/9axis_PR2) branch is used to develop support for up to 10 non-extruder axes. This branch needs to be rebased onto https://github.com/MarlinFirmware/Marlin/tree/bugfix-2.0 and a pull request targeting https://github.com/MarlinFirmware/Marlin/tree/bugfix-2.0 has to be prepared.
+- [9axis_PR2](https://github.com/DerAndere1/Marlin/tree/9axis_PR2) branch is used to develop support for up to 9 non-extruder axes. A pull request targeting https://github.com/MarlinFirmware/Marlin/tree/bugfix-2.0 was opened. This branch needs to be rebased onto https://github.com/MarlinFirmware/Marlin/tree/bugfix-2.0.
 
 - Other branches: Deprecated legacy code. Use current [MarlinFirmware/Marlin](https://github.com/MarlinFirmware/Marlin) instead.
 
