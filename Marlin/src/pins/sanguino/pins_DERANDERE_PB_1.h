@@ -1,6 +1,6 @@
 /**
  * Marlin2ForPipetBot [https://github.com/DerAndere1/Marlin]
- * Copyright 2019 - 2021 DerAndere and other Marlin2ForPipetBot authors [https://github.com/DerAndere1/Marlin]
+ * Copyright 2019 - 2022 DerAndere and other Marlin2ForPipetBot authors [https://github.com/DerAndere1/Marlin]
  *
  * Based on:
  * Marlin 3D Printer Firmware
@@ -228,9 +228,9 @@
       #define BTN_EN1                         11
       #define BTN_EN2                         10
       #define BTN_ENC                         16
-      #define BOARD_ST7920_DELAY_1 DELAY_NS(125)
-      #define BOARD_ST7920_DELAY_2 DELAY_NS(63)
-      #define BOARD_ST7920_DELAY_3 DELAY_NS(125)
+      #define BOARD_ST7920_DELAY_1           125
+      #define BOARD_ST7920_DELAY_2            63
+      #define BOARD_ST7920_DELAY_3           125
     #endif
 
   #endif
