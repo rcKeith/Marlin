@@ -3122,7 +3122,8 @@ void Temperature::isr() {
 
       #if BOTH(USE_CONTROLLER_FAN, FAN_SOFT_PWM)
         WRITE(CONTROLLER_FAN_PIN, soft_pwm_controller.add(pwm_mask, soft_pwm_controller_speed));
-        WRITE(CONTROLLER_FAN2_PIN, soft_pwm_controller.add(pwm_mask, soft_pwm_controller_speed));      #endif
+        WRITE(CONTROLLER_FAN2_PIN, soft_pwm_controller.add(pwm_mask, soft_pwm_controller_speed));
+      #endif
 
       #if ENABLED(FAN_SOFT_PWM)
         #define _FAN_PWM(N) do{                                     \
