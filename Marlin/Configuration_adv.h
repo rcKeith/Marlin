@@ -1392,6 +1392,9 @@
 
   // Show the E position (filament used) during printing
   //#define LCD_SHOW_E_TOTAL
+
+  // Show the position of secondary axes I[J[K]]
+  //#define LCD_SHOW_SECONDARY_AXES
 #endif
 
 // LCD Print Progress options
