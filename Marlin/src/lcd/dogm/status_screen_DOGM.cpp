@@ -495,15 +495,14 @@ void MarlinUI::draw_status_screen() {
   constexpr int xystorage = TERN(INCH_MODE_SUPPORT, 8, 5);
   static char xstring[TERN(LCD_SHOW_E_TOTAL, 12, xystorage)], ystring[xystorage], zstring[8];
   #if HAS_I_AXIS
-    constexpr int istring[TERN(AXES4_ROTATES, xystorage, 5)];
+    constexpr int istring[TERN(AXIS4_ROTATES, xystorage, 5)];
   #endif
   #if HAS_J_AXIS
-    constexpr int jstring[TERN(AXES5_ROTATES, xystorage, 5)];
+    constexpr int jstring[TERN(AXIS5_ROTATES, xystorage, 5)];
   #endif
   #if HAS_K_AXIS  
-    constexpr int kstring[TERN(AXES6_ROTATES, xystorage, 5)];
+    constexpr int kstring[TERN(AXIS6_ROTATES, xystorage, 5)];
   #endif
-#if BOTH(AXES4_ROTATES)
 
   #if ENABLED(FILAMENT_LCD_DISPLAY)
     static char wstring[5], mstring[4];
