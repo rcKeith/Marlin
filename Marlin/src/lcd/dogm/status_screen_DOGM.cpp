@@ -495,13 +495,13 @@ void MarlinUI::draw_status_screen() {
   constexpr int xystorage = TERN(INCH_MODE_SUPPORT, 8, 5);
   static char xstring[TERN(LCD_SHOW_E_TOTAL, 12, xystorage)], ystring[xystorage], zstring[8];
   #if HAS_I_AXIS
-    constexpr int istring[TERN(AXIS4_ROTATES, xystorage, 5)];
+    static char istring[TERN(AXIS4_ROTATES, 5, xystorage)];
   #endif
   #if HAS_J_AXIS
-    constexpr int jstring[TERN(AXIS5_ROTATES, xystorage, 5)];
+    static char jstring[TERN(AXIS5_ROTATES, 5, xystorage)];
   #endif
   #if HAS_K_AXIS  
-    constexpr int kstring[TERN(AXIS6_ROTATES, xystorage, 5)];
+    static char kstring[TERN(AXIS6_ROTATES, 5, xystorage)];
   #endif
 
   #if ENABLED(FILAMENT_LCD_DISPLAY)
@@ -562,23 +562,29 @@ void MarlinUI::draw_status_screen() {
     else {
       strcpy(xstring, is_inch ? ftostr53_63(LINEAR_UNIT(lpos.x)) : ftostr4sign(lpos.x));
       strcpy(ystring, is_inch ? ftostr53_63(LINEAR_UNIT(lpos.y)) : ftostr4sign(lpos.y));
-      #if !defined(AXIS4_ROTATES) && defined(INCH_MODE_SUPPORT)
-        strcpy(istring, is_inch ? ftostr53_63(LINEAR_UNIT(lpos.i)) : ftostr4sign(lpos.i));
-      #else
-        strcpy(istring, ftostr4sign(lpos.i));
-      #endif
-
-      #if !defined(AXIS5_ROTATES) && defined(INCH_MODE_SUPPORT)
-        strcpy(jstring, is_inch ? ftostr53_63(LINEAR_UNIT(lpos.j)) : ftostr4sign(lpos.j));
-      #else
-        strcpy(jstring, ftostr4sign(lpos.j));
-      #endif
-
-      #if !defined(AXIS6_ROTATES) && defined(INCH_MODE_SUPPORT)
-        strcpy(kstring, is_inch ? ftostr53_63(LINEAR_UNIT(lpos.k)) : ftostr4sign(lpos.k));
-      #else
-        strcpy(kstring, ftostr4sign(lpos.k));
-      #endif
+      #if ENABLED(LCD_SHOW_SECONDARY_AXES)
+        #if HAS_I_AXIS
+          #if DISABLED(AXIS4_ROTATES) && ENABLED(INCH_MODE_SUPPORT)
+            strcpy(istring, is_inch ? ftostr53_63(LINEAR_UNIT(lpos.i)) : ftostr4sign(lpos.i));
+          #else
+            strcpy(istring, ftostr4sign(lpos.i));
+          #endif
+        #endif
+        #if HAS_J_AXIS
+          #if DISABLED(AXIS5_ROTATES) && ENABLED(INCH_MODE_SUPPORT)
+            strcpy(jstring, is_inch ? ftostr53_63(LINEAR_UNIT(lpos.j)) : ftostr4sign(lpos.j));
+          #else
+            strcpy(jstring, ftostr4sign(lpos.j));
+          #endif
+        #endif
+        #if HAS_K_AXIS
+          #if DISABLED(AXIS6_ROTATES) && ENABLED(INCH_MODE_SUPPORT)
+            strcpy(kstring, is_inch ? ftostr53_63(LINEAR_UNIT(lpos.k)) : ftostr4sign(lpos.k));
+          #else
+            strcpy(kstring, ftostr4sign(lpos.k));
+          #endif
+        #endif
+      #endif // LCD_SHOW_SECONDARY_AXES
     }
 
     #if ENABLED(FILAMENT_LCD_DISPLAY)
