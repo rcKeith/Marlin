@@ -511,7 +511,6 @@ FORCE_INLINE void _draw_axis_value(const AxisEnum axis, const char *value, const
       }
 
     const uint8_t offs = a * IJ_SPACING;
-    lcd_put_wchar(X_SECONDARY_AXES_VALUE_POS, IJ_BASELINE, axis_codes[axis]);
     lcd_moveto(X_SECONDARY_AXES_VALUE_POS, IJ_BASELINE + offs);
 
     if (blink)
