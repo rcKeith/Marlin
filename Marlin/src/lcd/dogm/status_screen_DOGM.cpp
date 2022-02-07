@@ -472,9 +472,9 @@ FORCE_INLINE void _draw_axis_value(const AxisEnum axis, const char *value, const
           a = axis;
       }
 
-    const uint8_t offs = a * IJ_SPACING;
-    lcd_put_wchar(X_SECONDARY_AXES_VALUE_POS, IJ_BASELINE, axis_codes[axis]);
-    lcd_moveto(X_SECONDARY_AXES_VALUE_POS, IJ_BASELINE + offs);
+    const uint8_t offs = a * (is_inch ? XYZ_SPACING_IN : XYZ_SPACING);
+    lcd_put_wchar((is_inch ? X_LABEL_POS_IN : X_LABEL_POS) + offs, IJ_BASELINE, axis_codes[axis]);
+    lcd_moveto((is_inch ? X_VALUE_POS_IN : X_VALUE_POS) + offs, IJ_BASELINE);
 
     if (blink)
       lcd_put_u8str(value);
