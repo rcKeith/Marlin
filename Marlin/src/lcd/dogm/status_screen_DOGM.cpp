@@ -84,12 +84,14 @@
 #define X_LABEL_POS      3
 #define X_VALUE_POS     11
 #define XYZ_SPACING     37
+#define IJ_SPACING     (2 + INFO_FONT_ASCENT)
 
 #define X_LABEL_POS_IN (X_LABEL_POS - 2)
 #define X_VALUE_POS_IN (X_VALUE_POS - 5)
 #define XYZ_SPACING_IN (XYZ_SPACING + 9)
+#define X_SECONDARY_AXES_VALUE_POS (LCD_PIXEL_WIDTH - 27)
 
-#define IJK_BASELINE    (3 + INFO_FONT_ASCENT)
+#define IJ_BASELINE    (2 + INFO_FONT_ASCENT)
 #define XYZ_BASELINE    (30 + INFO_FONT_ASCENT)
 #define EXTRAS_BASELINE (40 + INFO_FONT_ASCENT)
 #define STATUS_BASELINE (LCD_PIXEL_HEIGHT - INFO_FONT_DESCENT)
@@ -446,22 +448,22 @@ FORCE_INLINE void _draw_axis_value(const AxisEnum axis, const char *value, const
     lcd_put_u8str(value);
 }
 
-#if defined(LCD_SHOW_SECONDARY_AXES)
+#if ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
   FORCE_INLINE void _draw_secondary_axis_value(const AxisEnum axis, const char *value, const bool blink) {
     const bool is_inch = parser.using_inch_units();
     AxisEnum a;
       switch (axis) {
-        #if HAS_I_AXIS && defined(LCD_SHOW_SECONDARY_AXES)
+        #if HAS_I_AXIS
           case I_AXIS:
             a = X_AXIS;
             break;
         #endif
-        #if HAS_J_AXIS && defined(LCD_SHOW_SECONDARY_AXES)
+        #if HAS_J_AXIS
           case J_AXIS:
             a = Y_AXIS;
             break;
         #endif
-        #if HAS_K_AXIS && defined(LCD_SHOW_SECONDARY_AXES)
+        #if HAS_K_AXIS
           case K_AXIS:
             a = Z_AXIS;
             break;
@@ -470,9 +472,47 @@ FORCE_INLINE void _draw_axis_value(const AxisEnum axis, const char *value, const
           a = axis;
       }
 
-    const uint8_t offs = a * (is_inch ? XYZ_SPACING_IN : XYZ_SPACING);
-    lcd_put_wchar((is_inch ? X_LABEL_POS_IN : X_LABEL_POS) + offs, IJK_BASELINE, axis_codes[axis]);
-    lcd_moveto((is_inch ? X_VALUE_POS_IN : X_VALUE_POS) + offs, IJK_BASELINE);
+    const uint8_t offs = a * IJ_SPACING;
+    lcd_put_wchar(X_SECONDARY_AXES_VALUE_POS, IJ_BASELINE, axis_codes[axis]);
+    lcd_moveto(X_SECONDARY_AXES_VALUE_POS, IJ_BASELINE + offs);
+
+    if (blink)
+      lcd_put_u8str(value);
+    else if (axis_should_home(axis))
+      while (const char c = *value++) lcd_put_wchar(c <= '.' ? c : '?');
+    else if (NONE(HOME_AFTER_DEACTIVATE, DISABLE_REDUCED_ACCURACY_WARNING) && !axis_is_trusted(axis))
+      lcd_put_u8str(axis == Z_AXIS ? F("       ") : F("    "));
+    else
+      lcd_put_u8str(value);
+  }
+#endif
+
+#if ENABLED(LCD_SHOW_SECONDARY_AXES)
+  FORCE_INLINE void _draw_secondary_axis_value(const AxisEnum axis, const char *value, const bool blink) {
+    AxisEnum a;
+      switch (axis) {
+        #if HAS_I_AXIS
+          case I_AXIS:
+            a = X_AXIS;
+            break;
+        #endif
+        #if HAS_J_AXIS
+          case J_AXIS:
+            a = Y_AXIS;
+            break;
+        #endif
+        #if HAS_K_AXIS
+          case K_AXIS:
+            a = Z_AXIS;
+            break;
+        #endif
+        default: 
+          a = axis;
+      }
+
+    const uint8_t offs = a * IJ_SPACING;
+    lcd_put_wchar(X_SECONDARY_AXES_VALUE_POS, IJ_BASELINE, axis_codes[axis]);
+    lcd_moveto(X_SECONDARY_AXES_VALUE_POS, IJ_BASELINE + offs);
 
     if (blink)
       lcd_put_u8str(value);
@@ -562,7 +602,7 @@ void MarlinUI::draw_status_screen() {
     else {
       strcpy(xstring, is_inch ? ftostr53_63(LINEAR_UNIT(lpos.x)) : ftostr4sign(lpos.x));
       strcpy(ystring, is_inch ? ftostr53_63(LINEAR_UNIT(lpos.y)) : ftostr4sign(lpos.y));
-      #if ENABLED(LCD_SHOW_SECONDARY_AXES)
+      #if EITHER(LCD_SHOW_SECONDARY_AXES, LCD_SHOW_SECONDARY_AXES_LINE)
         #if HAS_I_AXIS
           #if DISABLED(AXIS4_ROTATES) && ENABLED(INCH_MODE_SUPPORT)
             strcpy(istring, is_inch ? ftostr53_63(LINEAR_UNIT(lpos.i)) : ftostr4sign(lpos.i));
@@ -812,40 +852,53 @@ void MarlinUI::draw_status_screen() {
     #endif
   }
 
-  #if NONE(DO_DRAW_LOGO,  DO_DRAW_HOTENDS, DO_DRAW_CUTTER, DO_DRAW_COOLER, DO_DRAW_FLOWMETER, DO_DRAW_AMMETER, DO_DRAW_BED, DO_DRAW_CHAMBER, DO_DRAW_FAN)
-    #if LCD_SHOW_SECONDARY_AXES
+  #if DISABLED(DO_DRAW_FAN)
+    #if EITHER(LCD_SHOW_SECONDARY_AXES, LCD_SHOW_SECONDARY_AXES_LINE)
       //
-      // IJK Coordinates
+      // IJ(K) Coordinates
       //
 
       #if EITHER(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
-        #define IJK_FRAME_TOP 2
-        #define IJK_FRAME_HEIGHT INFO_FONT_ASCENT + 3
+        #define IJ_FRAME_TOP 1
+        #if LCD_SHOW_SECONDARY_AXES
+          #define IJ_FRAME_HEIGHT (2 * INFO_FONT_ASCENT + 2 + 3)
+        #else // LCD_SHOW_SECONDARY_AXES_LINE
+          #define IJ_FRAME_HEIGHT INFO_FONT_ASCENT + 3
+        #endif
       #else
-        #define IJK_FRAME_TOP 3
-        #define IJK_FRAME_HEIGHT INFO_FONT_ASCENT + 1
+        #define IJ_FRAME_TOP 2
+      #if ENABLED(LCD_SHOW_SECONDARY_AXES)
+        #define IJ_FRAME_HEIGHT (2 * INFO_FONT_ASCENT + 2 + 1)
+      #else // LCD_SHOW_SECONDARY_AXES_LINE
+        #define IJ_FRAME_HEIGHT INFO_FONT_ASCENT + 1
       #endif
 
-      if (PAGE_CONTAINS(IJK_FRAME_TOP, IJK_FRAME_TOP + IJK_FRAME_HEIGHT - 1)) {
+      if (PAGE_CONTAINS(IJ_FRAME_TOP, IJ_FRAME_TOP + IJ_FRAME_HEIGHT - 1)) {
 
         #if DISABLED(XYZ_NO_FRAME)
-          #if ENABLED(XYZ_HOLLOW_FRAME)
-            u8g.drawFrame(0, IJK_FRAME_TOP, LCD_PIXEL_WIDTH, IJK_FRAME_HEIGHT); // 8: 29-40  7: 29-39
-          #else
-            u8g.drawBox(0, IJK_FRAME_TOP, LCD_PIXEL_WIDTH, IJK_FRAME_HEIGHT);   // 8: 30-39  7: 30-37
+          #if BOTH(XYZ_HOLLOW_FRAME, LCD_SHOW_SECONDARY_AXES)
+            u8g.drawFrame(X_SECONDARY_AXES_VALUE_POS - 1, IJ_FRAME_TOP, 28, IJ_FRAME_HEIGHT);
+          #elif BOTH(XYZ_HOLLOW_FRAME, LCD_SHOW_SECONDARY_AXES_LINE)
+            u8g.drawFrame(X_SECONDARY_AXES_VALUE_POS - 1, IJ_FRAME_TOP, LCD_PIXEL_WIDTH, IJ_FRAME_HEIGHT);
+          #elif DISABLED(XYZ_HOLLOW_FRAME) && ENABLED(LCD_SHOW_SECONDARY_AXES)
+            u8g.drawBox(X_SECONDARY_AXES_VALUE_POS - 1, IJ_FRAME_TOP, 28, IJ_FRAME_HEIGHT);
+          #else // DISABLED(XYZ_HOLLOW_FRAME) && ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
+            u8g.drawBox(X_SECONDARY_AXES_VALUE_POS - 1, IJ_FRAME_TOP, LCD_PIXEL_WIDTH, IJ_FRAME_HEIGHT); 
           #endif
         #endif
 
-        if (PAGE_CONTAINS(IJK_BASELINE - (INFO_FONT_ASCENT - 1), IJK_BASELINE)) {
+        if (PAGE_CONTAINS(IJ_BASELINE - (INFO_FONT_ASCENT - 1), IJ_BASELINE)) {
 
           #if NONE(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
             u8g.setColorIndex(0); // white on black
           #endif
 
-
           TERN_(HAS_I_AXIS, _draw_secondary_axis_value(I_AXIS, istring, blink));
           TERN_(HAS_J_AXIS, _draw_secondary_axis_value(J_AXIS, jstring, blink));
-          TERN_(HAS_K_AXIS, _draw_secondary_axis_value(K_AXIS, kstring, blink));
+
+          #if ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
+            TERN_(HAS_J_AXIS, _draw_secondary_axis_value(J_AXIS, jstring, blink));
+          #endif
 
           #if NONE(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
             u8g.setColorIndex(1); // black on white
