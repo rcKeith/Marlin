@@ -99,10 +99,26 @@
 #endif
 #ifndef Z_STOP_PIN
   #ifndef Z_MIN_PIN
-    #define Z_MIN_PIN                         18
+    #define Z_MIN_PIN                         9   // Dummy for z
   #endif
   #ifndef Z_MAX_PIN
-    #define Z_MAX_PIN                         19
+    #define Z_MAX_PIN                         10  // Dummy for z
+  #endif
+#endif
+#ifndef I_STOP_PIN
+  #ifndef I_MIN_PIN
+    #define I_MIN_PIN                         42
+  #endif
+  #ifndef I_MAX_PIN
+    #define I_MAX_PIN                         40
+  #endif
+#endif
+#ifndef J_STOP_PIN
+  #ifndef J_MIN_PIN
+    #define J_MIN_PIN                         18
+  #endif
+  #ifndef J_MAX_PIN
+    #define J_MAX_PIN                         19
   #endif
 #endif
 
