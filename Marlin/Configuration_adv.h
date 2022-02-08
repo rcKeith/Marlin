@@ -1,8 +1,4 @@
 /**
- * Marlin2ForPipetBot [https://github.com/DerAndere1/Marlin]
- * Copyright 2019 - 2022 DerAndere and other Marlin2ForPipetBot authors [https://github.com/DerAndere1/Marlin]
- *
- * Based on:
  * Marlin 3D Printer Firmware
  * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
@@ -850,8 +846,8 @@
 
 //#define SENSORLESS_BACKOFF_MM  { 2, 2, 0 }  // (mm for linear axes, ° for rotational axes) Backoff from endstops before sensorless homing
 
-#define HOMING_BUMP_MM      { 5, 5, 2 }       // (mm for linear axes, ° for rotational axes) Backoff from endstops after first bump
-#define HOMING_BUMP_DIVISOR { 2, 2, 4 }       // Re-Bump Speed Divisor (Divides the Homing Feedrate)
+#define HOMING_BUMP_MM      { 5, 5, 5,5,5 }       // (mm for linear axes, ° for rotational axes) Backoff from endstops after first bump
+#define HOMING_BUMP_DIVISOR { 2, 2, 2,2,2 }       // Re-Bump Speed Divisor (Divides the Homing Feedrate)
 
 //#define HOMING_BACKOFF_POST_MM { 2, 2, 2 }  // (mm for linear axes, ° for rotational axes) Backoff from endstops after homing
 
@@ -1025,7 +1021,7 @@
 
 // @section motion
 
-#define AXIS_RELATIVE_MODES { false, false, false, false }
+#define AXIS_RELATIVE_MODES { false, false, false, false,false }
 
 // Add a Duplicate option for well-separated conjoined nozzles
 //#define MULTI_NOZZLE_DUPLICATION
@@ -1275,7 +1271,7 @@
 // @section lcd
 
 #if ANY(HAS_LCD_MENU, EXTENSIBLE_UI, HAS_DWIN_E3V2)
-  #define MANUAL_FEEDRATE { 50*60, 50*60, 4*60, 2*60 } // (mm/min) Feedrates for manual moves along X, Y, Z, E from panel
+  #define MANUAL_FEEDRATE { 50*60, 50*60, 50*60, 50*60,50*60 } // (mm/min) Feedrates for manual moves along X, Y, Z, E from panel
   #define FINE_MANUAL_MOVE 0.025    // (mm) Smallest manual move (< 0.1mm) applying to Z on most machines
   #if IS_ULTIPANEL
     #define MANUAL_E_MOVES_RELATIVE // Display extruder move distance rather than "position"
@@ -1398,12 +1394,11 @@
   //#define LCD_SHOW_E_TOTAL
 
   // Show the position of secondary axes I[J] in place of the fan icon in the top right corner. Incompatible with LCD_SHOW_SECONDARY_AXES_LINE
-  //#define LCD_SHOW_SECONDARY_AXES
+  #define LCD_SHOW_SECONDARY_AXES
 
   // Show the position of secondary axes I[J[K]] instead of icons. Incompatible with LCD_SHOW_SECONDARY_AXES
   //#define LCD_SHOW_SECONDARY_AXES_LINE
 #endif
-
 // LCD Print Progress options
 #if EITHER(SDSUPPORT, LCD_SET_PROGRESS_MANUALLY)
   #if CAN_SHOW_REMAINING_TIME
@@ -3574,7 +3569,7 @@
  *
  * See https://marlinfw.org/docs/configuration/laser_spindle.html for more config details.
  */
-//#define SPINDLE_FEATURE
+#define SPINDLE_FEATURE
 //#define LASER_FEATURE
 #if EITHER(SPINDLE_FEATURE, LASER_FEATURE)
   #define SPINDLE_LASER_ACTIVE_STATE    LOW    // Set to "HIGH" if SPINDLE_LASER_ENA_PIN is active HIGH
@@ -3610,7 +3605,7 @@
    *  - RPM     (S0 - S50000)  Best for use with a spindle
    *  - SERVO   (S0 - S180)
    */
-  #define CUTTER_POWER_UNIT PWM255
+  #define CUTTER_POWER_UNIT PERCENT
 
   /**
    * Relative Cutter Power
@@ -3987,21 +3982,29 @@
  */
 
 // Custom Menu: Main Menu
-//#define CUSTOM_MENU_MAIN
+#define CUSTOM_MENU_MAIN
 #if ENABLED(CUSTOM_MENU_MAIN)
-  //#define CUSTOM_MENU_MAIN_TITLE "Custom Commands"
-  #define CUSTOM_MENU_MAIN_SCRIPT_DONE "M117 User Script Done"
-  #define CUSTOM_MENU_MAIN_SCRIPT_AUDIBLE_FEEDBACK
-  //#define CUSTOM_MENU_MAIN_SCRIPT_RETURN   // Return to status screen after a script
+  #define CUSTOM_MENU_MAIN_TITLE "Zero Axes"
+  #define CUSTOM_MENU_MAIN_SCRIPT_DONE "M117 Axes Zero'd"
+  //#define CUSTOM_MENU_MAIN_SCRIPT_AUDIBLE_FEEDBACK
+  #define CUSTOM_MENU_MAIN_SCRIPT_RETURN   // Return to status screen after a script
   #define CUSTOM_MENU_MAIN_ONLY_IDLE         // Only show custom menu when the machine is idle
 
-  #define MAIN_MENU_ITEM_1_DESC "Home & UBL Info"
-  #define MAIN_MENU_ITEM_1_GCODE "G28\nG29 W"
-  //#define MAIN_MENU_ITEM_1_CONFIRM          // Show a confirmation dialog before this action
+  #define MAIN_MENU_ITEM_1_DESC "Zero All"
+  #define MAIN_MENU_ITEM_1_GCODE "G92 X0 Y0 Z0 U0"
+  #define MAIN_MENU_ITEM_1_CONFIRM          // Show a confirmation dialog before this action
 
-  #define MAIN_MENU_ITEM_2_DESC "Preheat for " PREHEAT_1_LABEL
-  #define MAIN_MENU_ITEM_2_GCODE "M140 S" STRINGIFY(PREHEAT_1_TEMP_BED) "\nM104 S" STRINGIFY(PREHEAT_1_TEMP_HOTEND)
-  //#define MAIN_MENU_ITEM_2_CONFIRM
+  #define MAIN_MENU_ITEM_2_DESC "Zero Vert. Axis" 
+  #define MAIN_MENU_ITEM_2_GCODE "G92 Y0 Z0"
+  #define MAIN_MENU_ITEM_2_CONFIRM
+
+  #define MAIN_MENU_ITEM_3_DESC "Zero Horiz. Axis" 
+  #define MAIN_MENU_ITEM_3_GCODE "G92 X0 U0"
+  #define MAIN_MENU_ITEM_3_CONFIRM
+
+  #define MAIN_MENU_ITEM_4_DESC "Reset to Mach. Zero" 
+  #define MAIN_MENU_ITEM_4_GCODE "G92.1"
+  #define MAIN_MENU_ITEM_4_CONFIRM
 
   //#define MAIN_MENU_ITEM_3_DESC "Preheat for " PREHEAT_2_LABEL
   //#define MAIN_MENU_ITEM_3_GCODE "M140 S" STRINGIFY(PREHEAT_2_TEMP_BED) "\nM104 S" STRINGIFY(PREHEAT_2_TEMP_HOTEND)
@@ -4014,36 +4017,6 @@
   //#define MAIN_MENU_ITEM_5_DESC "Home & Info"
   //#define MAIN_MENU_ITEM_5_GCODE "G28\nM503"
   //#define MAIN_MENU_ITEM_5_CONFIRM
-#endif
-
-// Custom Menu: Configuration Menu
-//#define CUSTOM_MENU_CONFIG
-#if ENABLED(CUSTOM_MENU_CONFIG)
-  //#define CUSTOM_MENU_CONFIG_TITLE "Custom Commands"
-  #define CUSTOM_MENU_CONFIG_SCRIPT_DONE "M117 Wireless Script Done"
-  #define CUSTOM_MENU_CONFIG_SCRIPT_AUDIBLE_FEEDBACK
-  //#define CUSTOM_MENU_CONFIG_SCRIPT_RETURN  // Return to status screen after a script
-  #define CUSTOM_MENU_CONFIG_ONLY_IDLE        // Only show custom menu when the machine is idle
-
-  #define CONFIG_MENU_ITEM_1_DESC "Wifi ON"
-  #define CONFIG_MENU_ITEM_1_GCODE "M118 [ESP110] WIFI-STA pwd=12345678"
-  //#define CONFIG_MENU_ITEM_1_CONFIRM        // Show a confirmation dialog before this action
-
-  #define CONFIG_MENU_ITEM_2_DESC "Bluetooth ON"
-  #define CONFIG_MENU_ITEM_2_GCODE "M118 [ESP110] BT pwd=12345678"
-  //#define CONFIG_MENU_ITEM_2_CONFIRM
-
-  //#define CONFIG_MENU_ITEM_3_DESC "Radio OFF"
-  //#define CONFIG_MENU_ITEM_3_GCODE "M118 [ESP110] OFF pwd=12345678"
-  //#define CONFIG_MENU_ITEM_3_CONFIRM
-
-  //#define CONFIG_MENU_ITEM_4_DESC "Wifi ????"
-  //#define CONFIG_MENU_ITEM_4_GCODE "M118 ????"
-  //#define CONFIG_MENU_ITEM_4_CONFIRM
-
-  //#define CONFIG_MENU_ITEM_5_DESC "Wifi ????"
-  //#define CONFIG_MENU_ITEM_5_GCODE "M118 ????"
-  //#define CONFIG_MENU_ITEM_5_CONFIRM
 #endif
 
 /**
