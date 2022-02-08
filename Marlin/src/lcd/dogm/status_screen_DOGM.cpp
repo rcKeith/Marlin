@@ -863,17 +863,18 @@ void MarlinUI::draw_status_screen() {
 
       #if EITHER(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
         #define IJ_FRAME_TOP 1
-        #if LCD_SHOW_SECONDARY_AXES
+        #if ENABLED(LCD_SHOW_SECONDARY_AXES)
           #define IJ_FRAME_HEIGHT (2 * INFO_FONT_ASCENT + 2 + 3)
-        #else // LCD_SHOW_SECONDARY_AXES_LINE
+        #else // ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
           #define IJ_FRAME_HEIGHT INFO_FONT_ASCENT + 3
         #endif
       #else
         #define IJ_FRAME_TOP 2
-      #if ENABLED(LCD_SHOW_SECONDARY_AXES)
-        #define IJ_FRAME_HEIGHT (2 * INFO_FONT_ASCENT + 2 + 1)
-      #else // LCD_SHOW_SECONDARY_AXES_LINE
-        #define IJ_FRAME_HEIGHT INFO_FONT_ASCENT + 1
+        #if ENABLED(LCD_SHOW_SECONDARY_AXES)
+          #define IJ_FRAME_HEIGHT (2 * INFO_FONT_ASCENT + 2 + 1)
+        #else // ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
+          #define IJ_FRAME_HEIGHT INFO_FONT_ASCENT + 1
+        #endif
       #endif
 
       if (PAGE_CONTAINS(IJ_FRAME_TOP, IJ_FRAME_TOP + IJ_FRAME_HEIGHT - 1)) {
