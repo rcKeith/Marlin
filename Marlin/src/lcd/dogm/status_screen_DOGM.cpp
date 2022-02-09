@@ -722,11 +722,11 @@ void MarlinUI::draw_status_screen() {
 
       #if DISABLED(XYZ_NO_FRAME)
         #if BOTH(XYZ_HOLLOW_FRAME, LCD_SHOW_SECONDARY_AXES)
-          u8g.drawFrame(TERN(SHOW_SECONDARY_AXES_TOP_LEFT(0, X_SECONDARY_AXES_VALUE_POS - 1), IJ_FRAME_TOP, 28, IJ_FRAME_HEIGHT);
+          u8g.drawFrame(TERN(SHOW_SECONDARY_AXES_TOP_LEFT, 0, X_SECONDARY_AXES_VALUE_POS - 1), IJ_FRAME_TOP, 28, IJ_FRAME_HEIGHT);
         #elif BOTH(XYZ_HOLLOW_FRAME, LCD_SHOW_SECONDARY_AXES_LINE)
           u8g.drawFrame(0, IJ_FRAME_TOP, NUM_AXES * XYZ_SPACING_IN + X_LABEL_POS_IN + 3, IJ_FRAME_HEIGHT);
         #elif DISABLED(XYZ_HOLLOW_FRAME) && ENABLED(LCD_SHOW_SECONDARY_AXES)
-          u8g.drawFrame(TERN(SHOW_SECONDARY_AXES_TOP_LEFT(0, X_SECONDARY_AXES_VALUE_POS - 1), IJ_FRAME_TOP, 28, IJ_FRAME_HEIGHT);
+          u8g.drawFrame(TERN(SHOW_SECONDARY_AXES_TOP_LEFT, 0, X_SECONDARY_AXES_VALUE_POS - 1), IJ_FRAME_TOP, 28, IJ_FRAME_HEIGHT);
         #else // DISABLED(XYZ_HOLLOW_FRAME) && ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
           u8g.drawBox(0, IJ_FRAME_TOP, NUM_AXES * XYZ_SPACING_IN + X_LABEL_POS_IN + 1, IJ_FRAME_HEIGHT); 
         #endif
@@ -742,7 +742,7 @@ void MarlinUI::draw_status_screen() {
         TERN_(HAS_J_AXIS, _draw_secondary_axis_value(J_AXIS, jstring, blink));
 
         #if ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
-          TERN_(HAS_K_AXIS, _draw_secondary_axis_value(J_AXIS, kstring, blink));
+          TERN_(HAS_K_AXIS, _draw_secondary_axis_value(K_AXIS, kstring, blink));
         #endif
 
         #if NONE(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
