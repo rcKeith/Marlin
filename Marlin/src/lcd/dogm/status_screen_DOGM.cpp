@@ -95,7 +95,7 @@
 #define XYZ_SPACING_IN (XYZ_SPACING + 9)
 #define X_SECONDARY_AXES_VALUE_POS (LCD_PIXEL_WIDTH - 27)
 
-#define IJ_BASELINE    (2 + INFO_FONT_ASCENT)
+#define IJ_BASELINE    (1 + INFO_FONT_ASCENT)
 #define XYZ_BASELINE    (30 + INFO_FONT_ASCENT)
 #define EXTRAS_BASELINE (40 + INFO_FONT_ASCENT)
 #define STATUS_BASELINE (LCD_PIXEL_HEIGHT - INFO_FONT_DESCENT)
@@ -515,7 +515,7 @@ FORCE_INLINE void _draw_axis_value(const AxisEnum axis, const char *value, const
       }
 
     const uint8_t offs = a * IJ_SPACING;
-    lcd_moveto(X_SECONDARY_AXES_VALUE_POS, IJ_BASELINE + offs);
+    lcd_moveto(TERN(SHOW_SECONDARY_AXES_TOP_LEFT, 0, X_SECONDARY_AXES_VALUE_POS), IJ_BASELINE + offs);
 
     if (blink)
       lcd_put_u8str(value);
@@ -696,6 +696,62 @@ void MarlinUI::draw_status_screen() {
   // Status Menu Font
   set_font(FONT_STATUSMENU);
 
+
+  #if EITHER(LCD_SHOW_SECONDARY_AXES, LCD_SHOW_SECONDARY_AXES_LINE)
+    //
+    // IJ(K) Coordinates
+    //
+
+    #if EITHER(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
+      #define IJ_FRAME_TOP 0
+      #if ENABLED(LCD_SHOW_SECONDARY_AXES)
+        #define IJ_FRAME_HEIGHT (2 * INFO_FONT_ASCENT + 1 + 3)
+      #else // ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
+        #define IJ_FRAME_HEIGHT INFO_FONT_ASCENT + 3
+      #endif
+    #else
+      #define IJ_FRAME_TOP 1
+      #if ENABLED(LCD_SHOW_SECONDARY_AXES)
+        #define IJ_FRAME_HEIGHT (2 * INFO_FONT_ASCENT + 1 + 1)
+      #else // ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
+        #define IJ_FRAME_HEIGHT INFO_FONT_ASCENT + 1
+      #endif
+    #endif
+
+    if (PAGE_CONTAINS(IJ_FRAME_TOP, IJ_FRAME_TOP + IJ_FRAME_HEIGHT - 1)) {
+
+      #if DISABLED(XYZ_NO_FRAME)
+        #if BOTH(XYZ_HOLLOW_FRAME, LCD_SHOW_SECONDARY_AXES)
+          u8g.drawFrame(TERN(SHOW_SECONDARY_AXES_TOP_LEFT(0, X_SECONDARY_AXES_VALUE_POS - 1), IJ_FRAME_TOP, 28, IJ_FRAME_HEIGHT);
+        #elif BOTH(XYZ_HOLLOW_FRAME, LCD_SHOW_SECONDARY_AXES_LINE)
+          u8g.drawFrame(0, IJ_FRAME_TOP, NUM_AXES * XYZ_SPACING_IN + X_LABEL_POS_IN + 3, IJ_FRAME_HEIGHT);
+        #elif DISABLED(XYZ_HOLLOW_FRAME) && ENABLED(LCD_SHOW_SECONDARY_AXES)
+          u8g.drawFrame(TERN(SHOW_SECONDARY_AXES_TOP_LEFT(0, X_SECONDARY_AXES_VALUE_POS - 1), IJ_FRAME_TOP, 28, IJ_FRAME_HEIGHT);
+        #else // DISABLED(XYZ_HOLLOW_FRAME) && ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
+          u8g.drawBox(0, IJ_FRAME_TOP, NUM_AXES * XYZ_SPACING_IN + X_LABEL_POS_IN + 1, IJ_FRAME_HEIGHT); 
+        #endif
+      #endif
+
+      if (PAGE_CONTAINS(IJ_BASELINE - (INFO_FONT_ASCENT - 1), IJ_BASELINE)) {
+
+        #if NONE(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
+          u8g.setColorIndex(0); // white on black
+        #endif
+
+        TERN_(HAS_I_AXIS, _draw_secondary_axis_value(I_AXIS, istring, blink));
+        TERN_(HAS_J_AXIS, _draw_secondary_axis_value(J_AXIS, jstring, blink));
+
+        #if ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
+          TERN_(HAS_J_AXIS, _draw_secondary_axis_value(J_AXIS, jstring, blink));
+        #endif
+
+        #if NONE(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
+          u8g.setColorIndex(1); // black on white
+        #endif
+      }
+    }
+  #endif
+
   #if DO_DRAW_LOGO
     if (PAGE_CONTAINS(STATUS_LOGO_Y, STATUS_LOGO_Y + STATUS_LOGO_HEIGHT - 1))
       u8g.drawBitmapP(STATUS_LOGO_X, STATUS_LOGO_Y, STATUS_LOGO_BYTEWIDTH, STATUS_LOGO_HEIGHT, status_logo_bmp);
@@ -776,7 +832,13 @@ void MarlinUI::draw_status_screen() {
   //
   // Temperature Graphics and Info
   //
-  if (PAGE_UNDER(6 + 1 + 12 + 1 + 6 + 1)) {
+  if (
+    #if ENABLED(LCD_SHOW_SECONDARY_AXES)
+      PAGE_UNDER(IJ_FRAME_TOP + IJ_FRAME_HEIGHT - 1)
+    #else
+      PAGE_UNDER(6 + 1 + 12 + 1 + 6 + 1)
+    #endif
+  ) {
     // Extruders
     #if DO_DRAW_HOTENDS
       LOOP_L_N(e, MAX_HOTEND_DRAW)
@@ -854,63 +916,6 @@ void MarlinUI::draw_status_screen() {
       }
     #endif
   }
-
-  #if DISABLED(DO_DRAW_FAN)
-    #if EITHER(LCD_SHOW_SECONDARY_AXES, LCD_SHOW_SECONDARY_AXES_LINE)
-      //
-      // IJ(K) Coordinates
-      //
-
-      #if EITHER(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
-        #define IJ_FRAME_TOP 1
-        #if ENABLED(LCD_SHOW_SECONDARY_AXES)
-          #define IJ_FRAME_HEIGHT (2 * INFO_FONT_ASCENT + 2 + 3)
-        #else // ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
-          #define IJ_FRAME_HEIGHT INFO_FONT_ASCENT + 3
-        #endif
-      #else
-        #define IJ_FRAME_TOP 2
-        #if ENABLED(LCD_SHOW_SECONDARY_AXES)
-          #define IJ_FRAME_HEIGHT (2 * INFO_FONT_ASCENT + 2 + 1)
-        #else // ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
-          #define IJ_FRAME_HEIGHT INFO_FONT_ASCENT + 1
-        #endif
-      #endif
-
-      if (PAGE_CONTAINS(IJ_FRAME_TOP, IJ_FRAME_TOP + IJ_FRAME_HEIGHT - 1)) {
-
-        #if DISABLED(XYZ_NO_FRAME)
-          #if BOTH(XYZ_HOLLOW_FRAME, LCD_SHOW_SECONDARY_AXES)
-            u8g.drawFrame(X_SECONDARY_AXES_VALUE_POS - 1, IJ_FRAME_TOP, 28, IJ_FRAME_HEIGHT);
-          #elif BOTH(XYZ_HOLLOW_FRAME, LCD_SHOW_SECONDARY_AXES_LINE)
-            u8g.drawFrame(X_SECONDARY_AXES_VALUE_POS - 1, IJ_FRAME_TOP, LCD_PIXEL_WIDTH, IJ_FRAME_HEIGHT);
-          #elif DISABLED(XYZ_HOLLOW_FRAME) && ENABLED(LCD_SHOW_SECONDARY_AXES)
-            u8g.drawBox(X_SECONDARY_AXES_VALUE_POS - 1, IJ_FRAME_TOP, 28, IJ_FRAME_HEIGHT);
-          #else // DISABLED(XYZ_HOLLOW_FRAME) && ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
-            u8g.drawBox(X_SECONDARY_AXES_VALUE_POS - 1, IJ_FRAME_TOP, LCD_PIXEL_WIDTH, IJ_FRAME_HEIGHT); 
-          #endif
-        #endif
-
-        if (PAGE_CONTAINS(IJ_BASELINE - (INFO_FONT_ASCENT - 1), IJ_BASELINE)) {
-
-          #if NONE(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
-            u8g.setColorIndex(0); // white on black
-          #endif
-
-          TERN_(HAS_I_AXIS, _draw_secondary_axis_value(I_AXIS, istring, blink));
-          TERN_(HAS_J_AXIS, _draw_secondary_axis_value(J_AXIS, jstring, blink));
-
-          #if ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
-            TERN_(HAS_J_AXIS, _draw_secondary_axis_value(J_AXIS, jstring, blink));
-          #endif
-
-          #if NONE(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
-            u8g.setColorIndex(1); // black on white
-          #endif
-        }
-      }
-    #endif
-  #endif
 
   #if ENABLED(SDSUPPORT)
     //
@@ -1069,7 +1074,9 @@ void MarlinUI::draw_status_screen() {
 
       #endif
 
-      _draw_axis_value(Z_AXIS, zstring, blink);
+      #if DISABLED(FOAMCUTTER_XYUV)
+        _draw_axis_value(Z_AXIS, zstring, blink);
+      #endif
 
       #if NONE(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
         u8g.setColorIndex(1); // black on white
