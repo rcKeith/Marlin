@@ -1394,7 +1394,7 @@
   //#define LCD_SHOW_E_TOTAL
 
   // Show the position of secondary axes I[J] in place of the fan icon in the top right corner. Incompatible with LCD_SHOW_SECONDARY_AXES_LINE
-  #define LCD_SHOW_SECONDARY_AXES
+  //#define LCD_SHOW_SECONDARY_AXES
 
   // Show the position of secondary axes I[J[K]] instead of icons. Incompatible with LCD_SHOW_SECONDARY_AXES
   //#define LCD_SHOW_SECONDARY_AXES_LINE

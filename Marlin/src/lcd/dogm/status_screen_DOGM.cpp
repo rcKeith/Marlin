@@ -90,6 +90,7 @@
 #define XYZ_SPACING     37
 #define IJ_SPACING     (2 + INFO_FONT_ASCENT)
 
+
 #define X_LABEL_POS_IN (X_LABEL_POS - 2)
 #define X_VALUE_POS_IN (X_VALUE_POS - 5)
 #define XYZ_SPACING_IN (XYZ_SPACING + 9)
@@ -864,7 +865,7 @@ void MarlinUI::draw_status_screen() {
       #if EITHER(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
         #define IJ_FRAME_TOP 1
         #if ENABLED(LCD_SHOW_SECONDARY_AXES)
-          #define IJ_FRAME_HEIGHT (2 * INFO_FONT_ASCENT + 2 + 3)
+          #define IJ_FRAME_HEIGHT (2 * INFO_FONT_ASCENT + 4 + 3)
         #else // ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
           #define IJ_FRAME_HEIGHT INFO_FONT_ASCENT + 3
         #endif
@@ -1069,7 +1070,9 @@ void MarlinUI::draw_status_screen() {
 
       #endif
 
-      _draw_axis_value(Z_AXIS, zstring, blink);
+      #if DISABLED(FOAMCUTTER_XYUV)
+       _draw_axis_value(Z_AXIS, zstring, blink);
+      #endif
 
       #if NONE(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
         u8g.setColorIndex(1); // black on white
