@@ -742,7 +742,7 @@ void MarlinUI::draw_status_screen() {
         TERN_(HAS_J_AXIS, _draw_secondary_axis_value(J_AXIS, jstring, blink));
 
         #if ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
-          TERN_(HAS_J_AXIS, _draw_secondary_axis_value(J_AXIS, jstring, blink));
+          TERN_(HAS_K_AXIS, _draw_secondary_axis_value(J_AXIS, kstring, blink));
         #endif
 
         #if NONE(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
