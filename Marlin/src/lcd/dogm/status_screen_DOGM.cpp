@@ -88,7 +88,7 @@
 #define X_LABEL_POS      3
 #define X_VALUE_POS     11
 #define XYZ_SPACING     37
-#define IJ_SPACING     (2 + INFO_FONT_ASCENT)
+#define IJ_SPACING     (1 + INFO_FONT_ASCENT)
 
 #define X_LABEL_POS_IN (X_LABEL_POS - 2)
 #define X_VALUE_POS_IN (X_VALUE_POS - 5)
