@@ -90,7 +90,6 @@
 #define XYZ_SPACING     37
 #define IJ_SPACING     (1 + INFO_FONT_ASCENT)
 
-
 #define X_LABEL_POS_IN (X_LABEL_POS - 2)
 #define X_VALUE_POS_IN (X_VALUE_POS - 5)
 #define XYZ_SPACING_IN (XYZ_SPACING + 9)
@@ -725,7 +724,8 @@ void MarlinUI::draw_status_screen() {
         #if BOTH(XYZ_HOLLOW_FRAME, LCD_SHOW_SECONDARY_AXES)
           u8g.drawFrame(TERN(SHOW_SECONDARY_AXES_TOP_LEFT, 0, X_SECONDARY_AXES_VALUE_POS - 1), IJ_FRAME_TOP, 28, IJ_FRAME_HEIGHT);
         #elif BOTH(XYZ_HOLLOW_FRAME, LCD_SHOW_SECONDARY_AXES_LINE)
-          u8g.drawFrame(0, IJ_FRAME_TOP, NUM_AXES * XYZ_SPACING_IN + X_LABEL_POS_IN + 3, IJ_FRAME_HEIGHT);
+          //u8g.drawFrame(0, IJ_FRAME_TOP, NUM_AXES * XYZ_SPACING_IN + X_LABEL_POS_IN + 3, IJ_FRAME_HEIGHT);
+          u8g.drawFrame(0, IJ_FRAME_TOP, LCD_PIXEL_WIDTH, IJ_FRAME_HEIGHT);
         #elif DISABLED(XYZ_HOLLOW_FRAME) && ENABLED(LCD_SHOW_SECONDARY_AXES)
           u8g.drawFrame(TERN(SHOW_SECONDARY_AXES_TOP_LEFT, 0, X_SECONDARY_AXES_VALUE_POS - 1), IJ_FRAME_TOP, 28, IJ_FRAME_HEIGHT);
         #else // DISABLED(XYZ_HOLLOW_FRAME) && ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
@@ -918,66 +918,6 @@ void MarlinUI::draw_status_screen() {
     #endif
   }
 
-<<<<<<< HEAD
-  #if DISABLED(DO_DRAW_FAN)
-    #if EITHER(LCD_SHOW_SECONDARY_AXES, LCD_SHOW_SECONDARY_AXES_LINE)
-      //
-      // IJ(K) Coordinates
-      //
-
-      #if EITHER(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
-        #define IJ_FRAME_TOP 1
-        #if ENABLED(LCD_SHOW_SECONDARY_AXES)
-          #define IJ_FRAME_HEIGHT (2 * INFO_FONT_ASCENT + 4 + 3)
-        #else // ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
-          #define IJ_FRAME_HEIGHT INFO_FONT_ASCENT + 3
-        #endif
-      #else
-        #define IJ_FRAME_TOP 2
-        #if ENABLED(LCD_SHOW_SECONDARY_AXES)
-          #define IJ_FRAME_HEIGHT (2 * INFO_FONT_ASCENT + 2 + 1)
-        #else // ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
-          #define IJ_FRAME_HEIGHT INFO_FONT_ASCENT + 1
-        #endif
-      #endif
-
-      if (PAGE_CONTAINS(IJ_FRAME_TOP, IJ_FRAME_TOP + IJ_FRAME_HEIGHT - 1)) {
-
-        #if DISABLED(XYZ_NO_FRAME)
-          #if BOTH(XYZ_HOLLOW_FRAME, LCD_SHOW_SECONDARY_AXES)
-            u8g.drawFrame(X_SECONDARY_AXES_VALUE_POS - 1, IJ_FRAME_TOP, 28, IJ_FRAME_HEIGHT);
-          #elif BOTH(XYZ_HOLLOW_FRAME, LCD_SHOW_SECONDARY_AXES_LINE)
-            u8g.drawFrame(X_SECONDARY_AXES_VALUE_POS - 1, IJ_FRAME_TOP, LCD_PIXEL_WIDTH, IJ_FRAME_HEIGHT);
-          #elif DISABLED(XYZ_HOLLOW_FRAME) && ENABLED(LCD_SHOW_SECONDARY_AXES)
-            u8g.drawBox(X_SECONDARY_AXES_VALUE_POS - 1, IJ_FRAME_TOP, 28, IJ_FRAME_HEIGHT);
-          #else // DISABLED(XYZ_HOLLOW_FRAME) && ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
-            u8g.drawBox(X_SECONDARY_AXES_VALUE_POS - 1, IJ_FRAME_TOP, LCD_PIXEL_WIDTH, IJ_FRAME_HEIGHT); 
-          #endif
-        #endif
-
-        if (PAGE_CONTAINS(IJ_BASELINE - (INFO_FONT_ASCENT - 1), IJ_BASELINE)) {
-
-          #if NONE(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
-            u8g.setColorIndex(0); // white on black
-          #endif
-
-          TERN_(HAS_I_AXIS, _draw_secondary_axis_value(I_AXIS, istring, blink));
-          TERN_(HAS_J_AXIS, _draw_secondary_axis_value(J_AXIS, jstring, blink));
-
-          #if ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
-            TERN_(HAS_J_AXIS, _draw_secondary_axis_value(J_AXIS, jstring, blink));
-          #endif
-
-          #if NONE(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
-            u8g.setColorIndex(1); // black on white
-          #endif
-        }
-      }
-    #endif
-  #endif
-
-=======
->>>>>>> upstream/Marlin2ForPipetBot_edge
   #if ENABLED(SDSUPPORT)
     //
     // SD Card Symbol
@@ -1136,11 +1076,7 @@ void MarlinUI::draw_status_screen() {
       #endif
 
       #if DISABLED(FOAMCUTTER_XYUV)
-<<<<<<< HEAD
-       _draw_axis_value(Z_AXIS, zstring, blink);
-=======
         _draw_axis_value(Z_AXIS, zstring, blink);
->>>>>>> upstream/Marlin2ForPipetBot_edge
       #endif
 
       #if NONE(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
