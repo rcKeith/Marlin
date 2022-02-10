@@ -1400,7 +1400,7 @@
     #define SHOW_SECONDARY_AXES_TOP_LEFT
   #endif
   // Show the position of secondary axes I[J[K]] instead of icons. Incompatible with LCD_SHOW_SECONDARY_AXES
-  #define LCD_SHOW_SECONDARY_AXES_LINE
+  //#define LCD_SHOW_SECONDARY_AXES_LINE
 #endif
 // LCD Print Progress options
 #if EITHER(SDSUPPORT, LCD_SET_PROGRESS_MANUALLY)
