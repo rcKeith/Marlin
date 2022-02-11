@@ -261,7 +261,9 @@ void menu_move() {
     #endif
 
     #if HAS_Z_AXIS
-      SUBMENU(MSG_MOVE_Z, []{ _menu_move_distance(Z_AXIS, lcd_move_z); });
+      #if DISABLED(FOAMCUTTER_XYUV)
+        SUBMENU(MSG_MOVE_Z, []{ _menu_move_distance(Z_AXIS, lcd_move_z); });
+      #endif
     #endif
     #if HAS_I_AXIS
       SUBMENU(MSG_MOVE_I, []{ _menu_move_distance(I_AXIS, lcd_move_i); });

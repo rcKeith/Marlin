@@ -63,6 +63,8 @@
   #warning "Your Configuration provides no method to acquire user feedback!"
 #endif
 
+#define NO_AUTO_ASSIGN_WARNING
+
 #ifndef NO_AUTO_ASSIGN_WARNING
 
   #if AUTO_ASSIGNED_X2_STEPPER
