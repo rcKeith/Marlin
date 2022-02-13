@@ -510,8 +510,9 @@ void menu_motion() {
   //
   // Disable Steppers
   //
-  GCODES_ITEM(MSG_DISABLE_STEPPERS, PSTR("M84"));
-
+  #if DISABLED(FOAMCUTTER_XYUV)
+    GCODES_ITEM(MSG_DISABLE_STEPPERS, PSTR("M84"));
+  #endif
   END_MENU();
 }
 
