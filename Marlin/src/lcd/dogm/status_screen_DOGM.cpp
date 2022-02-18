@@ -1074,11 +1074,9 @@ void MarlinUI::draw_status_screen() {
         }
 
       #endif
-
       #if DISABLED(FOAMCUTTER_XYUV)
         _draw_axis_value(Z_AXIS, zstring, blink);
       #endif
-
       #if NONE(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
         u8g.setColorIndex(1); // black on white
       #endif

@@ -435,14 +435,14 @@ void GcodeSuite::G28() {
     TERN_(HOME_Z_FIRST, if (doZ) homeaxis(Z_AXIS));
 
     const float z_homing_height = parser.seenval('R') ? parser.value_linear_units() : Z_HOMING_HEIGHT;
-
-    if (z_homing_height && (NUM_AXIS_GANG(doX, || doY, || TERN0(Z_SAFE_HOMING, doZ), || doI, || doJ, || doK, || doU, || doV, || doW))) {
-      // Raise Z before homing any other axes and z is not already high enough (never lower z)
-      if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("Raise Z (before homing) by ", z_homing_height);
-      do_z_clearance(z_homing_height);
-      TERN_(BLTOUCH, bltouch.init());
+    #if DISABLED(FOAMCUTTER_XYUV)
+      if (z_homing_height && (NUM_AXIS_GANG(doX, || doY, || TERN0(Z_SAFE_HOMING, doZ), || doI, || doJ, || doK, || doU, || doV, || doW))) {
+        // Raise Z before homing any other axes and z is not already high enough (never lower z)
+        if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("Raise Z (before homing) by ", z_homing_height);
+        do_z_clearance(z_homing_height);
+        TERN_(BLTOUCH, bltouch.init());
     }
-
+    #endif
     // Diagonal move first if both are homing
     TERN_(QUICK_HOME, if (doX && doY) quick_home_xy());
 
@@ -489,8 +489,9 @@ void GcodeSuite::G28() {
           stepper.set_all_z_lock(false);
           stepper.set_separate_multi_axis(false);
         #endif
-
-        TERN(Z_SAFE_HOMING, home_z_safely(), homeaxis(Z_AXIS));
+        #if DISABLED(FOAMCUTTER_XYUV)
+          TERN(Z_SAFE_HOMING, home_z_safely(), homeaxis(Z_AXIS));
+        #endif
         probe.move_z_after_homing();
       }
     #endif
