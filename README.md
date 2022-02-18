@@ -1,5 +1,10 @@
-# Marlin2ForPipetBot 3D Printer and Lab Robot CNC Firmware
- 
+# 4 Axis Foam Cutter firmware forked from Marlin2ForPipetBot
+
+To be able to use a 4 axis CNC Foam Cutter without the need of a attached computer.
+The Status screen has been modifed by DerAndere1 to show the axes XYUV with a few minor tweaks by myself. Many thanks.
+This as yet hasn't been tested on a running CNC Foam Cutter just bench tested on an Arduino Mega 2560 and a RAMPS 1.4 with stepper motor connected.
+Please use with caution until this has been completed.
+
 Additional documentation can be found in the 
 repository [DerAndere1/Marlin at https://github.com](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot), the [Wiki](https://github.com/DerAndere1/Marlin/wiki)
 or on the [PipetBot-A8 project homepage](https://derandere.gitlab.io/pipetbot-a8) 
