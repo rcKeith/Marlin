@@ -431,11 +431,11 @@ void GcodeSuite::G28() {
     #else
       constexpr bool doZ = false;
     #endif
-
-    TERN_(HOME_Z_FIRST, if (doZ) homeaxis(Z_AXIS));
-
-    const float z_homing_height = parser.seenval('R') ? parser.value_linear_units() : Z_HOMING_HEIGHT;
     #if DISABLED(FOAMCUTTER_XYUV)
+      TERN_(HOME_Z_FIRST, if (doZ) homeaxis(Z_AXIS));
+
+      const float z_homing_height = parser.seenval('R') ? parser.value_linear_units() : Z_HOMING_HEIGHT;
+    
       if (z_homing_height && (NUM_AXIS_GANG(doX, || doY, || TERN0(Z_SAFE_HOMING, doZ), || doI, || doJ, || doK, || doU, || doV, || doW))) {
         // Raise Z before homing any other axes and z is not already high enough (never lower z)
         if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("Raise Z (before homing) by ", z_homing_height);
@@ -491,8 +491,8 @@ void GcodeSuite::G28() {
         #endif
         #if DISABLED(FOAMCUTTER_XYUV)
           TERN(Z_SAFE_HOMING, home_z_safely(), homeaxis(Z_AXIS));
+          probe.move_z_after_homing();
         #endif
-        probe.move_z_after_homing();
       }
     #endif
 

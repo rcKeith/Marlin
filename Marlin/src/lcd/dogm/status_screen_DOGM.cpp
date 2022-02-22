@@ -48,6 +48,8 @@
   #include "../../MarlinCore.h" // for printingIsActive()
 #endif
 
+
+
 #if ENABLED(FILAMENT_LCD_DISPLAY)
   #include "../../feature/filwidth.h"
   #include "../../module/planner.h"
@@ -59,6 +61,7 @@
 
 #if HAS_CUTTER
   #include "../../feature/spindle_laser.h"
+  #define DO_DRAW_CUTTER 1
 #endif
 
 #if EITHER(HAS_COOLER, LASER_COOLANT_FLOW_METER)
@@ -95,8 +98,8 @@
 #define XYZ_SPACING_IN (XYZ_SPACING + 9)
 #define X_SECONDARY_AXES_VALUE_POS (LCD_PIXEL_WIDTH - 27)
 
-#define IJ_BASELINE    (1 + INFO_FONT_ASCENT)
-#define XYZ_BASELINE    (30 + INFO_FONT_ASCENT)
+#define IJ_BASELINE    (30 + INFO_FONT_ASCENT)
+#define XYZ_BASELINE    (16 + INFO_FONT_ASCENT)
 #define EXTRAS_BASELINE (40 + INFO_FONT_ASCENT)
 #define STATUS_BASELINE (LCD_PIXEL_HEIGHT - INFO_FONT_DESCENT)
 
@@ -703,7 +706,7 @@ void MarlinUI::draw_status_screen() {
     //
 
     #if EITHER(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
-      #define IJ_FRAME_TOP 0
+      #define IJ_FRAME_TOP 29
       #if ENABLED(LCD_SHOW_SECONDARY_AXES)
         #define IJ_FRAME_HEIGHT (2 * INFO_FONT_ASCENT + 1 + 3)
       #else // ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
@@ -724,8 +727,8 @@ void MarlinUI::draw_status_screen() {
         #if BOTH(XYZ_HOLLOW_FRAME, LCD_SHOW_SECONDARY_AXES)
           u8g.drawFrame(TERN(SHOW_SECONDARY_AXES_TOP_LEFT, 0, X_SECONDARY_AXES_VALUE_POS - 1), IJ_FRAME_TOP, 28, IJ_FRAME_HEIGHT);
         #elif BOTH(XYZ_HOLLOW_FRAME, LCD_SHOW_SECONDARY_AXES_LINE)
-          //u8g.drawFrame(0, IJ_FRAME_TOP, NUM_AXES * XYZ_SPACING_IN + X_LABEL_POS_IN + 3, IJ_FRAME_HEIGHT);
-          u8g.drawFrame(0, IJ_FRAME_TOP, LCD_PIXEL_WIDTH, IJ_FRAME_HEIGHT);
+          u8g.drawFrame(0, IJ_FRAME_TOP, 2 * XYZ_SPACING_IN + X_LABEL_POS_IN + 3, IJ_FRAME_HEIGHT);
+          //u8g.drawFrame(0, IJ_FRAME_TOP, LCD_PIXEL_WIDTH, IJ_FRAME_HEIGHT);
         #elif DISABLED(XYZ_HOLLOW_FRAME) && ENABLED(LCD_SHOW_SECONDARY_AXES)
           u8g.drawFrame(TERN(SHOW_SECONDARY_AXES_TOP_LEFT, 0, X_SECONDARY_AXES_VALUE_POS - 1), IJ_FRAME_TOP, 28, IJ_FRAME_HEIGHT);
         #else // DISABLED(XYZ_HOLLOW_FRAME) && ENABLED(LCD_SHOW_SECONDARY_AXES_LINE)
@@ -1009,10 +1012,10 @@ void MarlinUI::draw_status_screen() {
   //
 
   #if EITHER(XYZ_NO_FRAME, XYZ_HOLLOW_FRAME)
-    #define XYZ_FRAME_TOP 29
+    #define XYZ_FRAME_TOP 15
     #define XYZ_FRAME_HEIGHT INFO_FONT_ASCENT + 3
   #else
-    #define XYZ_FRAME_TOP 30
+    #define XYZ_FRAME_TOP 20
     #define XYZ_FRAME_HEIGHT INFO_FONT_ASCENT + 1
   #endif
 
@@ -1020,7 +1023,7 @@ void MarlinUI::draw_status_screen() {
 
     #if DISABLED(XYZ_NO_FRAME)
       #if ENABLED(XYZ_HOLLOW_FRAME)
-        u8g.drawFrame(0, XYZ_FRAME_TOP, LCD_PIXEL_WIDTH, XYZ_FRAME_HEIGHT); // 8: 29-40  7: 29-39
+        u8g.drawFrame(0, XYZ_FRAME_TOP, 2 * XYZ_SPACING_IN + X_LABEL_POS_IN + 3, XYZ_FRAME_HEIGHT); // 8: 29-40  7: 29-39
       #else
         u8g.drawBox(0, XYZ_FRAME_TOP, LCD_PIXEL_WIDTH, XYZ_FRAME_HEIGHT);   // 8: 30-39  7: 30-37
       #endif
