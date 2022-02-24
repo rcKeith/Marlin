@@ -12,4 +12,4 @@ Additional documentation can be found in the
 repository [DerAndere1/Marlin at https://github.com](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot), the [Wiki](https://github.com/DerAndere1/Marlin/wiki)
 
 # CNC Foam Cutter build
-Please check my website for the build and electronics used in my 4 CNC Foam cutter https://rckeith.co.uk
+Please check my website for the build and electronics used in my 4 Axes CNC Foam cutter https://rckeith.co.uk
