@@ -3723,7 +3723,7 @@
        * The laser might do some weird things, so only enable this
        * feature if you understand the implications.
        */
-      //#define LASER_POWER_INLINE_CONTINUOUS
+      #define LASER_POWER_INLINE_CONTINUOUS
 
     #else
 
@@ -3987,8 +3987,8 @@
 // Custom Menu: Main Menu
 #define CUSTOM_MENU_MAIN
 #if ENABLED(CUSTOM_MENU_MAIN)
-  #define CUSTOM_MENU_MAIN_TITLE "Zero Axes"
-  #define CUSTOM_MENU_MAIN_SCRIPT_DONE "M117 Axes Zero'd"
+  #define CUSTOM_MENU_MAIN_TITLE "Set/Move Axe to Zero"
+  #define CUSTOM_MENU_MAIN_SCRIPT_DONE "Done"
   //#define CUSTOM_MENU_MAIN_SCRIPT_AUDIBLE_FEEDBACK
   #define CUSTOM_MENU_MAIN_SCRIPT_RETURN   // Return to status screen after a script
   #define CUSTOM_MENU_MAIN_ONLY_IDLE         // Only show custom menu when the machine is idle
@@ -3997,11 +3997,11 @@
   #define MAIN_MENU_ITEM_1_GCODE "G92 X0 Y0 V0 U0"
   #define MAIN_MENU_ITEM_1_CONFIRM          // Show a confirmation dialog before this action
 
-  #define MAIN_MENU_ITEM_2_DESC "Zero Vert. Axis" 
-  #define MAIN_MENU_ITEM_2_GCODE "G92 Y0 Z0"
+  #define MAIN_MENU_ITEM_2_DESC "Zero Vert Axes" 
+  #define MAIN_MENU_ITEM_2_GCODE "G92 Y0 V0"
   #define MAIN_MENU_ITEM_2_CONFIRM
 
-  #define MAIN_MENU_ITEM_3_DESC "Zero Horiz. Axis" 
+  #define MAIN_MENU_ITEM_3_DESC "Zero Horiz Axes" 
   #define MAIN_MENU_ITEM_3_GCODE "G92 X0 U0"
   #define MAIN_MENU_ITEM_3_CONFIRM
 
@@ -4009,9 +4009,17 @@
   #define MAIN_MENU_ITEM_4_GCODE "G92.1"
   #define MAIN_MENU_ITEM_4_CONFIRM
 
-  //#define MAIN_MENU_ITEM_3_DESC "Preheat for " PREHEAT_2_LABEL
-  //#define MAIN_MENU_ITEM_3_GCODE "M140 S" STRINGIFY(PREHEAT_2_TEMP_BED) "\nM104 S" STRINGIFY(PREHEAT_2_TEMP_HOTEND)
-  //#define MAIN_MENU_ITEM_3_CONFIRM
+  #define MAIN_MENU_ITEM_5_DESC "Move All Axes to 0"
+  #define MAIN_MENU_ITEM_5_GCODE "G0 X0 Y0 U0 V0" 
+  #define MAIN_MENU_ITEM_5_CONFIRM
+
+  #define MAIN_MENU_ITEM_6_DESC "Move Vert Axes to 0"
+  #define MAIN_MENU_ITEM_6_GCODE "G0 Y0 V0" 
+  #define MAIN_MENU_ITEM_6_CONFIRM
+
+  #define MAIN_MENU_ITEM_7_DESC "Move Horiz Axes to 0"
+  #define MAIN_MENU_ITEM_7_GCODE "G0 X0 U0" 
+  #define MAIN_MENU_ITEM_7_CONFIRM
 
   //#define MAIN_MENU_ITEM_4_DESC "Heat Bed/Home/Level"
   //#define MAIN_MENU_ITEM_4_GCODE "M140 S" STRINGIFY(PREHEAT_2_TEMP_BED) "\nG28\nG29"
@@ -4416,7 +4424,7 @@
 //
 // M42 - Set pin states
 //
-//#define DIRECT_PIN_CONTROL
+// #define DIRECT_PIN_CONTROL
 
 //
 // M43 - display pin status, toggle pins, watch pins, watch endstops & toggle LED, test servo probe
