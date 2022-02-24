@@ -3987,7 +3987,7 @@
 // Custom Menu: Main Menu
 #define CUSTOM_MENU_MAIN
 #if ENABLED(CUSTOM_MENU_MAIN)
-  #define CUSTOM_MENU_MAIN_TITLE "Set/Move Axe to Zero"
+  #define CUSTOM_MENU_MAIN_TITLE "Set/Move Axes to Zero"
   #define CUSTOM_MENU_MAIN_SCRIPT_DONE "Done"
   //#define CUSTOM_MENU_MAIN_SCRIPT_AUDIBLE_FEEDBACK
   #define CUSTOM_MENU_MAIN_SCRIPT_RETURN   // Return to status screen after a script
