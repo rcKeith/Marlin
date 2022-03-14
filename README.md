@@ -9,8 +9,6 @@ This is still in the testing phase with CNC Foam Cutter using an Arduino Mega 25
 Please use with caution until this has been completed.
 More details here https://rckeith.co.uk/4-axis-cnc-foam-cutter-using-marlin-3d-printer-firmware/
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/ys1kgXrevF4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
 Additional documentation can be found in the 
 repository [DerAndere1/Marlin at https://github.com](https://github.com/DerAndere1/Marlin/tree/Marlin2ForPipetBot), the [Wiki](https://github.com/DerAndere1/Marlin/wiki)
 
