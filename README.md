@@ -7,6 +7,10 @@ To be able to use a 4 axes CNC Foam Cutter without the need of a attached comput
 The Status screen has been modifed by DerAndere1 to show the axes XYUV with a few minor tweaks by myself. Many thanks.
 This is still in the testing phase with CNC Foam Cutter using an Arduino Mega 2560 and a RAMPS 1.4. 
 Please use with caution until this has been completed.
+More details here https://rckeith.co.uk/4-axis-cnc-foam-cutter-using-marlin-3d-printer-firmware/
+
+[![4 Axes Foam Cutter firmware forked from Marlin2ForPipetBot](https://img.youtube.com/vi/ys1kgXrevF4/0.jpg)](https://www.youtube.com/watch?v=ys1kgXrevF4)
+
 
 # MKS GEN L V2.1
 If you use the MKS GEN L V2.1 board change line 99 in Configuration.h 
