@@ -82,4 +82,12 @@
   #define E1_SERIAL_RX_PIN                    12
 #endif
 
+
+// V2.1 board used D42 for UART so we use the X-MAX pin D19 as
+// this is not used
+#define I_MIN_PIN                         19
+// Reassign to unused 5th Axis can't have two pins with the same number 
+#define J_MAX_PIN                         42
+
 #include "pins_RAMPS.h"
+
